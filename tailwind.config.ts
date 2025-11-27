@@ -5,6 +5,10 @@ export default {
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
+    fontFamily: {
+      'display': ['Orbitron', 'sans-serif'],
+      'body': ['Rajdhani', 'sans-serif'],
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -22,6 +26,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -46,6 +51,12 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        status: {
+          empty: "hsl(var(--status-empty))",
+          progress: "hsl(var(--status-in-progress))",
+          complete: "hsl(var(--status-complete))",
+          insight: "hsl(var(--status-insight))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
