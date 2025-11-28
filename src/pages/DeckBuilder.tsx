@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ArrowLeft, Share2 } from 'lucide-react';
+import { ArrowLeft, Share2, Activity } from 'lucide-react';
 import { PhaseSection } from '@/components/deck-builder/PhaseSection';
 import { TeamPanel } from '@/components/deck-builder/TeamPanel';
 import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
 import { CardEditor } from '@/components/deck-builder/CardEditor';
 import { CollaboratorManager } from '@/components/deck-builder/review/CollaboratorManager';
+import { DeckHealthDashboard } from '@/components/deck-builder/health/DeckHealthDashboard';
 import { useDeckCards } from '@/hooks/useDeckCards';
 import { getCardBySlot, CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
@@ -22,6 +23,7 @@ export default function DeckBuilder() {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [loading, setLoading] = useState(true);
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
+  const [healthDashboardOpen, setHealthDashboardOpen] = useState(false);
   const { cards, saveCard, getCardBySlot: getDeckCard, getFilledCardsCount } = useDeckCards(deckId || '');
 
   useEffect(() => {
@@ -130,6 +132,16 @@ export default function DeckBuilder() {
               </div>
 
               <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="gap-2"
+                  onClick={() => setHealthDashboardOpen(true)}
+                >
+                  <Activity className="w-4 h-4" />
+                  Deck Health
+                </Button>
+
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="lg" className="gap-2">
@@ -205,6 +217,15 @@ export default function DeckBuilder() {
           evaluation={(editingCardData?.card_data as any)?.evaluation}
           cardId={editingCardData?.id}
           onSave={handleSaveCard}
+        />
+      )}
+
+      {/* Deck Health Dashboard */}
+      {deckId && (
+        <DeckHealthDashboard
+          deckId={deckId}
+          isOpen={healthDashboardOpen}
+          onClose={() => setHealthDashboardOpen(false)}
         />
       )}
     </div>
