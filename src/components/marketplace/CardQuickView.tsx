@@ -1,0 +1,183 @@
+import { X, ShoppingCart, Heart, Eye, Star } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { RarityBadge } from './RarityBadge';
+import { PriceTag } from './PriceTag';
+import { MarketplaceCard } from '@/data/mockMarketplaceData';
+import { cn } from '@/lib/utils';
+import { RARITY_CONFIG } from '@/data/rarityConfig';
+
+interface CardQuickViewProps {
+  card: MarketplaceCard | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onBuy: () => void;
+  onFavorite: () => void;
+  isInCollection: boolean;
+  isFavorited: boolean;
+}
+
+export const CardQuickView = ({
+  card,
+  isOpen,
+  onClose,
+  onBuy,
+  onFavorite,
+  isInCollection,
+  isFavorited,
+}: CardQuickViewProps) => {
+  if (!card) return null;
+
+  const rarityConfig = RARITY_CONFIG[card.rarity];
+
+  const phaseColors = {
+    vision: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+    research: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+    build: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
+    grow: 'bg-green-500/10 text-green-400 border-green-500/30',
+  };
+
+  const phaseIcons = {
+    vision: '🔮',
+    research: '🔬',
+    build: '🔧',
+    grow: '🚀',
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="sr-only">Card Details</DialogTitle>
+        </DialogHeader>
+
+        {/* Hero Section */}
+        <div
+          className={cn(
+            'relative h-64 -mx-6 -mt-6 bg-gradient-to-br overflow-hidden',
+            rarityConfig.bgGradient
+          )}
+        >
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-9xl opacity-20">{phaseIcons[card.phase]}</div>
+          </div>
+          {rarityConfig.animated && (
+            <div className="absolute inset-0 legendary-shimmer opacity-30" />
+          )}
+
+          {/* Favorite Button */}
+          <Button
+            size="icon"
+            variant="ghost"
+            className={cn(
+              'absolute top-4 right-4 backdrop-blur-sm',
+              isFavorited ? 'text-red-500' : 'text-white'
+            )}
+            onClick={onFavorite}
+          >
+            <Heart size={24} fill={isFavorited ? 'currentColor' : 'none'} />
+          </Button>
+        </div>
+
+        {/* Content */}
+        <div className="space-y-6 pt-4">
+          {/* Title & Badges */}
+          <div className="space-y-3">
+            <h2 className="text-3xl font-bold text-glow">{card.title}</h2>
+            <div className="flex flex-wrap gap-2">
+              <Badge className={cn('text-sm border', phaseColors[card.phase])}>
+                {phaseIcons[card.phase]} {card.phase.toUpperCase()}
+              </Badge>
+              <Badge variant="outline" className="text-sm capitalize">
+                {card.cardType}
+              </Badge>
+              <RarityBadge rarity={card.rarity} />
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-muted-foreground leading-relaxed">{card.description}</p>
+
+          <Separator />
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center space-y-1">
+              <div className="flex items-center justify-center gap-1 text-muted-foreground">
+                <Eye size={16} />
+                <span className="text-sm">Views</span>
+              </div>
+              <div className="text-2xl font-bold">{card.stats.views.toLocaleString()}</div>
+            </div>
+            <div className="text-center space-y-1">
+              <div className="flex items-center justify-center gap-1 text-muted-foreground">
+                <ShoppingCart size={16} />
+                <span className="text-sm">Purchases</span>
+              </div>
+              <div className="text-2xl font-bold">{card.stats.purchases.toLocaleString()}</div>
+            </div>
+            <div className="text-center space-y-1">
+              <div className="flex items-center justify-center gap-1 text-muted-foreground">
+                <Star size={16} />
+                <span className="text-sm">Rating</span>
+              </div>
+              <div className="text-2xl font-bold">{card.stats.avgRating.toFixed(1)}</div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Seller Info */}
+          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-lg font-bold">
+                {card.seller.username[0]}
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">Created by</div>
+                <div className="font-medium">@{card.seller.username}</div>
+              </div>
+            </div>
+            <Badge variant="outline">{card.industry}</Badge>
+          </div>
+
+          {/* Preview Data */}
+          {card.previewData && (
+            <div className="p-4 bg-muted/20 rounded-lg">
+              <h4 className="text-sm font-semibold mb-2 text-muted-foreground">What's Inside:</h4>
+              <div className="flex flex-wrap gap-3">
+                {Object.entries(card.previewData).map(([key, value]) => (
+                  <div key={key} className="flex items-center gap-2">
+                    <span className="text-2xl">📦</span>
+                    <span className="text-sm">
+                      <span className="font-bold text-primary">{String(value)}</span>{' '}
+                      <span className="text-muted-foreground">{key}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Price & Actions */}
+          <div className="flex items-center justify-between pt-4 border-t border-border">
+            <PriceTag price={card.price} size="lg" />
+            <div className="flex gap-2">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-primary to-secondary"
+                onClick={onBuy}
+                disabled={isInCollection}
+              >
+                <ShoppingCart size={18} />
+                {isInCollection ? 'Already Owned' : 'Buy Now'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};

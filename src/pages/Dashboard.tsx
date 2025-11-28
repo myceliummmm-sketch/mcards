@@ -138,9 +138,14 @@ const Dashboard = () => {
             <h1 className="text-2xl font-display font-bold text-glow">Mycelium Cards</h1>
             <p className="text-sm text-muted-foreground">Welcome back, {username}!</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleSignOut}>
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => navigate('/marketplace')}>
+              🛒 Marketplace
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleSignOut}>
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
