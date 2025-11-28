@@ -17,32 +17,41 @@ export type Database = {
       deck_cards: {
         Row: {
           card_data: Json
+          card_image_url: string | null
           card_slot: number
           card_type: string
           created_at: string
           deck_id: string
+          evaluation: Json | null
           id: string
           is_insight: boolean
+          last_evaluated_at: string | null
           updated_at: string
         }
         Insert: {
           card_data?: Json
+          card_image_url?: string | null
           card_slot: number
           card_type: string
           created_at?: string
           deck_id: string
+          evaluation?: Json | null
           id?: string
           is_insight?: boolean
+          last_evaluated_at?: string | null
           updated_at?: string
         }
         Update: {
           card_data?: Json
+          card_image_url?: string | null
           card_slot?: number
           card_type?: string
           created_at?: string
           deck_id?: string
+          evaluation?: Json | null
           id?: string
           is_insight?: boolean
+          last_evaluated_at?: string | null
           updated_at?: string
         }
         Relationships: [

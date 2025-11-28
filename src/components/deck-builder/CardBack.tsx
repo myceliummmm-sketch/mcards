@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { getCharacterById } from '@/data/teamCharacters';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Sparkles } from 'lucide-react';
 
 interface CardBackProps {
   definition: CardDefinition;
@@ -74,13 +75,14 @@ export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
         </div>
       )}
 
-      {/* Edit button */}
+      {/* Craft Button */}
       <Button
         onClick={onEdit}
-        className="w-full"
+        className="w-full gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105"
         size="lg"
       >
-        ✏️ Edit Card
+        <Sparkles className="w-4 h-4" />
+        ✨ Craft Card
       </Button>
     </div>
   );

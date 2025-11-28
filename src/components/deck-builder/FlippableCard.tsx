@@ -60,6 +60,7 @@ export const FlippableCard = ({
               isComplete={isComplete}
               isInsight={isInsight}
               preview={preview}
+              imageUrl={cardData?.card_image_url}
             />
           </div>
         </motion.div>

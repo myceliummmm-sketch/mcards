@@ -8,7 +8,7 @@ import { TeamPanel } from '@/components/deck-builder/TeamPanel';
 import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
 import { CardEditor } from '@/components/deck-builder/CardEditor';
 import { useDeckCards } from '@/hooks/useDeckCards';
-import { getCardBySlot } from '@/data/cardDefinitions';
+import { getCardBySlot, CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -53,13 +53,20 @@ export default function DeckBuilder() {
     setEditingSlot(null);
   };
 
-  const handleSaveCard = async (data: any) => {
+  const handleSaveCard = async (data: any, imageUrl?: string, evaluation?: any) => {
     if (!editingSlot) return;
     
     const cardDefinition = getCardBySlot(editingSlot);
     if (!cardDefinition) return;
 
-    await saveCard(editingSlot, cardDefinition.cardType, data);
+    // Merge all data together
+    const fullData = {
+      ...data,
+      ...(imageUrl && { card_image_url: imageUrl }),
+      ...(evaluation && { evaluation })
+    };
+
+    await saveCard(editingSlot, cardDefinition.cardType, fullData);
   };
 
   const handleGeneratePrompt = () => {
@@ -169,12 +176,14 @@ export default function DeckBuilder() {
       <TeamPanel />
 
       {/* Card Editor Modal */}
-      {editingCardDefinition && (
+      {editingCardDefinition && editingCardData && (
         <CardEditor
           isOpen={editingSlot !== null}
           onClose={handleCloseEditor}
           definition={editingCardDefinition}
-          initialData={editingCardData?.card_data || {}}
+          initialData={editingCardData.card_data || {}}
+          cardImageUrl={(editingCardData.card_data as any)?.card_image_url}
+          evaluation={(editingCardData.card_data as any)?.evaluation}
           onSave={handleSaveCard}
         />
       )}
