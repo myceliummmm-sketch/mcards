@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { RarityBadge } from './RarityBadge';
 import { PriceTag } from './PriceTag';
 import { MarketplaceCard } from '@/data/mockMarketplaceData';
@@ -53,32 +54,56 @@ export const CardQuickView = ({
           <DialogTitle className="sr-only">Card Details</DialogTitle>
         </DialogHeader>
 
-        {/* Hero Section */}
-        <div
-          className={cn(
-            'relative h-64 -mx-6 -mt-6 bg-gradient-to-br overflow-hidden',
-            rarityConfig.bgGradient
-          )}
-        >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-9xl opacity-20">{phaseIcons[card.phase]}</div>
-          </div>
-          {rarityConfig.animated && (
-            <div className="absolute inset-0 legendary-shimmer opacity-30" />
-          )}
+        {/* Hero Section - Card Preview with 5:7 ratio */}
+        <div className="-mx-6 -mt-6">
+          <AspectRatio ratio={5/7}>
+            <div
+              className={cn(
+                'relative w-full h-full overflow-hidden',
+                rarityConfig.borderStyle
+              )}
+            >
+              {/* Background Image */}
+              <img 
+                src={card.imageUrl || `https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=500&fit=crop`}
+                alt={card.title}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              
+              {/* Legendary shimmer overlay */}
+              {rarityConfig.animated && (
+                <div className="absolute inset-0 legendary-shimmer opacity-30" />
+              )}
 
-          {/* Favorite Button */}
-          <Button
-            size="icon"
-            variant="ghost"
-            className={cn(
-              'absolute top-4 right-4 backdrop-blur-sm',
-              isFavorited ? 'text-red-500' : 'text-white'
-            )}
-            onClick={onFavorite}
-          >
-            <Heart size={24} fill={isFavorited ? 'currentColor' : 'none'} />
-          </Button>
+              {/* Top Gradient Overlay */}
+              <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/80 via-black/50 to-transparent" />
+              
+              {/* Bottom Gradient Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/90 via-black/60 to-transparent" />
+
+              {/* Favorite Button */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  'absolute top-4 right-4 backdrop-blur-md bg-black/40',
+                  isFavorited ? 'text-red-500' : 'text-white'
+                )}
+                onClick={onFavorite}
+              >
+                <Heart size={24} fill={isFavorited ? 'currentColor' : 'none'} />
+              </Button>
+
+              {/* Bottom Info */}
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">{card.title}</h2>
+                <div className="flex items-center justify-between">
+                  <RarityBadge rarity={card.rarity} className="backdrop-blur-md" />
+                  <PriceTag price={card.price} size="md" className="drop-shadow-lg" />
+                </div>
+              </div>
+            </div>
+          </AspectRatio>
         </div>
 
         {/* Content */}

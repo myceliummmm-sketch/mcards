@@ -3,6 +3,7 @@ import { Heart, Eye, ShoppingCart, Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { RarityBadge } from './RarityBadge';
 import { PriceTag } from './PriceTag';
 import { MarketplaceCard as MarketplaceCardType } from '@/data/mockMarketplaceData';
@@ -46,22 +47,23 @@ export const MarketplaceCard = ({
   };
 
   return (
-    <Card
-      className={cn(
-        'relative group overflow-hidden transition-all duration-300',
-        'border-2 h-[420px] flex flex-col',
-        rarityConfig.borderStyle,
-        fillsGap && 'gap-filler',
-        'hover:scale-[1.02]'
-      )}
-      style={{
-        boxShadow: isHovered ? rarityConfig.glow : 'none',
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Image Container - Takes most of the card space */}
-      <div className="relative flex-1 overflow-hidden">
+    <AspectRatio ratio={5/7}>
+      <Card
+        className={cn(
+          'absolute inset-0 group overflow-hidden transition-all duration-300',
+          'border-2 flex flex-col',
+          rarityConfig.borderStyle,
+          fillsGap && 'gap-filler',
+          'hover:scale-[1.02]'
+        )}
+        style={{
+          boxShadow: isHovered ? rarityConfig.glow : 'none',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Image Container - Takes most of the card space */}
+        <div className="relative flex-1 overflow-hidden">
         {/* Background Image */}
         <img 
           src={card.imageUrl || `https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=500&fit=crop`}
@@ -187,7 +189,8 @@ export const MarketplaceCard = ({
             </Button>
           </div>
         </div>
-      </div>
-    </Card>
+        </div>
+      </Card>
+    </AspectRatio>
   );
 };
