@@ -1,1 +1,7 @@
 project_id = "amblpuczzbllqriaqkrq"
+
+[functions.generate-card-image]
+verify_jwt = true
+
+[functions.evaluate-card]
+verify_jwt = true
