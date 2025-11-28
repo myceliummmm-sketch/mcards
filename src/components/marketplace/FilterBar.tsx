@@ -19,6 +19,7 @@ interface FilterBarProps {
   sortBy: string;
   gapFillerMode: boolean;
   showOwned: boolean;
+  hasRecommendations?: boolean;
   onPhaseToggle: (phase: string) => void;
   onRarityToggle: (rarity: Rarity) => void;
   onIndustryChange: (industry: string) => void;
@@ -35,6 +36,7 @@ export const FilterBar = ({
   sortBy,
   gapFillerMode,
   showOwned,
+  hasRecommendations = false,
   onPhaseToggle,
   onRarityToggle,
   onIndustryChange,
@@ -122,6 +124,9 @@ export const FilterBar = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
+              {hasRecommendations && (
+                <SelectItem value="recommended">✨ Recommended</SelectItem>
+              )}
               {SORT_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}

@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { RarityBadge } from './RarityBadge';
 import { PriceTag } from './PriceTag';
+import { WhyRecommended } from './WhyRecommended';
 import { MarketplaceCard } from '@/data/mockMarketplaceData';
 import { cn } from '@/lib/utils';
 import { RARITY_CONFIG } from '@/data/rarityConfig';
@@ -18,6 +19,11 @@ interface CardQuickViewProps {
   onFavorite: () => void;
   isInCollection: boolean;
   isFavorited: boolean;
+  recommendation?: {
+    score: number;
+    reasons: string[];
+    category: string;
+  };
 }
 
 export const CardQuickView = ({
@@ -28,6 +34,7 @@ export const CardQuickView = ({
   onFavorite,
   isInCollection,
   isFavorited,
+  recommendation,
 }: CardQuickViewProps) => {
   if (!card) return null;
 
@@ -121,6 +128,18 @@ export const CardQuickView = ({
               <RarityBadge rarity={card.rarity} />
             </div>
           </div>
+
+          {/* Recommendation Section */}
+          {recommendation && (
+            <>
+              <WhyRecommended
+                reasons={recommendation.reasons}
+                matchScore={recommendation.score}
+                category={recommendation.category}
+              />
+              <Separator />
+            </>
+          )}
 
           {/* Description */}
           <p className="text-muted-foreground leading-relaxed">{card.description}</p>
