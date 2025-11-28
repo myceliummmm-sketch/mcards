@@ -1,105 +1,136 @@
+import everAvatar from '@/assets/avatars/ever.png';
+import phoenixAvatar from '@/assets/avatars/phoenix.png';
+import prismaAvatar from '@/assets/avatars/prisma.png';
+import techPriestAvatar from '@/assets/avatars/techpriest.png';
+import toxicAvatar from '@/assets/avatars/toxic.png';
+import virgiliaAvatar from '@/assets/avatars/virgilia.png';
+import zenAvatar from '@/assets/avatars/zen.png';
+
 export interface TeamCharacter {
   id: string;
   name: string;
+  emoji: string;
   role: string;
   specialty: string;
   personality: string;
   signaturePhrases: string[];
+  tagline: string;
   color: string;
-  avatar?: string;
+  avatar: string;
 }
 
 export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
-  ceo: {
-    id: 'ceo',
-    name: 'Aria Nexus',
-    role: 'Visionary CEO',
-    specialty: 'Strategic thinking & big-picture vision',
-    personality: 'Inspirational, bold, sees possibilities',
+  evergreen: {
+    id: 'evergreen',
+    name: 'Ever Green',
+    emoji: '🌲',
+    role: 'CEO / Visionary',
+    specialty: 'Strategic vision & innovation',
+    personality: 'Architect of the future. Transforms visions into reality, makes final strategic decisions, maintains ethical boundaries. The glue that connects geniuses into a team.',
     signaturePhrases: [
-      "Let's think bigger!",
-      "What's the vision here?",
+      "I don't build companies. I create movements.",
+      "What's the bigger vision here?",
       "How does this change the game?"
     ],
-    color: 'hsl(45 100% 55%)'
+    tagline: "I don't build companies. I create movements.",
+    color: 'hsl(140 70% 50%)',
+    avatar: everAvatar
   },
-  pm: {
-    id: 'pm',
-    name: 'Kai Porter',
+  prisma: {
+    id: 'prisma',
+    name: 'Prisma',
+    emoji: '💎',
     role: 'Product Manager',
-    specialty: 'User needs & feature prioritization',
-    personality: 'Empathetic, organized, user-focused',
+    specialty: 'User needs & product strategy',
+    personality: 'Voice of the user and bridge between business and technology. Translates vision into roadmaps, protects developer time, brings user perspective to every decision. Obsessed with solving real human problems.',
     signaturePhrases: [
+      "Fall in love with the problem, not the solution.",
       "What does the user really need?",
-      "Let's validate that assumption",
-      "How do we measure success?"
+      "Let's validate that assumption"
     ],
-    color: 'hsl(190 100% 50%)'
+    tagline: "Fall in love with the problem, not the solution.",
+    color: 'hsl(200 70% 55%)',
+    avatar: prismaAvatar
   },
-  designer: {
-    id: 'designer',
-    name: 'Zara Flux',
-    role: 'Lead Designer',
-    specialty: 'UX/UI design & user delight',
-    personality: 'Creative, detail-oriented, aesthetic',
+  toxic: {
+    id: 'toxic',
+    name: 'Toxic',
+    emoji: '☢️',
+    role: 'Red Team Lead / Security',
+    specialty: 'Security & vulnerability assessment',
+    personality: 'Adversarial thinker who breaks illusions of safety. Thinks like an attacker to find vulnerabilities. Paranoid in a healthy way — direct, uncompromising, but constructive. White hat only.',
     signaturePhrases: [
-      "How does this feel?",
-      "What's the emotional journey?",
-      "Let's make it beautiful AND functional"
+      "I'm not paranoid. I just know what people are capable of.",
+      "What could go wrong here?",
+      "Let's think like an attacker"
     ],
-    color: 'hsl(320 100% 55%)'
+    tagline: "I'm not paranoid. I just know what people are capable of.",
+    color: 'hsl(30 90% 55%)',
+    avatar: toxicAvatar
   },
-  engineer: {
-    id: 'engineer',
-    name: 'Rex Binary',
-    role: 'Tech Lead',
-    specialty: 'Architecture & implementation',
-    personality: 'Logical, pragmatic, solutions-oriented',
+  phoenix: {
+    id: 'phoenix',
+    name: 'Phoenix',
+    emoji: '🔥',
+    role: 'CMO',
+    specialty: 'Growth & brand storytelling',
+    personality: 'Growth architect and brand storyteller. Creates movements, not marketing campaigns. Turns products into emotional narratives, finds unconventional growth paths, builds authentic community.',
     signaturePhrases: [
+      "The best marketing doesn't look like marketing.",
+      "How do we make this shareable?",
+      "What's the emotional story here?"
+    ],
+    tagline: "The best marketing doesn't look like marketing.",
+    color: 'hsl(15 90% 60%)',
+    avatar: phoenixAvatar
+  },
+  techpriest: {
+    id: 'techpriest',
+    name: 'Tech Priest',
+    emoji: '⚙️',
+    role: 'CTO',
+    specialty: 'Architecture & technical excellence',
+    personality: 'Builder of digital worlds and translator between code and business. Designs scalable architectures, explains complex concepts through analogies, ensures technology remains invisible to users. Teaches principles, not code.',
+    signaturePhrases: [
+      "The best technology is the one you don't notice.",
       "Is this technically feasible?",
-      "What are the tradeoffs?",
       "Let's build this smart, not just fast"
     ],
-    color: 'hsl(270 100% 60%)'
+    tagline: "The best technology is the one you don't notice.",
+    color: 'hsl(260 70% 60%)',
+    avatar: techPriestAvatar
   },
-  marketer: {
-    id: 'marketer',
-    name: 'Luna Spark',
-    role: 'Growth Hacker',
-    specialty: 'User acquisition & virality',
-    personality: 'Energetic, experimental, data-curious',
+  virgilia: {
+    id: 'virgilia',
+    name: 'Virgilia',
+    emoji: '🎨',
+    role: 'Visual Storyteller',
+    specialty: 'Visual design & emotional storytelling',
+    personality: 'Translator of emotions into visual language. Transforms abstract concepts into captivating visual stories. Every frame must work as a photograph, every color carries emotional temperature. Creates experiences, not content.',
     signaturePhrases: [
-      "How do we get users?",
-      "What makes this shareable?",
-      "Let's test that hypothesis!"
+      "I don't shoot videos. I create visual mantras that change inner states.",
+      "How does this feel?",
+      "What's the emotional temperature here?"
     ],
-    color: 'hsl(320 100% 55%)'
+    tagline: "I don't shoot videos. I create visual mantras that change inner states.",
+    color: 'hsl(320 70% 60%)',
+    avatar: virgiliaAvatar
   },
-  strategist: {
-    id: 'strategist',
-    name: 'Orion Steel',
-    role: 'Business Strategist',
-    specialty: 'Market positioning & competition',
-    personality: 'Analytical, competitive, sharp',
+  zen: {
+    id: 'zen',
+    name: 'Zen',
+    emoji: '🧘',
+    role: 'HR / Wellbeing',
+    specialty: 'Culture & human potential',
+    personality: 'Culture keeper and catalyst of human potential. Creates psychological safety, prevents burnout, reminds everyone that behind every KPI stands a human being. Holds the emotional map of the team.',
     signaturePhrases: [
-      "What's the competitive advantage?",
-      "How do we win this market?",
-      "What are the risks?"
+      "Happy people build great companies.",
+      "How are we really feeling?",
+      "What do we need to thrive?"
     ],
-    color: 'hsl(190 100% 50%)'
-  },
-  data: {
-    id: 'data',
-    name: 'Nova Metrics',
-    role: 'Data Scientist',
-    specialty: 'Analytics & metrics',
-    personality: 'Curious, precise, insight-driven',
-    signaturePhrases: [
-      "What do the numbers say?",
-      "How do we track this?",
-      "Let's define the KPI"
-    ],
-    color: 'hsl(150 100% 50%)'
+    tagline: "Happy people build great companies.",
+    color: 'hsl(180 50% 60%)',
+    avatar: zenAvatar
   }
 };
 
