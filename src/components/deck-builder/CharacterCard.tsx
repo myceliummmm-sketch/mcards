@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import type { TeamCharacter } from '@/data/teamCharacters';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface CharacterCardProps {
   character: TeamCharacter;
@@ -19,15 +20,15 @@ export const CharacterCard = ({ character, isActive = false }: CharacterCardProp
       transition={isActive ? { repeat: Infinity, duration: 2 } : {}}
     >
       <div className="flex items-center gap-3">
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center text-2xl border-2"
-          style={{
-            borderColor: character.color,
-            backgroundColor: `${character.color}20`
-          }}
+        <Avatar 
+          className="w-12 h-12 border-2" 
+          style={{ borderColor: character.color }}
         >
-          {character.name.charAt(0)}
-        </div>
+          <AvatarImage src={character.avatar} alt={character.name} />
+          <AvatarFallback style={{ backgroundColor: `${character.color}20` }}>
+            {character.emoji}
+          </AvatarFallback>
+        </Avatar>
         
         <div className="flex-1 min-w-0">
           <div className="font-bold text-foreground truncate">{character.name}</div>

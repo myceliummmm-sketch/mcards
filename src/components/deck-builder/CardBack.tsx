@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { getCharacterById } from '@/data/teamCharacters';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface CardBackProps {
   definition: CardDefinition;
@@ -52,16 +53,15 @@ export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
       {character && (
         <div className="mb-4 p-3 bg-muted/50 rounded-lg border border-border">
           <div className="flex items-start gap-2">
-            <div
-              className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border shrink-0"
-              style={{
-                borderColor: character.color,
-                backgroundColor: `${character.color}20`,
-                color: character.color
-              }}
+            <Avatar 
+              className="w-6 h-6 border shrink-0" 
+              style={{ borderColor: character.color }}
             >
-              {character.name.charAt(0)}
-            </div>
+              <AvatarImage src={character.avatar} alt={character.name} />
+              <AvatarFallback style={{ backgroundColor: `${character.color}20`, color: character.color }}>
+                {character.emoji}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1">
               <div className="text-xs font-medium text-foreground mb-1">
                 {character.name} says:

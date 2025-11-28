@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { getCharacterById } from '@/data/teamCharacters';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface CardFrontProps {
   definition: CardDefinition;
@@ -78,16 +79,15 @@ export const CardFront = ({
       {/* AI Character badge */}
       {character && (
         <div className="flex items-center gap-2 mt-4">
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2"
-            style={{
-              borderColor: character.color,
-              backgroundColor: `${character.color}20`,
-              color: character.color
-            }}
+          <Avatar 
+            className="w-8 h-8 border-2" 
+            style={{ borderColor: character.color }}
           >
-            {character.name.charAt(0)}
-          </div>
+            <AvatarImage src={character.avatar} alt={character.name} />
+            <AvatarFallback style={{ backgroundColor: `${character.color}20`, color: character.color }}>
+              {character.emoji}
+            </AvatarFallback>
+          </Avatar>
           <div className="text-xs text-muted-foreground">
             {character.name}
           </div>
