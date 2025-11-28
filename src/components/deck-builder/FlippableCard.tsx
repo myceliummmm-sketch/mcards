@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CardFront } from './CardFront';
 import { CardBack } from './CardBack';
+import { ReviewBadge } from './review/ReviewBadge';
 import type { CardDefinition } from '@/data/cardDefinitions';
 
 interface FlippableCardProps {
   definition: CardDefinition;
   cardData?: any;
+  cardId?: string;
   isInsight?: boolean;
   onEdit: () => void;
 }
@@ -14,6 +16,7 @@ interface FlippableCardProps {
 export const FlippableCard = ({ 
   definition, 
   cardData,
+  cardId,
   isInsight = false,
   onEdit 
 }: FlippableCardProps) => {
@@ -41,6 +44,8 @@ export const FlippableCard = ({
       className="relative w-full aspect-[3/4] perspective-1000"
       onClick={() => setIsFlipped(!isFlipped)}
     >
+      {cardId && <ReviewBadge cardId={cardId} />}
+      
       <motion.div
         className="relative w-full h-full preserve-3d cursor-pointer"
         initial={false}

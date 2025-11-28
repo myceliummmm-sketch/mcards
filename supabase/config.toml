@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.evaluate-card]
 verify_jwt = true
+
+[functions.suggest-card-field]
+verify_jwt = true

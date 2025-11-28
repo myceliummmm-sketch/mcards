@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ArrowLeft, Share2 } from 'lucide-react';
 import { PhaseSection } from '@/components/deck-builder/PhaseSection';
 import { TeamPanel } from '@/components/deck-builder/TeamPanel';
 import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
 import { CardEditor } from '@/components/deck-builder/CardEditor';
+import { CollaboratorManager } from '@/components/deck-builder/review/CollaboratorManager';
 import { useDeckCards } from '@/hooks/useDeckCards';
 import { getCardBySlot, CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
@@ -127,15 +129,32 @@ export default function DeckBuilder() {
                 </div>
               </div>
 
-              <Button
-                size="lg"
-                onClick={handleGeneratePrompt}
-                disabled={filledCards < totalCards}
-                className="gap-2"
-              >
-                <span>⚡</span>
-                Generate Prompt
-              </Button>
+              <div className="flex gap-2">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="lg" className="gap-2">
+                      <Share2 className="w-4 h-4" />
+                      Share
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Share Deck</DialogTitle>
+                    </DialogHeader>
+                    {deckId && <CollaboratorManager deckId={deckId} />}
+                  </DialogContent>
+                </Dialog>
+
+                <Button
+                  size="lg"
+                  onClick={handleGeneratePrompt}
+                  disabled={filledCards < totalCards}
+                  className="gap-2"
+                >
+                  <span>⚡</span>
+                  Generate Prompt
+                </Button>
+              </div>
             </div>
 
             <XPProgressBar current={filledCards} total={totalCards} />
@@ -184,6 +203,7 @@ export default function DeckBuilder() {
           initialData={editingCardData?.card_data || {}}
           cardImageUrl={(editingCardData?.card_data as any)?.card_image_url}
           evaluation={(editingCardData?.card_data as any)?.evaluation}
+          cardId={editingCardData?.id}
           onSave={handleSaveCard}
         />
       )}
