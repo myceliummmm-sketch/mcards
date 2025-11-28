@@ -6,7 +6,9 @@ import { ArrowLeft } from 'lucide-react';
 import { PhaseSection } from '@/components/deck-builder/PhaseSection';
 import { TeamPanel } from '@/components/deck-builder/TeamPanel';
 import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
+import { CardEditor } from '@/components/deck-builder/CardEditor';
 import { useDeckCards } from '@/hooks/useDeckCards';
+import { getCardBySlot } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -17,7 +19,8 @@ export default function DeckBuilder() {
   const navigate = useNavigate();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [loading, setLoading] = useState(true);
-  const { cards, getFilledCardsCount } = useDeckCards(deckId || '');
+  const [editingSlot, setEditingSlot] = useState<number | null>(null);
+  const { cards, saveCard, getCardBySlot: getDeckCard, getFilledCardsCount } = useDeckCards(deckId || '');
 
   useEffect(() => {
     const fetchDeck = async () => {
@@ -43,14 +46,29 @@ export default function DeckBuilder() {
   }, [deckId, navigate]);
 
   const handleEditCard = (slot: number) => {
-    // TODO: Open card editor modal in Sprint 3
-    console.log('Edit card:', slot);
+    setEditingSlot(slot);
+  };
+
+  const handleCloseEditor = () => {
+    setEditingSlot(null);
+  };
+
+  const handleSaveCard = async (data: any) => {
+    if (!editingSlot) return;
+    
+    const cardDefinition = getCardBySlot(editingSlot);
+    if (!cardDefinition) return;
+
+    await saveCard(editingSlot, cardDefinition.cardType, data);
   };
 
   const handleGeneratePrompt = () => {
     // TODO: Generate prompt in Sprint 4
     console.log('Generate prompt');
   };
+
+  const editingCardDefinition = editingSlot ? getCardBySlot(editingSlot) : null;
+  const editingCardData = editingSlot ? getDeckCard(editingSlot) : null;
 
   if (loading) {
     return (
@@ -149,6 +167,17 @@ export default function DeckBuilder() {
 
       {/* AI Team sidebar */}
       <TeamPanel />
+
+      {/* Card Editor Modal */}
+      {editingCardDefinition && (
+        <CardEditor
+          isOpen={editingSlot !== null}
+          onClose={handleCloseEditor}
+          definition={editingCardDefinition}
+          initialData={editingCardData?.card_data || {}}
+          onSave={handleSaveCard}
+        />
+      )}
     </div>
   );
 }

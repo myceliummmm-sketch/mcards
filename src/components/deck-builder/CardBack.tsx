@@ -10,7 +10,7 @@ interface CardBackProps {
 }
 
 export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
-  const character = getCharacterById(definition.aiHelper);
+  const character = getCharacterById(definition.aiHelpers[0]);
 
   return (
     <div className="w-full h-full p-6 flex flex-col">
@@ -20,7 +20,7 @@ export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
           #{definition.slot} · {definition.title}
         </div>
         <p className="text-xs text-muted-foreground">
-          {definition.description}
+          {definition.coreQuestion}
         </p>
       </div>
 
