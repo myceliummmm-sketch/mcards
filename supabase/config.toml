@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.suggest-card-field]
 verify_jwt = true
+
+[functions.recommend-cards]
+verify_jwt = true

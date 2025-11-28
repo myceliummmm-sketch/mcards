@@ -4,9 +4,13 @@ import { FilterBar } from '@/components/marketplace/FilterBar';
 import { GapFinderSidebar } from '@/components/marketplace/GapFinderSidebar';
 import { CardGrid } from '@/components/marketplace/CardGrid';
 import { CardQuickView } from '@/components/marketplace/CardQuickView';
+import { DeckSelector } from '@/components/marketplace/DeckSelector';
+import { RecommendationSidebar } from '@/components/marketplace/RecommendationSidebar';
 import { MOCK_MARKETPLACE_CARDS, MarketplaceCard } from '@/data/mockMarketplaceData';
 import { Rarity } from '@/data/rarityConfig';
 import { useToast } from '@/hooks/use-toast';
+import { useUserDecks } from '@/hooks/useUserDecks';
+import { useRecommendations } from '@/hooks/useRecommendations';
 
 export default function Marketplace() {
   const { toast } = useToast();
@@ -19,6 +23,10 @@ export default function Marketplace() {
   const [gapFillerMode, setGapFillerMode] = useState(false);
   const [showOwned, setShowOwned] = useState(true);
   const [quickViewCard, setQuickViewCard] = useState<MarketplaceCard | null>(null);
+  const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
+  
+  const { decks, loading: decksLoading } = useUserDecks();
+  const { recommendations, deckAnalysis, isLoading: recommendationsLoading, refetch } = useRecommendations(selectedDeckId);
 
   // Mock user data
   const [ownedCardIds, setOwnedCardIds] = useState<string[]>(['1', '3']);
@@ -87,6 +95,12 @@ export default function Marketplace() {
 
     // Sort
     switch (sortBy) {
+      case 'recommended':
+        if (selectedDeckId && recommendations.length > 0) {
+          const scoreMap = new Map(recommendations.map(r => [r.cardId, r.score]));
+          cards.sort((a, b) => (scoreMap.get(b.id) || 0) - (scoreMap.get(a.id) || 0));
+        }
+        break;
       case 'newest':
         cards.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
@@ -118,6 +132,8 @@ export default function Marketplace() {
     favoritedCardIds,
     sellingCardIds,
     gapPhases,
+    selectedDeckId,
+    recommendations,
   ]);
 
   const handlePhaseToggle = (phase: string) => {
@@ -170,6 +186,10 @@ export default function Marketplace() {
     }
   };
 
+  const getRecommendation = (cardId: string) => {
+    return recommendations.find(r => r.cardId === cardId);
+  };
+
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
       <MarketplaceHeader
@@ -182,6 +202,13 @@ export default function Marketplace() {
         sellingCount={sellingCardIds.length}
       />
 
+      <DeckSelector
+        decks={decks}
+        selectedDeckId={selectedDeckId}
+        onDeckChange={setSelectedDeckId}
+        loading={decksLoading}
+      />
+
       <FilterBar
         selectedPhases={selectedPhases}
         selectedRarities={selectedRarities}
@@ -189,6 +216,7 @@ export default function Marketplace() {
         sortBy={sortBy}
         gapFillerMode={gapFillerMode}
         showOwned={showOwned}
+        hasRecommendations={selectedDeckId !== null}
         onPhaseToggle={handlePhaseToggle}
         onRarityToggle={handleRarityToggle}
         onIndustryChange={handleIndustryChange}
@@ -199,6 +227,17 @@ export default function Marketplace() {
       />
 
       <div className="flex gap-6">
+        {selectedDeckId && recommendations.length > 0 && (
+          <RecommendationSidebar
+            recommendations={recommendations}
+            deckAnalysis={deckAnalysis}
+            marketplaceCards={MOCK_MARKETPLACE_CARDS}
+            isLoading={recommendationsLoading}
+            onRefresh={refetch}
+            onCardView={setQuickViewCard}
+          />
+        )}
+
         {gapFillerMode && (
           <div className="w-80 flex-shrink-0">
             <GapFinderSidebar
@@ -230,6 +269,7 @@ export default function Marketplace() {
         onFavorite={() => quickViewCard && handleFavorite(quickViewCard.id)}
         isInCollection={quickViewCard ? ownedCardIds.includes(quickViewCard.id) : false}
         isFavorited={quickViewCard ? favoritedCardIds.includes(quickViewCard.id) : false}
+        recommendation={quickViewCard ? getRecommendation(quickViewCard.id) : undefined}
       />
     </div>
   );
