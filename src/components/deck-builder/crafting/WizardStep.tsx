@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lightbulb, CheckCircle2 } from 'lucide-react';
-import type { FormFieldConfig } from '@/data/cardDefinitions';
+import type { FormFieldConfig, CardDefinition } from '@/data/cardDefinitions';
 import type { FieldGuidance } from '@/data/fieldHints';
+import { AISuggestionPanel } from './AISuggestionPanel';
 
 interface WizardStepProps {
   field: FormFieldConfig;
@@ -13,9 +14,21 @@ interface WizardStepProps {
   value: any;
   onChange: (value: any) => void;
   isComplete: boolean;
+  cardType: string;
+  cardDefinition: CardDefinition;
+  previousAnswers: Record<string, any>;
 }
 
-export const WizardStep = ({ field, guidance, value, onChange, isComplete }: WizardStepProps) => {
+export const WizardStep = ({ 
+  field, 
+  guidance, 
+  value, 
+  onChange, 
+  isComplete,
+  cardType,
+  cardDefinition,
+  previousAnswers 
+}: WizardStepProps) => {
   const isFilled = value !== undefined && value !== null && value !== '';
 
   return (
@@ -49,7 +62,7 @@ export const WizardStep = ({ field, guidance, value, onChange, isComplete }: Wiz
       </div>
 
       {/* Input Field */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {field.type === 'text' && (
           <Input
             value={value || ''}
@@ -79,6 +92,17 @@ export const WizardStep = ({ field, guidance, value, onChange, isComplete }: Wiz
               ))}
             </SelectContent>
           </Select>
+        )}
+
+        {/* AI Suggestions */}
+        {(field.type === 'text' || field.type === 'textarea') && (
+          <AISuggestionPanel
+            cardType={cardType}
+            currentField={field.name}
+            previousAnswers={previousAnswers}
+            cardDefinition={cardDefinition}
+            onSelectSuggestion={onChange}
+          />
         )}
       </div>
 

@@ -156,6 +156,9 @@ export const CardCraftingWizard = ({
             value={currentValue}
             onChange={handleFieldChange}
             isComplete={isCurrentStepComplete}
+            cardType={definition.cardType}
+            cardDefinition={definition}
+            previousAnswers={formData}
           />
         )}
       </AnimatePresence>

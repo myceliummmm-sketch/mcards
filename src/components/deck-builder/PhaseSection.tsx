@@ -89,6 +89,7 @@ export const PhaseSection = ({ phase, cards, onEditCard }: PhaseSectionProps) =>
                   <FlippableCard
                     definition={definition}
                     cardData={cardData?.card_data}
+                    cardId={cardData?.id}
                     isInsight={cardData?.is_insight || false}
                     onEdit={() => onEditCard(definition.slot)}
                   />

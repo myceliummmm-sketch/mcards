@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Sparkles, Zap, Wand2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, Zap, Wand2, MessageSquare } from 'lucide-react';
 import { AIHelperHint } from './AIHelperHint';
 import { DynamicFormField } from './DynamicFormField';
 import { EvaluationMatrix } from './EvaluationMatrix';
 import { CardReveal } from './CardReveal';
 import { triggerForgeConfetti } from './ForgeConfetti';
 import { CardCraftingWizard } from './crafting/CardCraftingWizard';
+import { CardComments } from './review/CardComments';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,10 +23,11 @@ interface CardEditorProps {
   initialData?: any;
   cardImageUrl?: string;
   evaluation?: any;
+  cardId?: string;
   onSave: (data: any, imageUrl?: string, evaluation?: any) => Promise<void>;
 }
 
-export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImageUrl, evaluation, onSave }: CardEditorProps) => {
+export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImageUrl, evaluation, cardId, onSave }: CardEditorProps) => {
   const [formData, setFormData] = useState<any>(initialData || {});
   const [isSaving, setIsSaving] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState(cardImageUrl);
@@ -256,19 +259,33 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
 
         {/* Content */}
         <ScrollArea className="h-[calc(100vh-120px)]">
-          <div className="px-6 py-6 space-y-6">
-            {wizardMode ? (
-              /* Wizard Mode */
-              <CardCraftingWizard
-                definition={definition}
-                initialData={formData}
-                onChange={setFormData}
-                onForge={() => handleSave(false, true)}
-                isForging={isSaving}
-              />
-            ) : (
-              /* Quick Edit Mode */
-              <>
+          <Tabs defaultValue="edit" className="w-full">
+            <div className="px-6 pt-4">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="edit">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Edit Card
+                </TabsTrigger>
+                <TabsTrigger value="reviews">
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Reviews
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="edit" className="px-6 py-6 space-y-6">
+              {wizardMode ? (
+                /* Wizard Mode */
+                <CardCraftingWizard
+                  definition={definition}
+                  initialData={formData}
+                  onChange={setFormData}
+                  onForge={() => handleSave(false, true)}
+                  isForging={isSaving}
+                />
+              ) : (
+                /* Quick Edit Mode */
+                <>
             {/* Formula & Example */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -372,15 +389,26 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
               </Button>
             </motion.div>
 
-              {/* Validation Status */}
-              {!requiredFieldsFilled && (
-                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
-                  Please fill in all required fields (marked with *)
+                {/* Validation Status */}
+                {!requiredFieldsFilled && (
+                  <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+                    Please fill in all required fields (marked with *)
+                  </div>
+                )}
+              </>
+              )}
+            </TabsContent>
+
+            <TabsContent value="reviews" className="px-6 py-6">
+              {cardId ? (
+                <CardComments cardId={cardId} />
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  Save this card first to enable comments and reviews
                 </div>
               )}
-            </>
-            )}
-          </div>
+            </TabsContent>
+          </Tabs>
         </ScrollArea>
       </SheetContent>
     </Sheet>

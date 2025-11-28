@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      card_comments: {
+        Row: {
+          author_id: string
+          card_id: string
+          comment_type: Database["public"]["Enums"]["comment_type"]
+          content: string
+          created_at: string
+          field_name: string | null
+          id: string
+          is_resolved: boolean
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          card_id: string
+          comment_type?: Database["public"]["Enums"]["comment_type"]
+          content: string
+          created_at?: string
+          field_name?: string | null
+          id?: string
+          is_resolved?: boolean
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          card_id?: string
+          comment_type?: Database["public"]["Enums"]["comment_type"]
+          content?: string
+          created_at?: string
+          field_name?: string | null
+          id?: string
+          is_resolved?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "card_comments_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "deck_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      card_reviews: {
+        Row: {
+          card_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          reviewer_id: string
+          status: Database["public"]["Enums"]["review_status"]
+        }
+        Insert: {
+          card_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          reviewer_id: string
+          status?: Database["public"]["Enums"]["review_status"]
+        }
+        Update: {
+          card_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          reviewer_id?: string
+          status?: Database["public"]["Enums"]["review_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_reviews_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "deck_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "card_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deck_cards: {
         Row: {
           card_data: Json
@@ -60,6 +153,45 @@ export type Database = {
             columns: ["deck_id"]
             isOneToOne: false
             referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deck_collaborators: {
+        Row: {
+          deck_id: string
+          id: string
+          invited_at: string
+          role: Database["public"]["Enums"]["collaborator_role"]
+          user_id: string
+        }
+        Insert: {
+          deck_id: string
+          id?: string
+          invited_at?: string
+          role?: Database["public"]["Enums"]["collaborator_role"]
+          user_id: string
+        }
+        Update: {
+          deck_id?: string
+          id?: string
+          invited_at?: string
+          role?: Database["public"]["Enums"]["collaborator_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deck_collaborators_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deck_collaborators_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -158,7 +290,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      collaborator_role: "reviewer" | "editor"
+      comment_type: "comment" | "suggestion" | "approval"
+      review_status: "pending" | "in_progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -285,6 +419,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      collaborator_role: ["reviewer", "editor"],
+      comment_type: ["comment", "suggestion", "approval"],
+      review_status: ["pending", "in_progress", "completed"],
+    },
   },
 } as const
