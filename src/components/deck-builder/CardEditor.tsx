@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ArrowLeft, Sparkles, Zap } from 'lucide-react';
 import { AIHelperHint } from './AIHelperHint';
 import { DynamicFormField } from './DynamicFormField';
-import { CardImageGenerator } from './CardImageGenerator';
+
 import { EvaluationMatrix } from './EvaluationMatrix';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useToast } from '@/hooks/use-toast';
@@ -55,20 +55,76 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
     }));
   };
 
-  const handleSave = async (silent = false, skipEvaluation = false) => {
+  const handleSave = async (silent = false, autoMagic = false) => {
     setIsSaving(true);
     try {
-      await onSave(formData, currentImageUrl, currentEvaluation);
-      if (!silent) {
-        toast({
-          title: '✨ Card forged',
-          description: 'Your card has been successfully crafted.',
-        });
+      let finalImageUrl = currentImageUrl;
+      let finalEvaluation = currentEvaluation;
+
+      // If this is a "Forge Card" click (autoMagic=true), do the full magical flow
+      if (autoMagic && requiredFieldsFilled) {
+        // Step 1: Generate image if not present
+        if (!currentImageUrl) {
+          toast({
+            title: '✨ Channeling creative energy...',
+            description: 'Crafting your card\'s visual identity.',
+          });
+          
+          const contentSummary = Object.values(formData)
+            .filter(v => v && typeof v === 'string')
+            .slice(0, 3)
+            .join('. ')
+            .substring(0, 200);
+
+          const { data: imageData, error: imageError } = await supabase.functions.invoke('generate-card-image', {
+            body: { 
+              cardType: definition.title, 
+              cardContent: contentSummary,
+              phase: definition.phase 
+            }
+          });
+
+          if (!imageError && imageData?.imageUrl) {
+            finalImageUrl = imageData.imageUrl;
+            setCurrentImageUrl(imageData.imageUrl);
+          }
+        }
+
+        // Step 2: Generate evaluation if not present
+        if (!currentEvaluation) {
+          toast({
+            title: '🔮 The team is reviewing...',
+            description: 'Evaluating your card\'s potential.',
+          });
+
+          const { data: evalData, error: evalError } = await supabase.functions.invoke('evaluate-card', {
+            body: {
+              cardType: definition.title,
+              cardContent: formData,
+              cardDefinition: {
+                coreQuestion: definition.coreQuestion,
+                formula: definition.formula
+              }
+            }
+          });
+
+          if (!evalError && evalData?.evaluation) {
+            finalEvaluation = evalData.evaluation;
+            setCurrentEvaluation(evalData.evaluation);
+          }
+        }
       }
 
-      // Auto-evaluate if required fields are filled and evaluation doesn't exist
-      if (!skipEvaluation && requiredFieldsFilled && !currentEvaluation) {
-        await handleEvaluate();
+      // Save everything together
+      await onSave(formData, finalImageUrl, finalEvaluation);
+      
+      if (!silent) {
+        toast({
+          title: '✨ Card forged successfully!',
+          description: autoMagic && finalEvaluation 
+            ? `Overall score: ${finalEvaluation.overall}/10` 
+            : 'Your card has been crafted.',
+        });
       }
     } catch (error) {
       toast({
@@ -81,46 +137,6 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
     }
   };
 
-  const handleEvaluate = async () => {
-    setIsEvaluating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('evaluate-card', {
-        body: {
-          cardType: definition.title,
-          cardContent: formData,
-          cardDefinition: {
-            coreQuestion: definition.coreQuestion,
-            formula: definition.formula
-          }
-        }
-      });
-
-      if (error) throw error;
-
-      if (data?.evaluation) {
-        setCurrentEvaluation(data.evaluation);
-        await onSave(formData, currentImageUrl, data.evaluation);
-        toast({
-          title: '📊 Card evaluated',
-          description: `Overall score: ${data.evaluation.overall}/10`,
-        });
-      }
-    } catch (error) {
-      console.error('Error evaluating card:', error);
-      toast({
-        title: 'Failed to evaluate',
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsEvaluating(false);
-    }
-  };
-
-  const handleImageGenerated = async (imageUrl: string) => {
-    setCurrentImageUrl(imageUrl);
-    await onSave(formData, imageUrl, currentEvaluation);
-  };
 
   const requiredFieldsFilled = definition.fields
     .filter(f => f.required)
@@ -153,8 +169,17 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
               disabled={isSaving || !requiredFieldsFilled}
               className="gap-2 bg-primary/90 hover:bg-primary shadow-lg shadow-primary/20"
             >
-              <Zap className="w-4 h-4" />
-              {isSaving ? 'Forging...' : 'Forge Card'}
+              {isSaving ? (
+                <>
+                  <Sparkles className="w-4 h-4 animate-spin" />
+                  Forging magic...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4" />
+                  Forge Card
+                </>
+              )}
             </Button>
           </div>
           
@@ -202,14 +227,24 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             {/* Primary AI Helper Hint */}
             <AIHelperHint characterId={primaryHelper} type="encouraging" />
 
-            {/* Card Image Generator */}
-            <CardImageGenerator
-              cardType={definition.title}
-              cardContent={formData}
-              phase={definition.phase}
-              onImageGenerated={handleImageGenerated}
-              currentImageUrl={currentImageUrl}
-            />
+            {/* Current Card Image Preview */}
+            {currentImageUrl && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5"
+              >
+                <img 
+                  src={currentImageUrl} 
+                  alt="Card artwork"
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                <div className="absolute bottom-3 left-3 text-xs font-bold text-primary">
+                  ✨ CARD VISUAL
+                </div>
+              </motion.div>
+            )}
 
             {/* Form Fields */}
             <motion.div
@@ -237,25 +272,6 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             {/* Evaluation Matrix */}
             {currentEvaluation && (
               <EvaluationMatrix evaluation={currentEvaluation} />
-            )}
-
-            {/* Evaluate Button */}
-            {requiredFieldsFilled && !currentEvaluation && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Button
-                  onClick={handleEvaluate}
-                  disabled={isEvaluating}
-                  variant="outline"
-                  className="w-full gap-2 bg-secondary/5 border-secondary/20 hover:bg-secondary/10"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  {isEvaluating ? 'Team is evaluating...' : 'Get Team Evaluation'}
-                </Button>
-              </motion.div>
             )}
 
             {/* Secondary AI Helper Hint (Challenging) */}
