@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.recommend-cards]
 verify_jwt = true
+
+[functions.analyze-deck-health]
+verify_jwt = true
