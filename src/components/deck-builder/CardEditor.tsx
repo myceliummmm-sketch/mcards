@@ -42,13 +42,14 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   // Auto-save debounced
   useEffect(() => {
     if (!formData || Object.keys(formData).length === 0) return;
+    if (forgingStage !== 'idle') return; // Skip auto-save during forge
 
     const timer = setTimeout(() => {
       handleSave(true);
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [formData]);
+  }, [formData, forgingStage]);
 
   const handleFieldChange = (fieldName: string, value: any) => {
     setFormData((prev: any) => ({
@@ -115,7 +116,14 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             }
           });
 
-          if (!evalError && evalData?.evaluation) {
+          if (evalError) {
+            console.error('Evaluation error:', evalError);
+            toast({
+              title: '⚠️ Evaluation unavailable',
+              description: 'Card forged but team evaluation couldn\'t be generated.',
+              variant: 'destructive'
+            });
+          } else if (evalData?.evaluation) {
             finalEvaluation = evalData.evaluation;
             setCurrentEvaluation(evalData.evaluation);
           }
