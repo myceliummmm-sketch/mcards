@@ -3,12 +3,13 @@ import { motion } from 'framer-motion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Sparkles, Zap } from 'lucide-react';
+import { ArrowLeft, Sparkles, Zap, Wand2 } from 'lucide-react';
 import { AIHelperHint } from './AIHelperHint';
 import { DynamicFormField } from './DynamicFormField';
 import { EvaluationMatrix } from './EvaluationMatrix';
 import { CardReveal } from './CardReveal';
 import { triggerForgeConfetti } from './ForgeConfetti';
+import { CardCraftingWizard } from './crafting/CardCraftingWizard';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,6 +31,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   const [currentEvaluation, setCurrentEvaluation] = useState(evaluation);
   const [forgingStage, setForgingStage] = useState<'idle' | 'forging' | 'revealing' | 'complete'>('idle');
   const [loadingStage, setLoadingStage] = useState<'idle' | 'channeling' | 'summoning' | 'evaluating'>('idle');
+  const [wizardMode, setWizardMode] = useState(true); // Default to wizard mode for new cards
   const { toast } = useToast();
 
   // Update form data when initialData changes
@@ -37,6 +39,9 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
     setFormData(initialData || {});
     setCurrentImageUrl(cardImageUrl);
     setCurrentEvaluation(evaluation);
+    // If card already has data, default to quick edit mode
+    const hasExistingData = initialData && Object.keys(initialData).length > 0;
+    setWizardMode(!hasExistingData);
   }, [initialData, cardImageUrl, evaluation]);
 
   // Auto-save debounced
@@ -185,33 +190,46 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
         {/* Header */}
         <SheetHeader className="px-6 py-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm">
           <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="gap-2 hover:bg-primary/10"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Return to Deck
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => handleSave(false, true)}
-              disabled={isSaving || !requiredFieldsFilled}
-              className="gap-2 bg-primary/90 hover:bg-primary shadow-lg shadow-primary/20"
-            >
-              {isSaving ? (
-                <>
-                  <Sparkles className="w-4 h-4 animate-spin" />
-                  Forging magic...
-                </>
-              ) : (
-                <>
-                  <Zap className="w-4 h-4" />
-                  Forge Card
-                </>
-              )}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="gap-2 hover:bg-primary/10"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Return to Deck
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setWizardMode(!wizardMode)}
+                className="gap-2"
+              >
+                <Wand2 className="w-4 h-4" />
+                {wizardMode ? 'Quick Edit' : 'Wizard Mode'}
+              </Button>
+            </div>
+            {!wizardMode && (
+              <Button
+                size="sm"
+                onClick={() => handleSave(false, true)}
+                disabled={isSaving || !requiredFieldsFilled}
+                className="gap-2 bg-primary/90 hover:bg-primary shadow-lg shadow-primary/20"
+              >
+                {isSaving ? (
+                  <>
+                    <Sparkles className="w-4 h-4 animate-spin" />
+                    Forging magic...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4" />
+                    Forge Card
+                  </>
+                )}
+              </Button>
+            )}
           </div>
           
           <SheetTitle className="text-left mt-4">
@@ -239,6 +257,18 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
         {/* Content */}
         <ScrollArea className="h-[calc(100vh-120px)]">
           <div className="px-6 py-6 space-y-6">
+            {wizardMode ? (
+              /* Wizard Mode */
+              <CardCraftingWizard
+                definition={definition}
+                initialData={formData}
+                onChange={setFormData}
+                onForge={() => handleSave(false, true)}
+                isForging={isSaving}
+              />
+            ) : (
+              /* Quick Edit Mode */
+              <>
             {/* Formula & Example */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -342,11 +372,13 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
               </Button>
             </motion.div>
 
-            {/* Validation Status */}
-            {!requiredFieldsFilled && (
-              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
-                Please fill in all required fields (marked with *)
-              </div>
+              {/* Validation Status */}
+              {!requiredFieldsFilled && (
+                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+                  Please fill in all required fields (marked with *)
+                </div>
+              )}
+            </>
             )}
           </div>
         </ScrollArea>
