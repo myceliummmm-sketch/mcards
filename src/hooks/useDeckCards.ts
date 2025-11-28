@@ -60,35 +60,20 @@ export const useDeckCards = (deckId: string) => {
 
   const saveCard = async (cardSlot: number, cardType: string, cardData: any) => {
     try {
-      const existingCard = cards.find(c => c.card_slot === cardSlot);
-
-      if (existingCard) {
-        // Update existing card
-        const { error } = await supabase
-          .from('deck_cards')
-          .update({
-            card_data: cardData,
-            card_type: cardType,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existingCard.id);
-
-        if (error) throw error;
-      } else {
-        // Insert new card
-        const newCard: DeckCardInsert = {
+      // Use UPSERT to handle race conditions gracefully
+      const { error } = await supabase
+        .from('deck_cards')
+        .upsert({
           deck_id: deckId,
           card_slot: cardSlot,
           card_type: cardType,
-          card_data: cardData
-        };
+          card_data: cardData,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'deck_id,card_slot'
+        });
 
-        const { error } = await supabase
-          .from('deck_cards')
-          .insert(newCard);
-
-        if (error) throw error;
-      }
+      if (error) throw error;
 
       toast({
         title: 'Card saved',
