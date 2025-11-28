@@ -176,14 +176,14 @@ export default function DeckBuilder() {
       <TeamPanel />
 
       {/* Card Editor Modal */}
-      {editingCardDefinition && editingCardData && (
+      {editingCardDefinition && (
         <CardEditor
           isOpen={editingSlot !== null}
           onClose={handleCloseEditor}
           definition={editingCardDefinition}
-          initialData={editingCardData.card_data || {}}
-          cardImageUrl={(editingCardData.card_data as any)?.card_image_url}
-          evaluation={(editingCardData.card_data as any)?.evaluation}
+          initialData={editingCardData?.card_data || {}}
+          cardImageUrl={(editingCardData?.card_data as any)?.card_image_url}
+          evaluation={(editingCardData?.card_data as any)?.evaluation}
           onSave={handleSaveCard}
         />
       )}
