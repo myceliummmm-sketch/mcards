@@ -165,6 +165,48 @@
     }
   }
   
+  /* Confetti celebration glow effect */
+  @keyframes forge-pulse {
+    0% { 
+      box-shadow: 0 0 0 0 hsl(var(--primary) / 0.7); 
+    }
+    100% { 
+      box-shadow: 0 0 50px 20px hsl(var(--primary) / 0); 
+    }
+  }
+  
+  .forge-glow {
+    animation: forge-pulse 0.8s ease-out;
+  }
+  
+  /* Magical shimmer during card reveal */
+  @keyframes shimmer {
+    0% { 
+      transform: translateX(-100%) skewX(-15deg); 
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% { 
+      transform: translateX(200%) skewX(-15deg); 
+      opacity: 0;
+    }
+  }
+  
+  .reveal-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      hsl(var(--primary) / 0.4) 50%,
+      transparent 80%
+    );
+    animation: shimmer 1.5s ease-in-out;
+  }
+  
   .perspective-1000 {
     perspective: 1000px;
   }

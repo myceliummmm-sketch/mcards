@@ -6,8 +6,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ArrowLeft, Sparkles, Zap } from 'lucide-react';
 import { AIHelperHint } from './AIHelperHint';
 import { DynamicFormField } from './DynamicFormField';
-
 import { EvaluationMatrix } from './EvaluationMatrix';
+import { CardReveal } from './CardReveal';
+import { triggerForgeConfetti } from './ForgeConfetti';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,9 +26,10 @@ interface CardEditorProps {
 export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImageUrl, evaluation, onSave }: CardEditorProps) => {
   const [formData, setFormData] = useState<any>(initialData || {});
   const [isSaving, setIsSaving] = useState(false);
-  const [isEvaluating, setIsEvaluating] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState(cardImageUrl);
   const [currentEvaluation, setCurrentEvaluation] = useState(evaluation);
+  const [forgingStage, setForgingStage] = useState<'idle' | 'forging' | 'revealing' | 'complete'>('idle');
+  const [loadingStage, setLoadingStage] = useState<'idle' | 'channeling' | 'summoning' | 'evaluating'>('idle');
   const { toast } = useToast();
 
   // Update form data when initialData changes
@@ -63,8 +65,11 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
 
       // If this is a "Forge Card" click (autoMagic=true), do the full magical flow
       if (autoMagic && requiredFieldsFilled) {
+        setForgingStage('forging');
+        
         // Step 1: Generate image if not present
         if (!currentImageUrl) {
+          setLoadingStage('channeling');
           toast({
             title: '✨ Channeling creative energy...',
             description: 'Crafting your card\'s visual identity.',
@@ -76,6 +81,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             .join('. ')
             .substring(0, 200);
 
+          setLoadingStage('summoning');
           const { data: imageData, error: imageError } = await supabase.functions.invoke('generate-card-image', {
             body: { 
               cardType: definition.title, 
@@ -92,6 +98,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
 
         // Step 2: Generate evaluation if not present
         if (!currentEvaluation) {
+          setLoadingStage('evaluating');
           toast({
             title: '🔮 The team is reviewing...',
             description: 'Evaluating your card\'s potential.',
@@ -113,17 +120,31 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             setCurrentEvaluation(evalData.evaluation);
           }
         }
+
+        // Trigger reveal animation
+        setForgingStage('revealing');
+        
+        // Wait for flip animation to complete, then trigger confetti
+        setTimeout(() => {
+          triggerForgeConfetti();
+          setForgingStage('complete');
+          
+          toast({
+            title: '✨ Card forged successfully!',
+            description: finalEvaluation 
+              ? `Overall score: ${finalEvaluation.overall}/10` 
+              : 'Your card has been crafted.',
+          });
+        }, 1200);
       }
 
       // Save everything together
       await onSave(formData, finalImageUrl, finalEvaluation);
       
-      if (!silent) {
+      if (!silent && !autoMagic) {
         toast({
-          title: '✨ Card forged successfully!',
-          description: autoMagic && finalEvaluation 
-            ? `Overall score: ${finalEvaluation.overall}/10` 
-            : 'Your card has been crafted.',
+          title: '✨ Card saved',
+          description: 'Your changes have been saved.',
         });
       }
     } catch (error) {
@@ -132,6 +153,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
         description: 'There was an error saving your changes. Please try again.',
         variant: 'destructive',
       });
+      setForgingStage('idle');
+      setLoadingStage('idle');
     } finally {
       setIsSaving(false);
     }
@@ -227,8 +250,15 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             {/* Primary AI Helper Hint */}
             <AIHelperHint characterId={primaryHelper} type="encouraging" />
 
-            {/* Current Card Image Preview */}
-            {currentImageUrl && (
+            {/* Magical Card Reveal or Preview */}
+            {forgingStage !== 'idle' ? (
+              <CardReveal
+                isRevealing={forgingStage === 'revealing' || forgingStage === 'complete'}
+                imageUrl={currentImageUrl}
+                evaluation={currentEvaluation}
+                loadingStage={loadingStage}
+              />
+            ) : currentImageUrl ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -244,7 +274,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   ✨ CARD VISUAL
                 </div>
               </motion.div>
-            )}
+            ) : null}
 
             {/* Form Fields */}
             <motion.div
