@@ -253,4 +253,13 @@
   .gap-filler {
     animation: gap-pulse 2s ease-in-out infinite;
   }
+
+  /* Text shadows for better readability over images */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .text-shadow-strong {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  }
 }
