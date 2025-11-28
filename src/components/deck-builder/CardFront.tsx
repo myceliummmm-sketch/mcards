@@ -18,7 +18,7 @@ export const CardFront = ({
   isInsight,
   preview 
 }: CardFrontProps) => {
-  const character = getCharacterById(definition.aiHelper);
+  const character = getCharacterById(definition.aiHelpers[0]);
   
   const getStatusIcon = () => {
     if (isInsight) return '🔷';
@@ -59,7 +59,7 @@ export const CardFront = ({
           {definition.title}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {definition.description}
+          {definition.coreQuestion}
         </p>
       </div>
 
