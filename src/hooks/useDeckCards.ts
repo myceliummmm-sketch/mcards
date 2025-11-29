@@ -123,12 +123,42 @@ export const useDeckCards = (deckId: string) => {
     return cards.filter(c => c.card_data && Object.keys(c.card_data).length > 0).length;
   };
 
+  const updateCardImage = async (cardSlot: number, imageUrl: string) => {
+    try {
+      const existingCard = cards.find(c => c.card_slot === cardSlot);
+      if (!existingCard) return;
+
+      const { error } = await supabase
+        .from('deck_cards')
+        .update({
+          card_image_url: imageUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existingCard.id);
+
+      if (error) throw error;
+
+      toast({
+        title: '✨ Crystal regenerated',
+        description: 'Your card now has a fresh visual specimen'
+      });
+    } catch (error) {
+      console.error('Error updating card image:', error);
+      toast({
+        title: 'Failed to regenerate image',
+        description: 'Could not update the crystal specimen',
+        variant: 'destructive'
+      });
+    }
+  };
+
   return {
     cards,
     loading,
     saveCard,
     clearCard,
     getCardBySlot,
-    getFilledCardsCount
+    getFilledCardsCount,
+    updateCardImage
   };
 };
