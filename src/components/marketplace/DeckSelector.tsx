@@ -19,12 +19,12 @@ export function DeckSelector({ decks, selectedDeckId, onDeckChange, loading }: D
       <Sparkles className="w-5 h-5 text-primary" />
       <div className="flex-1">
         <p className="text-sm text-muted-foreground mb-1">Get personalized recommendations</p>
-        <Select value={selectedDeckId || ''} onValueChange={(value) => onDeckChange(value || null)}>
+        <Select value={selectedDeckId || 'none'} onValueChange={(value) => onDeckChange(value === 'none' ? null : value)}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select a deck to analyze..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">No recommendations</SelectItem>
+            <SelectItem value="none">No recommendations</SelectItem>
             {decks.map((deck) => (
               <SelectItem key={deck.id} value={deck.id}>
                 {deck.title}
