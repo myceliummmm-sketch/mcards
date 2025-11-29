@@ -55,96 +55,92 @@ export const CardFront = ({
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden field-guide-paper">
-      {/* Specimen frame with crystal or empty state */}
+    <div className="relative w-full h-full overflow-hidden group">
+      {/* Full-bleed background: Crystal image or animated gradient */}
+      <div className="absolute inset-0">
+        {imageUrl ? (
+          <img 
+            src={imageUrl} 
+            alt="Crystal specimen"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className={`w-full h-full ${getEmptyGradient()}`} />
+        )}
+      </div>
+
+      {/* Top gradient overlay for readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-transparent" />
+      
+      {/* Bottom gradient overlay for content */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+
+      {/* Content layer */}
       <div className="relative w-full h-full p-4 flex flex-col">
-        {/* Chrome beveled tab header */}
-        <div className="chrome-tab px-4 py-2 rounded-t-lg mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        {/* Top section: Phase badge & Status */}
+        <div className="flex items-start justify-between mb-auto">
+          {/* Phase badge */}
+          <div className="backdrop-blur-md bg-black/40 border border-white/20 rounded-lg px-3 py-2 flex items-center gap-2">
             <span className="text-lg">{getPhaseEmoji()}</span>
-            <span className="text-xs font-display font-bold text-slate-800 uppercase tracking-wider">
-              #{definition.slot} · {definition.phase}
+            <span className="text-xs font-display font-bold text-white uppercase tracking-wider drop-shadow-lg">
+              {definition.phase} · #{definition.slot}
             </span>
           </div>
           
-          {/* Status stamp */}
-          <div className={`cert-stamp text-[10px] px-2 py-1 ${
-            isInsight ? 'stamp-classified' :
-            isComplete ? 'stamp-verified' :
-            'stamp-draft'
+          {/* Status badge */}
+          <div className={`backdrop-blur-md rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wide border ${
+            isInsight ? 'bg-purple-500/30 border-purple-400/50 text-purple-200' :
+            isComplete ? 'bg-green-500/30 border-green-400/50 text-green-200' :
+            preview ? 'bg-yellow-500/30 border-yellow-400/50 text-yellow-200' :
+            'bg-gray-500/30 border-gray-400/50 text-gray-200'
           }`}>
-            {getStatusLabel()}
+            {getStatusIcon()} {getStatusLabel()}
           </div>
         </div>
 
-        {/* Title card with technical styling */}
-        <div className="bg-slate-900/5 border-2 border-slate-700 rounded-lg p-3 mb-3">
-          <h3 className="text-base font-display font-bold text-slate-900 mb-1">
-            {definition.title}
-          </h3>
-          <p className="text-xs text-slate-600 italic">
-            {definition.coreQuestion}
-          </p>
-        </div>
+        {/* Bottom section: Card info */}
+        <div className="space-y-3">
+          {/* Title & Core Question */}
+          <div className="backdrop-blur-md bg-black/50 border border-white/10 rounded-lg p-4">
+            <h3 className="text-lg font-display font-bold text-white mb-2 drop-shadow-lg">
+              {definition.title}
+            </h3>
+            <p className="text-sm text-white/90 italic drop-shadow-lg">
+              {definition.coreQuestion}
+            </p>
+          </div>
 
-        {/* Crystal specimen frame */}
-        <div className="flex-1 relative mb-3">
-          <div className="specimen-frame w-full h-full rounded-lg overflow-hidden bg-slate-100">
-            {imageUrl ? (
-              <img 
-                src={imageUrl} 
-                alt="Crystal specimen diagram"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className={`w-full h-full ${getEmptyGradient()} flex items-center justify-center`}>
-                <div className="text-center text-slate-400">
-                  <div className="text-4xl mb-2">◆</div>
-                  <div className="text-xs font-mono">SPECIMEN PENDING</div>
+          {/* Preview content (if any) */}
+          {preview && (
+            <div className="backdrop-blur-md bg-blue-500/20 border border-blue-400/30 rounded-lg p-3">
+              <p className="text-xs text-blue-100 drop-shadow-lg">
+                {preview.substring(0, 100)}...
+              </p>
+            </div>
+          )}
+
+          {/* AI Character badge */}
+          {character && (
+            <div className="backdrop-blur-md bg-black/40 border border-white/10 rounded-lg p-3 flex items-center gap-3">
+              <Avatar 
+                className="w-10 h-10 border-2 ring-2 ring-white/20" 
+                style={{ borderColor: character.color }}
+              >
+                <AvatarImage src={character.avatar} alt={character.name} />
+                <AvatarFallback style={{ backgroundColor: `${character.color}20`, color: character.color }}>
+                  {character.emoji}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] text-white/60 uppercase tracking-wider font-medium drop-shadow">
+                  AI Researcher
+                </div>
+                <div className="text-sm font-semibold text-white truncate drop-shadow-lg">
+                  {character.name}
                 </div>
               </div>
-            )}
-          </div>
-          
-          {/* Figure label */}
-          <div className="absolute -top-2 left-4 bg-field-guide-paper px-2">
-            <span className="text-[10px] font-mono text-slate-600">FIG. {definition.slot}</span>
-          </div>
-        </div>
-
-        {/* Preview content annotation (if any) */}
-        {preview && (
-          <div className="handwritten text-xs text-blue-700 mb-3 pl-2 border-l-2 border-blue-300">
-            ✎ {preview.substring(0, 80)}...
-          </div>
-        )}
-
-        {/* AI Character badge - technical style */}
-        {character && (
-          <div className="flex items-center gap-2 bg-slate-900/5 border border-slate-300 rounded px-3 py-2 mb-3">
-            <Avatar 
-              className="w-7 h-7 border-2" 
-              style={{ borderColor: character.color }}
-            >
-              <AvatarImage src={character.avatar} alt={character.name} />
-              <AvatarFallback style={{ backgroundColor: `${character.color}20`, color: character.color }}>
-                {character.emoji}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="text-[10px] font-mono text-slate-600 uppercase tracking-wide">
-                AI RESEARCHER
-              </div>
-              <div className="text-xs font-medium text-slate-900 truncate">
-                {character.name}
-              </div>
             </div>
-          </div>
-        )}
-
-        {/* Page number */}
-        <div className="page-number text-right">
-          {definition.slot}/22
+          )}
         </div>
       </div>
     </div>
