@@ -36,78 +36,114 @@ export const CardFront = ({
     return 'Empty';
   };
 
+  const getPhaseEmoji = () => {
+    const phase = definition.phase?.toLowerCase();
+    if (phase === 'vision') return '🔮';
+    if (phase === 'research') return '🔍';
+    if (phase === 'build') return '🔧';
+    if (phase === 'grow') return '🚀';
+    return '📝';
+  };
+
+  const getEmptyGradient = () => {
+    const phase = definition.phase?.toLowerCase();
+    if (phase === 'vision') return 'card-empty-vision';
+    if (phase === 'research') return 'card-empty-research';
+    if (phase === 'build') return 'card-empty-build';
+    if (phase === 'grow') return 'card-empty-grow';
+    return 'card-empty-vision';
+  };
+
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden">
-      {/* Card Image (if exists) */}
-      {imageUrl && (
-        <div className="relative w-full h-32 overflow-hidden">
-          <img 
-            src={imageUrl} 
-            alt={definition.title}
-            className="w-full h-full object-cover"
+    <div className="relative w-full h-full overflow-hidden">
+      {/* Full-bleed background image or gradient */}
+      {imageUrl ? (
+        <>
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${imageUrl})` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-card" />
-        </div>
+          {/* Top gradient overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+        </>
+      ) : (
+        <div className={`absolute inset-0 ${getEmptyGradient()}`} />
       )}
-      
-      <div className="flex-1 p-6 flex flex-col justify-between">
-        {/* Header */}
-        <div>
-          <div className="flex items-start justify-between mb-4">
-            <div className="text-sm font-bold text-muted-foreground">
-              #{definition.slot}
+
+      {/* Content overlay */}
+      <div className="relative w-full h-full p-6 flex flex-col justify-between">
+        {/* Header with glassmorphism */}
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-2">
+            {/* Phase and slot badge */}
+            <div className="glass-card px-3 py-1.5 rounded-lg flex items-center gap-2">
+              <span className="text-base">{getPhaseEmoji()}</span>
+              <span className="text-xs font-bold text-white uppercase tracking-wide">
+                #{definition.slot} · {definition.phase}
+              </span>
             </div>
-            <div className="flex items-center gap-2 text-xs font-medium">
-              <span>{getStatusIcon()}</span>
-              <span className={
+
+            {/* Status badge */}
+            <div className="glass-card px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+              <span className="text-sm">{getStatusIcon()}</span>
+              <span className={`text-xs font-medium ${
                 isInsight ? 'text-status-insight' :
                 isComplete ? 'text-status-complete' :
                 preview ? 'text-status-in-progress' :
-                'text-status-empty'
-              }>
+                'text-white/70'
+              }`}>
                 {getStatusLabel()}
               </span>
             </div>
           </div>
-          
-          <h3 className="text-2xl font-display font-bold text-foreground mb-2">
-            {definition.title}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            {definition.coreQuestion}
-          </p>
+
+          {/* Title card */}
+          <div className="glass-card p-4 rounded-xl">
+            <h3 className="text-xl font-display font-bold text-white mb-1 text-shadow-strong">
+              {definition.title}
+            </h3>
+            <p className="text-xs text-white/80 text-shadow">
+              {definition.coreQuestion}
+            </p>
+          </div>
         </div>
 
-        {/* Preview content (if any) */}
-        {preview && (
-          <motion.div
-            className="flex-1 my-4 p-4 bg-muted/30 rounded-lg border border-border/50 overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <p className="text-sm text-foreground/60 line-clamp-3">
-              {preview}
-            </p>
-          </motion.div>
-        )}
-
-        {/* AI Character badge */}
-        {character && (
-          <div className="flex items-center gap-2 mt-4">
-            <Avatar 
-              className="w-8 h-8 border-2" 
-              style={{ borderColor: character.color }}
+        {/* Bottom section */}
+        <div className="space-y-3">
+          {/* Preview content (if any) */}
+          {preview && (
+            <motion.div
+              className="glass-card p-4 rounded-xl"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
             >
-              <AvatarImage src={character.avatar} alt={character.name} />
-              <AvatarFallback style={{ backgroundColor: `${character.color}20`, color: character.color }}>
-                {character.emoji}
-              </AvatarFallback>
-            </Avatar>
-            <div className="text-xs text-muted-foreground">
-              {character.name}
+              <p className="text-sm text-white/90 line-clamp-3 text-shadow">
+                {preview}
+              </p>
+            </motion.div>
+          )}
+
+          {/* AI Character badge */}
+          {character && (
+            <div className="glass-card px-3 py-2 rounded-lg flex items-center gap-3">
+              <Avatar 
+                className="w-8 h-8 border-2 shrink-0" 
+                style={{ borderColor: character.color }}
+              >
+                <AvatarImage src={character.avatar} alt={character.name} />
+                <AvatarFallback style={{ backgroundColor: `${character.color}20`, color: character.color }}>
+                  {character.emoji}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-medium text-white text-shadow truncate">
+                  {character.name}
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

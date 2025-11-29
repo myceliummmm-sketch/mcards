@@ -51,28 +51,26 @@ export const FlippableCard = ({
         initial={false}
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.6, type: 'spring' }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.02 }}
       >
         {/* Front face */}
         <motion.div
-          className={`absolute inset-0 backface-hidden rounded-xl border-2 bg-card overflow-hidden ${getCardStyle()}`}
+          className={`absolute inset-0 backface-hidden rounded-xl border-2 overflow-hidden ${getCardStyle()}`}
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="card-shine w-full h-full">
-            <CardFront
-              definition={definition}
-              isEmpty={isEmpty}
-              isComplete={isComplete}
-              isInsight={isInsight}
-              preview={preview}
-              imageUrl={cardData?.card_image_url}
-            />
-          </div>
+          <CardFront
+            definition={definition}
+            isEmpty={isEmpty}
+            isComplete={isComplete}
+            isInsight={isInsight}
+            preview={preview}
+            imageUrl={cardData?.card_image_url}
+          />
         </motion.div>
 
         {/* Back face */}
         <motion.div
-          className={`absolute inset-0 backface-hidden rounded-xl border-2 bg-card overflow-hidden ${getCardStyle()}`}
+          className={`absolute inset-0 backface-hidden rounded-xl border-2 overflow-hidden ${getCardStyle()}`}
           style={{ 
             backfaceVisibility: 'hidden',
             rotateY: 180
