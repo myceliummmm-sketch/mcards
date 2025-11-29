@@ -1,17 +1,32 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { getCharacterById } from '@/data/teamCharacters';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, RefreshCw, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface CardBackProps {
   definition: CardDefinition;
   content?: any;
   onEdit: () => void;
+  cardType: string;
+  phase: string;
+  onRegenerateImage?: (imageUrl: string) => void;
 }
 
-export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
+export const CardBack = ({ 
+  definition, 
+  content, 
+  onEdit, 
+  cardType, 
+  phase, 
+  onRegenerateImage 
+}: CardBackProps) => {
   const character = getCharacterById(definition.aiHelpers[0]);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const { toast } = useToast();
 
   const getPhaseEmoji = () => {
     const phase = definition.phase?.toLowerCase();
@@ -29,6 +44,42 @@ export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
     if (phase === 'build') return 'card-empty-build';
     if (phase === 'grow') return 'card-empty-grow';
     return 'card-empty-vision';
+  };
+
+  const handleRegenerateImage = async () => {
+    if (!content || !onRegenerateImage) return;
+    
+    setIsRegenerating(true);
+    try {
+      const contentSummary = Object.values(content)
+        .filter(v => v && typeof v === 'string')
+        .slice(0, 3)
+        .join('. ')
+        .substring(0, 200);
+
+      const { data, error } = await supabase.functions.invoke('generate-card-image', {
+        body: { 
+          cardType, 
+          cardContent: contentSummary,
+          phase 
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.imageUrl) {
+        onRegenerateImage(data.imageUrl);
+      }
+    } catch (error) {
+      console.error('Error regenerating image:', error);
+      toast({
+        title: 'Failed to regenerate image',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRegenerating(false);
+    }
   };
 
   return (
@@ -117,6 +168,28 @@ export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
           <Sparkles className="w-4 h-4" />
           Document Specimen
         </Button>
+
+        {/* Regenerate Image Button - only show when card has content and image */}
+        {content && Object.keys(content).length > 0 && content.card_image_url && (
+          <Button
+            onClick={handleRegenerateImage}
+            disabled={isRegenerating}
+            variant="outline"
+            className="w-full gap-2 mt-2 backdrop-blur-md bg-white/10 border-white/20 hover:bg-white/20 text-white text-xs"
+          >
+            {isRegenerating ? (
+              <>
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Forging new crystal...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-3 h-3" />
+                Regenerate Crystal
+              </>
+            )}
+          </Button>
+        )}
       </div>
     </div>
   );

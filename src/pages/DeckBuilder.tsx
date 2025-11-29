@@ -188,16 +188,16 @@ export default function DeckBuilder() {
             }}
           >
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection phase="vision" cards={cards} onEditCard={handleEditCard} />
+              <PhaseSection phase="vision" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection phase="research" cards={cards} onEditCard={handleEditCard} />
+              <PhaseSection phase="research" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection phase="build" cards={cards} onEditCard={handleEditCard} />
+              <PhaseSection phase="build" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection phase="grow" cards={cards} onEditCard={handleEditCard} />
+              <PhaseSection phase="grow" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
             </motion.div>
           </motion.div>
         </div>

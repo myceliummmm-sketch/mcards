@@ -15,9 +15,10 @@ interface PhaseSectionProps {
   phase: CardPhase;
   cards: DeckCard[];
   onEditCard: (slot: number) => void;
+  deckId: string;
 }
 
-export const PhaseSection = ({ phase, cards, onEditCard }: PhaseSectionProps) => {
+export const PhaseSection = ({ phase, cards, onEditCard, deckId }: PhaseSectionProps) => {
   const config = PHASE_CONFIG[phase];
   const definitions = getCardsByPhase(phase);
   
@@ -92,6 +93,7 @@ export const PhaseSection = ({ phase, cards, onEditCard }: PhaseSectionProps) =>
                     cardId={cardData?.id}
                     isInsight={cardData?.is_insight || false}
                     onEdit={() => onEditCard(definition.slot)}
+                    deckId={deckId}
                   />
                 </motion.div>
               );
