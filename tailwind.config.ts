@@ -8,6 +8,7 @@ export default {
     fontFamily: {
       'display': ['Orbitron', 'sans-serif'],
       'body': ['Rajdhani', 'sans-serif'],
+      'handwritten': ['Caveat', 'cursive'],
     },
     container: {
       center: true,

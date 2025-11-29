@@ -5,92 +5,103 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Extract meaningful themes from card content
+// Extract content themes for crystal specimen visualization
 function extractContentThemes(cardType: string, cardContent: string): {
-  subject: string;
-  visualConcept: string;
-  emotion: string;
-  context: string;
+  crystalType: string;
+  annotation: string;
+  diagram: string;
+  scientificFocus: string;
 } {
-  // Parse card content to extract key themes
   const contentLower = cardContent.toLowerCase();
   
-  // Default themes based on card type
-  const typeThemes: Record<string, any> = {
+  // Card-specific crystal visual mappings
+  const cardVisuals: Record<string, any> = {
     product: {
-      subject: 'an innovative product concept',
-      visualConcept: 'the essence of innovation meeting user needs',
-      emotion: 'excitement and possibility',
-      context: 'A visual metaphor representing the bridge between vision and reality'
+      crystalType: 'luminous seed crystal with internal light source, pristine geometric facets',
+      annotation: 'POTENTIAL ENERGY READING',
+      diagram: 'Cross-section analysis: Core concept nucleus emitting conceptual photons',
+      scientificFocus: 'Innovation Emission Patterns'
     },
     problem: {
-      subject: 'a challenge transforming into opportunity',
-      visualConcept: 'tension resolving into clarity',
-      emotion: 'struggle evolving into understanding',
-      context: 'Show the journey from complexity to elegant solution'
+      crystalType: 'fractured crystal specimen with visible stress fracture lines',
+      annotation: 'FRACTURE POINT ANALYSIS',
+      diagram: 'Pressure distribution map showing pain vector concentration zones',
+      scientificFocus: 'Structural Weakness Assessment'
     },
     solution: {
-      subject: 'an elegant answer emerging',
-      visualConcept: 'clarity cutting through complexity',
-      emotion: 'relief and empowerment',
-      context: 'The moment of breakthrough visualized'
+      crystalType: 'perfectly faceted solution gem refracting prismatic light beams',
+      annotation: 'LIGHT REFRACTION EFFICIENCY',
+      diagram: 'Energy channeling pathways demonstrating elegant problem resolution',
+      scientificFocus: 'Clarity Optimization Study'
     },
     customer: {
-      subject: 'human needs and desires',
-      visualConcept: 'empathy and understanding personified',
-      emotion: 'connection and recognition',
-      context: 'Abstract representation of the human experience being served'
+      crystalType: 'resonating crystal vibrating at harmonic frequencies',
+      annotation: 'RESONANCE FREQUENCY MATCH',
+      diagram: 'Harmonic alignment patterns with external signal sources',
+      scientificFocus: 'User Alignment Metrics'
     },
     value: {
-      subject: 'transformation and benefit',
-      visualConcept: 'value being created and delivered',
-      emotion: 'satisfaction and growth',
-      context: 'The exchange of value visualized as energy or light'
+      crystalType: 'energy exchange crystal cluster showing bi-directional flow',
+      annotation: 'ENERGY EXCHANGE RATIOS',
+      diagram: 'Input/output flow measurement with value transformation visualization',
+      scientificFocus: 'Transformation Efficiency'
     },
-    channels: {
-      subject: 'pathways and connections',
-      visualConcept: 'networks of communication flowing',
-      emotion: 'accessibility and reach',
-      context: 'Abstract representation of connectivity and distribution'
+    competitor: {
+      crystalType: 'comparative specimen array displaying density variations',
+      annotation: 'COMPARATIVE DENSITY ANALYSIS',
+      diagram: 'Side-by-side differentiation markers with competitive advantage zones',
+      scientificFocus: 'Market Position Study'
     },
-    revenue: {
-      subject: 'sustainable growth patterns',
-      visualConcept: 'value exchange and prosperity',
-      emotion: 'abundance and sustainability',
-      context: 'Organic growth patterns representing financial health'
+    market: {
+      crystalType: 'vast crystalline landscape from aerial survey perspective',
+      annotation: 'DEPOSIT SIZE ESTIMATION',
+      diagram: 'TAM/SAM/SOM boundary delineation with growth zone markers',
+      scientificFocus: 'Market Topology Survey'
     },
-    costs: {
-      subject: 'efficient resource allocation',
-      visualConcept: 'balance and optimization',
-      emotion: 'stability and wisdom',
-      context: 'Geometric precision representing careful management'
+    features: {
+      crystalType: 'multi-faceted crystal with individually labeled capability faces',
+      annotation: 'FACET CAPABILITY INDEX',
+      diagram: 'Each polished face represents distinct feature functionality',
+      scientificFocus: 'Feature Set Taxonomy'
     },
     metrics: {
-      subject: 'success indicators and patterns',
-      visualConcept: 'data becoming insight',
-      emotion: 'clarity and confidence',
-      context: 'Abstract visualization of measurement and progress'
+      crystalType: 'measurement crystal with internal calibration grid system',
+      annotation: 'GROWTH VELOCITY TRACKING',
+      diagram: 'KPI calibration markers with performance threshold indicators',
+      scientificFocus: 'Progress Measurement Matrix'
     },
-    risks: {
-      subject: 'uncertainty and mitigation',
-      visualConcept: 'challenges being navigated',
-      emotion: 'vigilance and preparedness',
-      context: 'Storms clearing or obstacles being overcome'
+    team: {
+      crystalType: 'interconnected crystal lattice network showing collaboration bonds',
+      annotation: 'SYNERGY COEFFICIENT ANALYSIS',
+      diagram: 'Team node connections with skill set intersection visualizations',
+      scientificFocus: 'Collective Capability Study'
+    },
+    channels: {
+      crystalType: 'branching crystal pathways forming distribution networks',
+      annotation: 'PATHWAY CONDUCTIVITY RATING',
+      diagram: 'Communication channel flow with reach optimization patterns',
+      scientificFocus: 'Distribution Network Analysis'
+    },
+    revenue: {
+      crystalType: 'organic growth spiral crystal with expanding formation rings',
+      annotation: 'SUSTAINABLE GROWTH RATE',
+      diagram: 'Revenue stream patterns showing recurring flow structures',
+      scientificFocus: 'Financial Health Indicators'
     }
   };
 
-  // Try to extract specific content themes
-  let themes = typeThemes[cardType] || typeThemes.product;
+  // Get base themes or default to product
+  let themes = cardVisuals[cardType] || cardVisuals.product;
   
-  // Enhance with content-specific details if available
+  // Enhance with content-specific details
   if (contentLower.includes('ai') || contentLower.includes('artificial intelligence')) {
-    themes.context += ' with subtle technological intelligence motifs';
+    themes.diagram += ' · Enhanced with neural network pattern overlay';
   }
   if (contentLower.includes('fitness') || contentLower.includes('health')) {
-    themes.context += ' incorporating organic vitality and human energy';
+    themes.diagram += ' · Organic vitality signatures detected';
   }
   if (contentLower.includes('learning') || contentLower.includes('education')) {
-    themes.context += ' with elements of growth and enlightenment';
+    themes.diagram += ' · Knowledge growth vectors visible';
   }
   
   return themes;
@@ -109,63 +120,90 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    // Enhanced art styles per phase
-    const phaseStyles: Record<string, { style: string; colors: string[]; mood: string; composition: string }> = {
+    // Phase-specific crystal types and styling
+    const phaseStyles: Record<string, { crystalColor: string; accentColors: string[]; scientificTheme: string }> = {
       vision: { 
-        style: 'ethereal dreamscape with soft flowing gradients and mystical energy',
-        colors: ['deep violet', 'soft rose gold', 'starlight white'],
-        mood: 'visionary and transcendent',
-        composition: 'central radiant focus with flowing organic forms'
+        crystalColor: 'ethereal purple-pink quartz with internal glow',
+        accentColors: ['neon pink #FF6B9D', 'neon purple #B388FF', 'gold #FFD700'],
+        scientificTheme: 'ENERGY EMISSION ANALYSIS'
       },
       research: { 
-        style: 'clean data visualization aesthetic with elegant information design',
-        colors: ['ocean blue', 'mint cyan', 'silver'],
-        mood: 'analytical and insightful',
-        composition: 'layered depth with geometric precision'
+        crystalColor: 'geometric cyan data crystal with lattice structure',
+        accentColors: ['neon cyan #00F0FF', 'electric blue #0EA5E9', 'silver #C0C0C0'],
+        scientificTheme: 'STRUCTURAL ANALYSIS'
       },
       build: { 
-        style: 'constructivist architectural forms with technical elegance',
-        colors: ['forest green', 'copper', 'stone gray'],
-        mood: 'technical and purposeful',
-        composition: 'isometric perspective with structured elements'
+        crystalColor: 'industrial green construction crystal with metallic inclusions',
+        accentColors: ['forest green #10B981', 'copper #B45309', 'stone gray #78716C'],
+        scientificTheme: 'LOAD-BEARING PROPERTIES'
       },
       grow: { 
-        style: 'organic growth patterns merging with dynamic energy',
-        colors: ['sunrise orange', 'warm gold', 'coral pink'],
-        mood: 'expansive and vibrant',
-        composition: 'explosive radial energy with forward motion'
+        crystalColor: 'expanding orange fractal crystal with growth rings',
+        accentColors: ['sunrise orange #FB923C', 'warm gold #FFD700', 'coral pink #FF6B9D'],
+        scientificTheme: 'GROWTH RATE METRICS'
       }
     };
 
     const selectedStyle = phaseStyles[phase] || phaseStyles.vision;
     
-    // Extract meaningful themes from card content
-    const extractedThemes = extractContentThemes(cardType, cardContent);
+    // Extract crystal specimen details from card content
+    const crystalSpec = extractContentThemes(cardType, cardContent);
     
-    // Construct sophisticated, personalized prompt
-    const prompt = `Create a premium collectible card illustration:
+    // Master Field Guide prompt template
+    const prompt = `STYLE: 1989 technical field guide page meets synthwave aesthetics.
 
-Subject: ${extractedThemes.subject}
-Visual Concept: ${extractedThemes.visualConcept}
-Emotional Tone: ${extractedThemes.emotion || selectedStyle.mood}
+SUBJECT: Low-poly crystal specimen - ${crystalSpec.crystalType}
+Crystal Coloration: ${selectedStyle.crystalColor}
 
-Art Direction:
-- Style: ${selectedStyle.style}
-- Color Palette: ${selectedStyle.colors.join(', ')} with subtle gradients
-- Composition: ${selectedStyle.composition}
-- Lighting: Cinematic with dramatic highlights and atmospheric depth
-- Details: High-quality digital art, refined but not cluttered, gallery-worthy
+VISUAL FORMAT - Technical Documentation Page:
+- Base: Aged cream/ivory paper texture (#F5F0E6) with subtle grain and yellowing
+- Main visual: Crystal specimen as precise technical diagram (40-60% of frame, centered)
+- Scientific measurement callouts with thin leader lines pointing to crystal features
+- Mixed typography: Technical monospace labels + handwritten margin annotations
+- Scattered data points, grid coordinates, classification codes in margins
+- Chrome beveled metallic tab at top edge showing specimen category
+- Page feels like essential documentation from founder's handbook
 
-Visual Identity: 
-${extractedThemes.context}
+ANNOTATION DETAILS:
+- Primary callout: "${crystalSpec.annotation}"
+- Technical diagram note: "${crystalSpec.diagram}"
+- Scientific classification: "${selectedStyle.scientificTheme}"
+- Additional margin notes in cursive handwriting style with arrows
 
-Technical Requirements:
-- No text, letters, or words anywhere in the image
-- Abstract representation preferred over literal depiction
-- Focus on evoking emotion and concept rather than explicit storytelling
-- Suitable for portrait-oriented trading card format`;
+COLOR PALETTE:
+- Base paper: Cream (#F5F0E6), aged ivory (#FBF8F3)
+- Neon accents: ${selectedStyle.accentColors.join(', ')}
+- Chrome elements: Metallic silver-white highlights with reflective finish
+- Technical ink: Deep navy (#1E293B) for precise labels, faded blue (#64748B) for annotations
 
-    console.log('Generating personalized image with prompt:', prompt);
+COMPOSITION ELEMENTS:
+- Crystal specimen centered with 40-60% frame coverage
+- Technical callout lines radiating to margins (thin, precise)
+- Handwritten notes in margins at slight angles with connecting arrows
+- Small certification stamps or seals in corners (rotated 5-10°)
+- Subtle engineering grid overlay (very faint)
+- Measurement scale marks along edges
+- Page number "X/22" format at bottom right corner with horizontal line above
+- "FIG. {number}" label near specimen
+
+TECHNICAL SPECIFICATIONS:
+- Low-poly geometric crystal facets (not organic, sharp angles)
+- Chrome beveled tab has 3D depth with gradient sheen
+- Paper texture must show subtle fiber grain and age spots
+- Neon accent colors used sparingly but impactfully on key elements
+- Scientific diagram aesthetic - precise, educational, professional
+- Blend of cold technical precision with warm handwritten humanity
+
+8K detail on:
+- Paper grain texture and slight yellowing
+- Chrome metallic reflections and beveled edges  
+- Crystal facet precision and light refraction
+- Handwritten annotation authenticity
+
+CRITICAL: NO text, letters, numbers, or readable words in the image itself.
+Portrait orientation. This is a scientific specimen study page.`;
+
+    console.log('Generating Crystal Builder Field Guide card:', crystalSpec.crystalType);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -198,7 +236,7 @@ Technical Requirements:
       throw new Error('No image generated');
     }
 
-    console.log('Image generated successfully');
+    console.log('Crystal Builder card image generated successfully');
 
     return new Response(
       JSON.stringify({ imageUrl }),
