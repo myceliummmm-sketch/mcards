@@ -55,94 +55,96 @@ export const CardFront = ({
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
-      {/* Full-bleed background image or gradient */}
-      {imageUrl ? (
-        <>
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          />
-          {/* Top gradient overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
-        </>
-      ) : (
-        <div className={`absolute inset-0 ${getEmptyGradient()}`} />
-      )}
-
-      {/* Content overlay */}
-      <div className="relative w-full h-full p-6 flex flex-col justify-between">
-        {/* Header with glassmorphism */}
-        <div className="space-y-3">
-          <div className="flex items-start justify-between gap-2">
-            {/* Phase and slot badge */}
-            <div className="glass-card px-3 py-1.5 rounded-lg flex items-center gap-2">
-              <span className="text-base">{getPhaseEmoji()}</span>
-              <span className="text-xs font-bold text-white uppercase tracking-wide">
-                #{definition.slot} · {definition.phase}
-              </span>
-            </div>
-
-            {/* Status badge */}
-            <div className="glass-card px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-              <span className="text-sm">{getStatusIcon()}</span>
-              <span className={`text-xs font-medium ${
-                isInsight ? 'text-status-insight' :
-                isComplete ? 'text-status-complete' :
-                preview ? 'text-status-in-progress' :
-                'text-white/70'
-              }`}>
-                {getStatusLabel()}
-              </span>
-            </div>
+    <div className="relative w-full h-full overflow-hidden field-guide-paper">
+      {/* Specimen frame with crystal or empty state */}
+      <div className="relative w-full h-full p-4 flex flex-col">
+        {/* Chrome beveled tab header */}
+        <div className="chrome-tab px-4 py-2 rounded-t-lg mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{getPhaseEmoji()}</span>
+            <span className="text-xs font-display font-bold text-slate-800 uppercase tracking-wider">
+              #{definition.slot} · {definition.phase}
+            </span>
           </div>
-
-          {/* Title card */}
-          <div className="glass-card p-4 rounded-xl">
-            <h3 className="text-xl font-display font-bold text-white mb-1 text-shadow-strong">
-              {definition.title}
-            </h3>
-            <p className="text-xs text-white/80 text-shadow">
-              {definition.coreQuestion}
-            </p>
+          
+          {/* Status stamp */}
+          <div className={`cert-stamp text-[10px] px-2 py-1 ${
+            isInsight ? 'stamp-classified' :
+            isComplete ? 'stamp-verified' :
+            'stamp-draft'
+          }`}>
+            {getStatusLabel()}
           </div>
         </div>
 
-        {/* Bottom section */}
-        <div className="space-y-3">
-          {/* Preview content (if any) */}
-          {preview && (
-            <motion.div
-              className="glass-card p-4 rounded-xl"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <p className="text-sm text-white/90 line-clamp-3 text-shadow">
-                {preview}
-              </p>
-            </motion.div>
-          )}
+        {/* Title card with technical styling */}
+        <div className="bg-slate-900/5 border-2 border-slate-700 rounded-lg p-3 mb-3">
+          <h3 className="text-base font-display font-bold text-slate-900 mb-1">
+            {definition.title}
+          </h3>
+          <p className="text-xs text-slate-600 italic">
+            {definition.coreQuestion}
+          </p>
+        </div>
 
-          {/* AI Character badge */}
-          {character && (
-            <div className="glass-card px-3 py-2 rounded-lg flex items-center gap-3">
-              <Avatar 
-                className="w-8 h-8 border-2 shrink-0" 
-                style={{ borderColor: character.color }}
-              >
-                <AvatarImage src={character.avatar} alt={character.name} />
-                <AvatarFallback style={{ backgroundColor: `${character.color}20`, color: character.color }}>
-                  {character.emoji}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-white text-shadow truncate">
-                  {character.name}
+        {/* Crystal specimen frame */}
+        <div className="flex-1 relative mb-3">
+          <div className="specimen-frame w-full h-full rounded-lg overflow-hidden bg-slate-100">
+            {imageUrl ? (
+              <img 
+                src={imageUrl} 
+                alt="Crystal specimen diagram"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className={`w-full h-full ${getEmptyGradient()} flex items-center justify-center`}>
+                <div className="text-center text-slate-400">
+                  <div className="text-4xl mb-2">◆</div>
+                  <div className="text-xs font-mono">SPECIMEN PENDING</div>
                 </div>
               </div>
+            )}
+          </div>
+          
+          {/* Figure label */}
+          <div className="absolute -top-2 left-4 bg-field-guide-paper px-2">
+            <span className="text-[10px] font-mono text-slate-600">FIG. {definition.slot}</span>
+          </div>
+        </div>
+
+        {/* Preview content annotation (if any) */}
+        {preview && (
+          <div className="handwritten text-xs text-blue-700 mb-3 pl-2 border-l-2 border-blue-300">
+            ✎ {preview.substring(0, 80)}...
+          </div>
+        )}
+
+        {/* AI Character badge - technical style */}
+        {character && (
+          <div className="flex items-center gap-2 bg-slate-900/5 border border-slate-300 rounded px-3 py-2 mb-3">
+            <Avatar 
+              className="w-7 h-7 border-2" 
+              style={{ borderColor: character.color }}
+            >
+              <AvatarImage src={character.avatar} alt={character.name} />
+              <AvatarFallback style={{ backgroundColor: `${character.color}20`, color: character.color }}>
+                {character.emoji}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] font-mono text-slate-600 uppercase tracking-wide">
+                AI RESEARCHER
+              </div>
+              <div className="text-xs font-medium text-slate-900 truncate">
+                {character.name}
+              </div>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Page number */}
+        <div className="page-number text-right">
+          {definition.slot}/22
         </div>
       </div>
     </div>

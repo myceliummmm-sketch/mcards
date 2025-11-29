@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Caveat:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -311,5 +311,152 @@
   @keyframes gradient-shift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
+  }
+
+  /* === CRYSTAL BUILDER FIELD GUIDE — 1989 Edition === */
+  
+  /* Aged paper texture background */
+  .field-guide-paper {
+    background-color: #F5F0E6;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 19px,
+        rgba(0, 0, 0, 0.02) 19px,
+        rgba(0, 0, 0, 0.02) 20px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 19px,
+        rgba(0, 0, 0, 0.02) 19px,
+        rgba(0, 0, 0, 0.02) 20px
+      );
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Chrome beveled metallic tab */
+  .chrome-tab {
+    background: linear-gradient(180deg, 
+      #FAFAFA 0%, 
+      #F0F0F0 10%,
+      #E0E0E0 30%,
+      #D0D0D0 60%,
+      #C0C0C0 85%,
+      #B0B0B0 100%
+    );
+    box-shadow: 
+      inset 0 2px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+      0 3px 6px rgba(0, 0, 0, 0.3),
+      0 1px 2px rgba(0, 0, 0, 0.2);
+    border: 1px solid #999;
+    border-bottom: 2px solid #666;
+  }
+
+  /* Synthwave neon accent colors */
+  .neon-pink { 
+    color: #FF6B9D; 
+    text-shadow: 0 0 10px rgba(255, 107, 157, 0.6); 
+  }
+  
+  .neon-cyan { 
+    color: #00F0FF; 
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); 
+  }
+  
+  .neon-purple { 
+    color: #B388FF; 
+    text-shadow: 0 0 10px rgba(179, 136, 255, 0.6); 
+  }
+  
+  .neon-gold { 
+    color: #FFD700; 
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); 
+  }
+
+  /* Technical diagram specimen frame */
+  .specimen-frame {
+    border: 2px solid #334155;
+    position: relative;
+  }
+
+  .specimen-frame::before,
+  .specimen-frame::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #334155;
+  }
+
+  .specimen-frame::before {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .specimen-frame::after {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+  }
+
+  /* Handwritten annotation style */
+  .handwritten {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    line-height: 1.4;
+    transform: rotate(-1deg);
+  }
+
+  /* Technical monospace data labels */
+  .technical-data {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+  }
+
+  /* Certification stamp styles */
+  .cert-stamp {
+    border: 3px double;
+    border-radius: 50%;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stamp-verified { 
+    border-color: #10B981; 
+    color: #10B981; 
+    background: rgba(16, 185, 129, 0.05);
+  }
+  
+  .stamp-classified { 
+    border-color: #8B5CF6; 
+    color: #8B5CF6; 
+    background: rgba(139, 92, 246, 0.05);
+  }
+  
+  .stamp-draft { 
+    border-color: #F59E0B; 
+    color: #F59E0B; 
+    background: rgba(245, 158, 11, 0.05);
+  }
+
+  /* Page number format */
+  .page-number {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: #64748B;
+    border-top: 1px solid #94A3B8;
+    padding-top: 6px;
+    display: inline-block;
+    min-width: 50px;
   }
 }
