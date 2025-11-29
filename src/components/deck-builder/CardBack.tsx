@@ -32,50 +32,67 @@ export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden field-guide-paper">
+    <div className="relative w-full h-full overflow-hidden">
+      {/* Full-bleed background: Crystal image (blurred) or gradient */}
+      <div className="absolute inset-0">
+        {content?.card_image_url ? (
+          <img 
+            src={content.card_image_url} 
+            alt="Crystal specimen"
+            className="w-full h-full object-cover blur-sm"
+          />
+        ) : (
+          <div className={`w-full h-full ${getEmptyGradient()}`} />
+        )}
+      </div>
+
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-black/60" />
+
+      {/* Content layer */}
       <div className="relative w-full h-full p-4 flex flex-col">
-        {/* Chrome beveled tab header */}
-        <div className="chrome-tab px-4 py-2 rounded-t-lg mb-3 flex items-center gap-2">
+        {/* Header */}
+        <div className="backdrop-blur-md bg-black/40 border border-white/20 rounded-lg px-4 py-2 mb-3 flex items-center gap-2">
           <span className="text-lg">{getPhaseEmoji()}</span>
-          <span className="text-xs font-display font-bold text-slate-800 uppercase tracking-wider">
+          <span className="text-xs font-display font-bold text-white uppercase tracking-wider">
             #{definition.slot} · {definition.title}
           </span>
         </div>
 
         {/* Core question box */}
-        <div className="bg-slate-900/5 border border-slate-700 rounded-lg p-3 mb-3">
-          <div className="text-[10px] font-mono text-slate-600 uppercase tracking-wide mb-1">
+        <div className="backdrop-blur-md bg-black/50 border border-white/20 rounded-lg p-3 mb-3">
+          <div className="text-[10px] font-mono text-white/60 uppercase tracking-wide mb-1">
             RESEARCH QUESTION
           </div>
-          <p className="text-xs text-slate-800 italic">
+          <p className="text-xs text-white italic">
             {definition.coreQuestion}
           </p>
         </div>
 
         {/* Content data or placeholder */}
-        <div className="flex-1 overflow-y-auto mb-3">
+        <div className="flex-1 overflow-y-auto mb-3 backdrop-blur-md bg-black/40 border border-white/10 rounded-lg p-3">
           {content && Object.keys(content).length > 0 ? (
             <div className="space-y-2">
               {Object.entries(content)
                 .filter(([key]) => !['id', 'deck_id', 'card_slot', 'card_type', 'card_image_url', 'is_insight', 'evaluation', 'created_at', 'updated_at', 'last_evaluated_at'].includes(key))
                 .map(([key, value]) => (
-                  <div key={key} className="bg-slate-50 border border-slate-300 rounded p-2">
-                    <div className="technical-data text-slate-600 uppercase mb-1">
+                  <div key={key} className="bg-white/10 border border-white/20 rounded p-2">
+                    <div className="text-[10px] text-white/70 uppercase mb-1 font-medium tracking-wider">
                       {key.replace(/_/g, ' ')}:
                     </div>
-                    <div className="text-xs text-slate-900">
+                    <div className="text-xs text-white">
                       {String(value)}
                     </div>
                   </div>
                 ))}
             </div>
           ) : (
-            <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center">
-              <div className="text-4xl mb-2 text-slate-400">◆</div>
-              <p className="text-xs text-slate-600 font-mono">
+            <div className="border-2 border-dashed border-white/30 rounded-lg p-8 text-center">
+              <div className="text-4xl mb-2 text-white/40">◆</div>
+              <p className="text-xs text-white/60 font-mono">
                 NO DATA RECORDED
               </p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-white/50 mt-1">
                 Click below to begin documentation
               </p>
             </div>
@@ -84,8 +101,10 @@ export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
 
         {/* AI Helper annotation */}
         {character && (
-          <div className="handwritten text-xs text-blue-700 mb-3 pl-3 border-l-2 border-blue-400">
-            ✎ Research note from {character.name}: "{character.signaturePhrases[Math.floor(Math.random() * character.signaturePhrases.length)]}"
+          <div className="backdrop-blur-md bg-blue-500/20 border border-blue-400/30 rounded-lg p-3 mb-3">
+            <p className="text-xs text-blue-100 italic">
+              ✎ Research note from {character.name}: "{character.signaturePhrases[Math.floor(Math.random() * character.signaturePhrases.length)]}"
+            </p>
           </div>
         )}
 
@@ -98,11 +117,6 @@ export const CardBack = ({ definition, content, onEdit }: CardBackProps) => {
           <Sparkles className="w-4 h-4" />
           Document Specimen
         </Button>
-
-        {/* Page number */}
-        <div className="page-number text-right mt-3">
-          {definition.slot}/22
-        </div>
       </div>
     </div>
   );
