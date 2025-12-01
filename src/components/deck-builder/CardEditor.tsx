@@ -189,7 +189,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   const secondaryHelper = definition.aiHelpers[1] || definition.aiHelpers[0];
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="right" className="w-full sm:max-w-2xl p-0 relative">
         {/* Header */}
         <SheetHeader className="px-6 py-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm">
