@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import type { CardDefinition } from '@/data/cardDefinitions';
+import { RarityBadge } from '@/components/marketplace/RarityBadge';
+import { Rarity } from '@/data/rarityConfig';
 
 interface CardFrontProps {
   definition: CardDefinition;
@@ -8,11 +10,22 @@ interface CardFrontProps {
   isInsight: boolean;
   preview?: string;
   imageUrl?: string;
+  evaluationScore?: number;
+}
+
+const getCardRarity = (score?: number): Rarity => {
+  if (!score) return 'common';
+  if (score <= 3) return 'common';
+  if (score <= 5) return 'uncommon';
+  if (score <= 7) return 'rare';
+  if (score <= 9) return 'epic';
+  return 'legendary';
 }
 
 export const CardFront = ({ 
   definition, 
-  imageUrl
+  imageUrl,
+  evaluationScore
 }: CardFrontProps) => {
   const getEmptyGradient = () => {
     const phase = definition.phase?.toLowerCase();
@@ -50,6 +63,13 @@ export const CardFront = ({
           #{definition.slot.toString().padStart(2, '0')}
         </span>
       </div>
+
+      {/* Rarity badge */}
+      {evaluationScore !== undefined && (
+        <div className="absolute top-2 right-2">
+          <RarityBadge rarity={getCardRarity(evaluationScore)} />
+        </div>
+      )}
     </motion.div>
   );
 };
