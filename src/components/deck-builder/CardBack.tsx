@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import type { CardDefinition } from '@/data/cardDefinitions';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Zap } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { TEAM_CHARACTERS } from '@/data/teamCharacters';
 
@@ -8,6 +8,7 @@ interface CardBackProps {
   definition: CardDefinition;
   content?: any;
   evaluation?: any;
+  isEmpty?: boolean;
   onEdit: () => void;
 }
 
@@ -57,6 +58,7 @@ export const CardBack = ({
   definition, 
   content,
   evaluation,
+  isEmpty = false,
   onEdit
 }: CardBackProps) => {
   const getEmptyGradient = () => {
@@ -91,14 +93,26 @@ export const CardBack = ({
         {/* Team Ratings Preview */}
         {evaluation && <TeamRatingsPreview evaluation={evaluation} />}
 
-        {/* Open Card Button */}
+        {/* Dynamic Button */}
         <Button
-          onClick={onEdit}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
           size="lg"
           className="gap-2 bg-gradient-to-r from-[#FF6B9D] to-[#B388FF] hover:from-[#FF6B9D]/90 hover:to-[#B388FF]/90 text-white shadow-2xl transition-all hover:scale-105 font-display uppercase tracking-wide text-sm px-8 py-6 backdrop-blur-sm border-2 border-white/20"
         >
-          <Sparkles className="w-5 h-5" />
-          Open Card
+          {isEmpty ? (
+            <>
+              <Zap className="w-5 h-5" />
+              Forge Card
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-5 h-5" />
+              Open Card
+            </>
+          )}
         </Button>
       </div>
     </div>
