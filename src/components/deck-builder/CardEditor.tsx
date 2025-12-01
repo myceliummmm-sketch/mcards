@@ -190,7 +190,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 relative">
+      <SheetContent side="right" className="w-full sm:max-w-2xl p-0">
         {/* Header */}
         <SheetHeader className="px-6 py-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm">
           <div className="flex items-center justify-between">
