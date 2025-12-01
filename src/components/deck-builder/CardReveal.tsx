@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { EvaluationMatrix } from './EvaluationMatrix';
 import { ForgeLoadingState } from './ForgeLoadingState';
 
 interface CardRevealProps {
@@ -90,15 +89,15 @@ export const CardReveal = ({ isRevealing, imageUrl, evaluation, loadingStage }: 
               </motion.div>
             )}
 
-            {/* Evaluation scores */}
+            {/* Overall score badge */}
             {evaluation && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-                className="p-4"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
+                className="absolute bottom-3 left-3 bg-primary/90 text-primary-foreground px-3 py-1.5 rounded-full text-sm font-bold shadow-lg"
               >
-                <EvaluationMatrix evaluation={evaluation} />
+                Score: {evaluation.overall}/10
               </motion.div>
             )}
 
