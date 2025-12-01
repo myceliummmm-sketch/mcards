@@ -12,6 +12,7 @@ import { CardReveal } from './CardReveal';
 import { triggerForgeConfetti } from './ForgeConfetti';
 import { CardCraftingWizard } from './crafting/CardCraftingWizard';
 import { CardComments } from './review/CardComments';
+import { ForgeRevealOverlay } from './ForgeRevealOverlay';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -189,7 +190,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl p-0">
+      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 relative">
         {/* Header */}
         <SheetHeader className="px-6 py-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm">
           <div className="flex items-center justify-between">
@@ -461,6 +462,19 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             </TabsContent>
           </Tabs>
         </ScrollArea>
+
+        {/* Forge Reveal Overlay - Shows magical forge animation */}
+        <ForgeRevealOverlay
+          isActive={forgingStage !== 'idle'}
+          forgingStage={forgingStage}
+          loadingStage={loadingStage}
+          imageUrl={currentImageUrl}
+          evaluation={currentEvaluation}
+          onDismiss={() => {
+            setForgingStage('idle');
+            setLoadingStage('idle');
+          }}
+        />
       </SheetContent>
     </Sheet>
   );
