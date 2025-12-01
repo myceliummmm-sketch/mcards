@@ -6,13 +6,17 @@ const corsHeaders = {
 };
 
 // Extract content themes for crystal specimen visualization
-function extractContentThemes(cardType: string, cardContent: string): {
+function extractContentThemes(cardType: string, cardContent: Record<string, any>): {
   crystalType: string;
   annotation: string;
   diagram: string;
   scientificFocus: string;
 } {
-  const contentLower = cardContent.toLowerCase();
+  // Convert object to string for analysis
+  const contentText = Object.values(cardContent)
+    .filter(v => v && typeof v === 'string')
+    .join(' ');
+  const contentLower = contentText.toLowerCase();
   
   // Card-specific crystal visual mappings
   const cardVisuals: Record<string, any> = {
@@ -113,7 +117,26 @@ serve(async (req) => {
   }
 
   try {
-    const { cardType, cardContent, phase } = await req.json();
+    const { cardSlot, cardContent } = await req.json();
+    
+    // Map card slot to type
+    const slotToType: Record<number, string> = {
+      1: 'product',
+      2: 'problem', 
+      3: 'solution',
+      4: 'customer',
+      5: 'value',
+      6: 'competitor',
+      7: 'market',
+      8: 'features',
+      9: 'metrics',
+      10: 'team',
+      11: 'channels',
+      12: 'revenue'
+    };
+    
+    const cardType = slotToType[cardSlot] || 'product';
+    const phase = cardSlot <= 3 ? 'vision' : cardSlot <= 6 ? 'research' : cardSlot <= 9 ? 'build' : 'grow';
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     if (!LOVABLE_API_KEY) {
