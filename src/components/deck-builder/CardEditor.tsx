@@ -15,6 +15,7 @@ import { CardComments } from './review/CardComments';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 
 interface CardEditorProps {
   isOpen: boolean;
@@ -274,6 +275,57 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             </div>
 
             <TabsContent value="edit" className="px-6 py-6 space-y-6">
+              {/* Metadata Card - Shows card stats */}
+              {initialData && Object.keys(initialData).length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="grid grid-cols-2 gap-3 p-4 bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-lg"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">⭐</span>
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase font-mono">XP Earned</div>
+                      <div className="text-sm font-bold text-foreground">
+                        {(() => {
+                          let xp = 10;
+                          if (currentEvaluation?.overall) xp += Math.round(currentEvaluation.overall);
+                          return `${xp}/20`;
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">📊</span>
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase font-mono">Score</div>
+                      <div className="text-sm font-bold text-foreground">
+                        {currentEvaluation?.overall ? `${currentEvaluation.overall.toFixed(1)}/10` : 'Not evaluated'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">📅</span>
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase font-mono">Updated</div>
+                      <div className="text-sm font-bold text-foreground">
+                        {initialData?.updated_at ? format(new Date(initialData.updated_at), 'MMM d, yyyy') : 'Never'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">
+                      {initialData?.completed === true ? '✅' : Object.keys(initialData).length > 0 ? '⏳' : '⭕'}
+                    </span>
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase font-mono">Status</div>
+                      <div className="text-sm font-bold text-foreground">
+                        {initialData?.completed === true ? 'Complete' : Object.keys(initialData).length > 0 ? 'In Progress' : 'Empty'}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
               {wizardMode ? (
                 /* Wizard Mode */
                 <CardCraftingWizard

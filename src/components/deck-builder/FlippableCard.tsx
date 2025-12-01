@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { CardFront } from './CardFront';
 import { CardBack } from './CardBack';
 import { ReviewBadge } from './review/ReviewBadge';
 import type { CardDefinition } from '@/data/cardDefinitions';
-import { format } from 'date-fns';
 import { useDeckCards } from '@/hooks/useDeckCards';
 
 interface FlippableCardProps {
@@ -25,19 +24,11 @@ export const FlippableCard = ({
   deckId
 }: FlippableCardProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
   const { updateCardImage } = useDeckCards(deckId);
 
   const isEmpty = !cardData || Object.keys(cardData).length === 0;
   const isComplete = !isEmpty && cardData.completed === true;
   const preview = cardData?.summary || cardData?.description || cardData?.content || '';
-
-  const calculateXP = () => {
-    let xp = 0;
-    if (!isEmpty) xp += 10;
-    if (cardData?.evaluation?.overall) xp += Math.round(cardData.evaluation.overall);
-    return { earned: xp, max: 20 };
-  };
 
   const handleRegenerateImage = async (imageUrl: string) => {
     await updateCardImage(definition.slot, imageUrl);
@@ -69,38 +60,7 @@ export const FlippableCard = ({
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.6, type: 'spring' }}
         whileHover={{ scale: 1.02 }}
-        onHoverStart={() => setIsHovering(true)}
-        onHoverEnd={() => setIsHovering(false)}
       >
-        {/* Hover Info Overlay - Only show on front face when card has data */}
-        <AnimatePresence>
-          {isHovering && !isFlipped && !isEmpty && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.2 }}
-              className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
-            >
-              <div className="card-glass-panel rounded-lg p-4 space-y-2 text-white text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⭐</span>
-                  <span>XP: {calculateXP().earned}/{calculateXP().max}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">📅</span>
-                  <span>Updated: {cardData?.updated_at ? format(new Date(cardData.updated_at), 'MMM d, yyyy') : 'N/A'}</span>
-                </div>
-                {cardData?.evaluation?.overall && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">📊</span>
-                    <span>Score: {cardData.evaluation.overall.toFixed(1)}/10</span>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
         {/* Front face */}
         <motion.div
           className={`absolute inset-0 backface-hidden rounded-xl border-2 overflow-hidden ${getCardStyle()}`}
@@ -130,9 +90,6 @@ export const FlippableCard = ({
             onEdit={() => {
               onEdit();
             }}
-            cardType={definition.cardType}
-            phase={definition.phase || 'vision'}
-            onRegenerateImage={handleRegenerateImage}
           />
         </motion.div>
       </motion.div>
