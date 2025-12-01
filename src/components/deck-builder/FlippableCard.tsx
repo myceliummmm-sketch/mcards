@@ -49,10 +49,7 @@ export const FlippableCard = ({
   };
 
   return (
-    <div 
-      className="relative w-full aspect-[3/4] perspective-1000"
-      onClick={() => setIsFlipped(!isFlipped)}
-    >
+    <div className="relative w-full aspect-[3/4] perspective-1000">
       {cardId && <ReviewBadge cardId={cardId} />}
       
       <motion.div
@@ -65,7 +62,11 @@ export const FlippableCard = ({
         {/* Front face */}
         <motion.div
           className={`absolute inset-0 backface-hidden rounded-xl border-2 overflow-hidden ${getCardStyle()}`}
-          style={{ backfaceVisibility: 'hidden' }}
+          style={{ 
+            backfaceVisibility: 'hidden',
+            pointerEvents: isFlipped ? 'none' : 'auto'
+          }}
+          onClick={() => setIsFlipped(true)}
         >
           <CardFront
             definition={definition}
@@ -83,8 +84,10 @@ export const FlippableCard = ({
           className={`absolute inset-0 backface-hidden rounded-xl border-2 overflow-hidden ${getCardStyle()}`}
           style={{ 
             backfaceVisibility: 'hidden',
-            rotateY: 180
+            rotateY: 180,
+            pointerEvents: isFlipped ? 'auto' : 'none'
           }}
+          onClick={() => setIsFlipped(false)}
         >
           <CardBack
             definition={definition}
