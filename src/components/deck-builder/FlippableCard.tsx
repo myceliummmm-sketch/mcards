@@ -90,6 +90,7 @@ export const FlippableCard = ({
             definition={definition}
             content={cardData}
             evaluation={evaluation}
+            isEmpty={isEmpty}
             onEdit={() => {
               onEdit();
             }}
