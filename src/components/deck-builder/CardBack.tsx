@@ -1,17 +1,62 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { Sparkles } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { TEAM_CHARACTERS } from '@/data/teamCharacters';
 
 interface CardBackProps {
   definition: CardDefinition;
   content?: any;
+  evaluation?: any;
   onEdit: () => void;
+}
+
+const TeamRatingsPreview = ({ evaluation }: { evaluation: any }) => {
+  const characterIds = ['evergreen', 'prisma', 'phoenix', 'techpriest', 'toxic', 'virgilia', 'zen'];
+  
+  const getScoreColor = (score: number) => {
+    if (score >= 8) return 'bg-cyan-500';
+    if (score >= 5) return 'bg-green-500';
+    return 'bg-muted';
+  };
+
+  return (
+    <div className="backdrop-blur-md bg-black/40 border border-white/30 rounded-lg p-4">
+      {/* Overall Score */}
+      <div className="text-center mb-3">
+        <div className="text-2xl font-bold text-white">{evaluation.overall}/10</div>
+        <div className="text-xs text-white/70">Overall Score</div>
+      </div>
+
+      {/* Character Avatars Grid */}
+      <div className="grid grid-cols-4 gap-2 justify-items-center">
+        {characterIds.map((charId) => {
+          const character = TEAM_CHARACTERS[charId];
+          const score = evaluation.breakdown?.[charId] || 0;
+          
+          return (
+            <div key={charId} className="flex flex-col items-center gap-1">
+              <div className="relative">
+                <Avatar className="w-8 h-8 border border-white/30">
+                  <AvatarImage src={character.avatar} alt={character.name} />
+                  <AvatarFallback className="text-xs">{character.emoji}</AvatarFallback>
+                </Avatar>
+                <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ${getScoreColor(score)} border border-black/50 flex items-center justify-center text-[8px] font-bold text-white`}>
+                  {score}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 export const CardBack = ({ 
   definition, 
-  content, 
+  content,
+  evaluation,
   onEdit
 }: CardBackProps) => {
   const getEmptyGradient = () => {
@@ -38,11 +83,15 @@ export const CardBack = ({
         )}
       </div>
 
-      {/* Dark overlay for button visibility */}
+      {/* Dark overlay for visibility */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
 
-      {/* Single centered button */}
-      <div className="relative w-full h-full flex items-center justify-center p-6">
+      {/* Content: Team Ratings + Button */}
+      <div className="relative w-full h-full flex flex-col items-center justify-center gap-4 p-6">
+        {/* Team Ratings Preview */}
+        {evaluation && <TeamRatingsPreview evaluation={evaluation} />}
+
+        {/* Open Card Button */}
         <Button
           onClick={onEdit}
           size="lg"

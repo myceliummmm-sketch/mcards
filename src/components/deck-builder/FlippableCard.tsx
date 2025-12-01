@@ -29,6 +29,7 @@ export const FlippableCard = ({
   const isEmpty = !cardData || Object.keys(cardData).length === 0;
   const isComplete = !isEmpty && cardData.completed === true;
   const preview = cardData?.summary || cardData?.description || cardData?.content || '';
+  const evaluation = cardData?.evaluation;
 
   const handleRegenerateImage = async (imageUrl: string) => {
     await updateCardImage(definition.slot, imageUrl);
@@ -73,6 +74,7 @@ export const FlippableCard = ({
             isInsight={isInsight}
             preview={preview}
             imageUrl={cardData?.card_image_url}
+            evaluationScore={evaluation?.overall}
           />
         </motion.div>
 
@@ -87,6 +89,7 @@ export const FlippableCard = ({
           <CardBack
             definition={definition}
             content={cardData}
+            evaluation={evaluation}
             onEdit={() => {
               onEdit();
             }}
