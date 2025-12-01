@@ -5,17 +5,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface CardImageGeneratorProps {
-  cardType: string;
+  cardSlot: number;
   cardContent: any;
-  phase: string;
   onImageGenerated: (imageUrl: string) => void;
   currentImageUrl?: string;
 }
 
 export const CardImageGenerator = ({ 
-  cardType, 
+  cardSlot, 
   cardContent, 
-  phase, 
   onImageGenerated,
   currentImageUrl 
 }: CardImageGeneratorProps) => {
@@ -25,18 +23,10 @@ export const CardImageGenerator = ({
   const generateImage = async () => {
     setIsGenerating(true);
     try {
-      // Summarize card content for image prompt
-      const contentSummary = Object.values(cardContent)
-        .filter(v => v && typeof v === 'string')
-        .slice(0, 3)
-        .join('. ')
-        .substring(0, 200);
-
       const { data, error } = await supabase.functions.invoke('generate-card-image', {
         body: { 
-          cardType, 
-          cardContent: contentSummary,
-          phase 
+          cardSlot,
+          cardContent
         }
       });
 
