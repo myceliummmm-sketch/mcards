@@ -30,7 +30,7 @@ export const ForgeRevealOverlay = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 z-50 bg-background/95 backdrop-blur-md"
+        className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-md"
       >
         <div className="h-full flex flex-col items-center justify-center p-6">
           {/* Forging Stage - Show loading animation */}

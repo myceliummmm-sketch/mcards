@@ -117,7 +117,11 @@ serve(async (req) => {
   }
 
   try {
-    const { cardSlot, cardContent } = await req.json();
+    const requestBody = await req.json();
+    const cardSlot = requestBody.cardSlot;
+    const cardContent = requestBody.cardContent || {}; // Defensive: default to empty object
+    
+    console.log('Received request:', { cardSlot, cardContentKeys: Object.keys(cardContent) });
     
     // Map card slot to type
     const slotToType: Record<number, string> = {
