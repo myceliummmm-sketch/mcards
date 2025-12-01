@@ -77,80 +77,98 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
       // If this is a "Forge Card" click (autoMagic=true), do the full magical flow
       if (autoMagic && requiredFieldsFilled) {
         setForgingStage('forging');
+        let hasErrors = false;
         
         // Step 1: Generate image if not present
         if (!currentImageUrl) {
-          setLoadingStage('channeling');
-          toast({
-            title: '✨ Channeling creative energy...',
-            description: 'Crafting your card\'s visual identity.',
-          });
-          
-          const contentSummary = Object.values(formData)
-            .filter(v => v && typeof v === 'string')
-            .slice(0, 3)
-            .join('. ')
-            .substring(0, 200);
+          try {
+            setLoadingStage('channeling');
+            toast({
+              title: '✨ Channeling creative energy...',
+              description: 'Crafting your card\'s visual identity.',
+            });
 
-          setLoadingStage('summoning');
-          const { data: imageData, error: imageError } = await supabase.functions.invoke('generate-card-image', {
-            body: { 
-              cardSlot: definition.slot,
-              cardContent: formData
+            setLoadingStage('summoning');
+            const { data: imageData, error: imageError } = await supabase.functions.invoke('generate-card-image', {
+              body: { 
+                cardSlot: definition.slot,
+                cardContent: formData
+              }
+            });
+
+            if (imageError) {
+              console.error('Image generation error:', imageError);
+              toast({
+                title: '⚠️ Image generation failed',
+                description: 'Card will be forged without artwork.',
+                variant: 'destructive'
+              });
+              hasErrors = true;
+            } else if (imageData?.imageUrl) {
+              finalImageUrl = imageData.imageUrl;
+              setCurrentImageUrl(imageData.imageUrl);
             }
-          });
-
-          if (!imageError && imageData?.imageUrl) {
-            finalImageUrl = imageData.imageUrl;
-            setCurrentImageUrl(imageData.imageUrl);
+          } catch (err) {
+            console.error('Image generation exception:', err);
+            hasErrors = true;
           }
         }
 
         // Step 2: Generate evaluation if not present
         if (!currentEvaluation) {
-          setLoadingStage('evaluating');
-          toast({
-            title: '🔮 The team is reviewing...',
-            description: 'Evaluating your card\'s potential.',
-          });
-
-          const { data: evalData, error: evalError } = await supabase.functions.invoke('evaluate-card', {
-            body: {
-              cardType: definition.title,
-              cardContent: formData,
-              cardDefinition: {
-                coreQuestion: definition.coreQuestion,
-                formula: definition.formula
-              }
-            }
-          });
-
-          if (evalError) {
-            console.error('Evaluation error:', evalError);
+          try {
+            setLoadingStage('evaluating');
             toast({
-              title: '⚠️ Evaluation unavailable',
-              description: 'Card forged but team evaluation couldn\'t be generated.',
-              variant: 'destructive'
+              title: '🔮 The team is reviewing...',
+              description: 'Evaluating your card\'s potential.',
             });
-          } else if (evalData?.evaluation) {
-            finalEvaluation = evalData.evaluation;
-            setCurrentEvaluation(evalData.evaluation);
+
+            const { data: evalData, error: evalError } = await supabase.functions.invoke('evaluate-card', {
+              body: {
+                cardType: definition.title,
+                cardContent: formData,
+                cardDefinition: {
+                  coreQuestion: definition.coreQuestion,
+                  formula: definition.formula
+                }
+              }
+            });
+
+            if (evalError) {
+              console.error('Evaluation error:', evalError);
+              toast({
+                title: '⚠️ Evaluation unavailable',
+                description: 'Card forged but team evaluation couldn\'t be generated.',
+                variant: 'destructive'
+              });
+              hasErrors = true;
+            } else if (evalData?.evaluation) {
+              finalEvaluation = evalData.evaluation;
+              setCurrentEvaluation(evalData.evaluation);
+            }
+          } catch (err) {
+            console.error('Evaluation exception:', err);
+            hasErrors = true;
           }
         }
 
-        // Trigger reveal animation
+        // Always trigger reveal animation, even if there were errors
         setForgingStage('revealing');
         
         // Wait for flip animation to complete, then trigger confetti
         setTimeout(() => {
-          triggerForgeConfetti();
+          if (!hasErrors) {
+            triggerForgeConfetti();
+          }
           setForgingStage('complete');
           
           toast({
-            title: '✨ Card forged successfully!',
+            title: hasErrors ? '⚠️ Card forged with issues' : '✨ Card forged successfully!',
             description: finalEvaluation 
               ? `Overall score: ${finalEvaluation.overall}/10` 
-              : 'Your card has been crafted.',
+              : hasErrors 
+                ? 'Some features unavailable, but your card is saved.'
+                : 'Your card has been crafted.',
           });
         }, 1200);
       }
