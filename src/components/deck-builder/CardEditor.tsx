@@ -94,9 +94,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           setLoadingStage('summoning');
           const { data: imageData, error: imageError } = await supabase.functions.invoke('generate-card-image', {
             body: { 
-              cardType: definition.title, 
-              cardContent: contentSummary,
-              phase: definition.phase 
+              cardSlot: definition.slot,
+              cardContent: formData
             }
           });
 
