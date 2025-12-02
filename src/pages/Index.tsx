@@ -7,6 +7,19 @@ import { motion } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
 import { PHASE_CONFIG } from "@/data/cardDefinitions";
 
+// Import phase icons
+import visionIcon from "@/assets/icons/vision.png";
+import researchIcon from "@/assets/icons/research.png";
+import buildIcon from "@/assets/icons/build.png";
+import growIcon from "@/assets/icons/grow.png";
+
+const PHASE_ICONS: Record<string, string> = {
+  vision: visionIcon,
+  research: researchIcon,
+  build: buildIcon,
+  grow: growIcon,
+};
+
 const Index = () => {
   const navigate = useNavigate();
 
@@ -96,28 +109,35 @@ const Index = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            {[-30, -15, 0, 15, 30].map((rotation, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-16 h-24 md:w-20 md:h-28 rounded-lg border border-primary/30 bg-card/80 backdrop-blur-sm"
-                style={{ 
-                  rotate: rotation,
-                  zIndex: 5 - Math.abs(i - 2)
-                }}
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ 
-                  y: 0, 
-                  opacity: 1,
-                  boxShadow: `0 0 ${20 + i * 5}px hsl(var(--primary) / 0.3)`
-                }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                whileHover={{ y: -10, scale: 1.05 }}
-              >
-                <div className="w-full h-full flex items-center justify-center text-2xl">
-                  {['🔮', '🔬', '🔧', '🚀', '✨'][i]}
-                </div>
-              </motion.div>
-            ))}
+          {[-30, -15, 0, 15, 30].map((rotation, i) => {
+              const iconKeys = ['vision', 'research', 'build', 'grow', 'vision'];
+              return (
+                <motion.div
+                  key={i}
+                  className="absolute w-16 h-24 md:w-20 md:h-28 rounded-lg border border-primary/30 bg-card/80 backdrop-blur-sm"
+                  style={{ 
+                    rotate: rotation,
+                    zIndex: 5 - Math.abs(i - 2)
+                  }}
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ 
+                    y: 0, 
+                    opacity: 1,
+                    boxShadow: `0 0 ${20 + i * 5}px hsl(var(--primary) / 0.3)`
+                  }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  whileHover={{ y: -10, scale: 1.05 }}
+                >
+                  <div className="w-full h-full flex items-center justify-center p-2">
+                    <img 
+                      src={PHASE_ICONS[iconKeys[i]]} 
+                      alt={iconKeys[i]} 
+                      className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
 
           {/* Main Title */}
@@ -222,7 +242,13 @@ const Index = () => {
                     boxShadow: `0 0 20px ${phase.color.replace('hsl', 'hsla').replace(')', ' / 0.2)')}` 
                   }}
                 >
-                  <div className="text-4xl mb-4">{phase.icon}</div>
+                <div className="w-16 h-16 mb-4">
+                    <img 
+                      src={PHASE_ICONS[key]} 
+                      alt={phase.name} 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                   <h3 className="text-lg md:text-xl font-display font-bold mb-2" style={{ color: phase.color }}>
                     {phase.name}
                   </h3>
@@ -276,7 +302,7 @@ const Index = () => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <p className="text-2xl mb-1">{character.emoji}</p>
+                  
                   <h4 className="font-display font-semibold text-sm mb-1">{character.name}</h4>
                   <p className="text-xs text-muted-foreground">{character.role}</p>
                   
