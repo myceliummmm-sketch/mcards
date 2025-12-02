@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, LogOut, Loader2 } from "lucide-react";
+import { Plus, LogOut, Loader2, Sparkles } from "lucide-react";
 import { DeckCard } from "@/components/DeckCard";
 import { CreateDeckDialog } from "@/components/CreateDeckDialog";
+import { SporeWallet } from "@/components/paywall/SporeWallet";
+import { SubscriptionBadge } from "@/components/paywall/SubscriptionBadge";
+import { UpgradeModal } from "@/components/paywall/UpgradeModal";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Deck {
   id: string;
@@ -22,7 +26,9 @@ const Dashboard = () => {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [username, setUsername] = useState("");
+  const { projectLimit, isPro } = useSubscription();
 
   useEffect(() => {
     checkAuth();
@@ -139,6 +145,8 @@ const Dashboard = () => {
             <p className="text-sm text-muted-foreground">Welcome back, {username}!</p>
           </div>
           <div className="flex items-center gap-3">
+            <SporeWallet />
+            <SubscriptionBadge />
             <Button variant="outline" onClick={() => navigate('/marketplace')}>
               🛒 Marketplace
             </Button>
@@ -154,12 +162,24 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-display font-bold mb-2">My Decks</h2>
-            <p className="text-muted-foreground">Create and manage your card decks</p>
+            <p className="text-muted-foreground">
+              {decks.length}/{projectLimit} decks used
+              {!isPro && decks.length >= projectLimit && (
+                <span className="text-primary ml-2">• Upgrade for more</span>
+              )}
+            </p>
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
-            <Plus className="h-5 w-5" />
-            New Deck
-          </Button>
+          {decks.length >= projectLimit && !isPro ? (
+            <Button onClick={() => setIsUpgradeModalOpen(true)} className="gap-2">
+              <Sparkles className="h-5 w-5" />
+              Upgrade to Create More
+            </Button>
+          ) : (
+            <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+              <Plus className="h-5 w-5" />
+              New Deck
+            </Button>
+          )}
         </div>
 
         {/* Decks grid */}
@@ -192,6 +212,11 @@ const Dashboard = () => {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
         onDeckCreated={handleDeckCreated}
+      />
+
+      <UpgradeModal
+        open={isUpgradeModalOpen}
+        onOpenChange={setIsUpgradeModalOpen}
       />
     </div>
   );
