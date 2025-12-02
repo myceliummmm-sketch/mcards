@@ -10,7 +10,9 @@ import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
 import { CardEditor } from '@/components/deck-builder/CardEditor';
 import { CollaboratorManager } from '@/components/deck-builder/review/CollaboratorManager';
 import { DeckHealthDashboard } from '@/components/deck-builder/health/DeckHealthDashboard';
+import { TeamChatDrawer } from '@/components/deck-builder/chat/TeamChatDrawer';
 import { useDeckCards } from '@/hooks/useDeckCards';
+import { useTeamChat } from '@/hooks/useTeamChat';
 import { getCardBySlot, CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
@@ -25,6 +27,17 @@ export default function DeckBuilder() {
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
   const [healthDashboardOpen, setHealthDashboardOpen] = useState(false);
   const { cards, saveCard, getCardBySlot: getDeckCard, getFilledCardsCount } = useDeckCards(deckId || '');
+  
+  // Team chat hook
+  const {
+    activeCharacter,
+    messages: chatMessages,
+    isStreaming: isChatStreaming,
+    isOpen: isChatOpen,
+    openChat,
+    closeChat,
+    sendMessage: sendChatMessage,
+  } = useTeamChat({ deckId: deckId || '', cards });
 
   useEffect(() => {
     const fetchDeck = async () => {
@@ -198,7 +211,20 @@ export default function DeckBuilder() {
       </div>
 
       {/* AI Team sidebar */}
-      <TeamPanel />
+      <TeamPanel 
+        activeCharacterId={activeCharacter || undefined}
+        onCharacterClick={openChat}
+      />
+
+      {/* Team Chat Drawer */}
+      <TeamChatDrawer
+        isOpen={isChatOpen}
+        onClose={closeChat}
+        characterId={activeCharacter}
+        messages={chatMessages}
+        isStreaming={isChatStreaming}
+        onSendMessage={sendChatMessage}
+      />
 
       {/* Card Editor Modal */}
       {editingCardDefinition && (

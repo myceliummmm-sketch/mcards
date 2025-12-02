@@ -3,9 +3,10 @@ import { CharacterCard } from './CharacterCard';
 
 interface TeamPanelProps {
   activeCharacterId?: string;
+  onCharacterClick?: (characterId: string) => void;
 }
 
-export const TeamPanel = ({ activeCharacterId }: TeamPanelProps) => {
+export const TeamPanel = ({ activeCharacterId, onCharacterClick }: TeamPanelProps) => {
   const characters = Object.values(TEAM_CHARACTERS);
 
   return (
@@ -13,7 +14,7 @@ export const TeamPanel = ({ activeCharacterId }: TeamPanelProps) => {
       <div className="mb-6">
         <h2 className="text-xl font-bold text-foreground mb-2">🤖 AI Team</h2>
         <p className="text-sm text-muted-foreground">
-          Your squad of AI experts ready to help
+          Click a team member to chat with them
         </p>
       </div>
       
@@ -23,13 +24,14 @@ export const TeamPanel = ({ activeCharacterId }: TeamPanelProps) => {
             key={character.id}
             character={character}
             isActive={character.id === activeCharacterId}
+            onClick={() => onCharacterClick?.(character.id)}
           />
         ))}
       </div>
       
       <div className="mt-6 p-4 bg-muted/50 rounded-lg border border-border">
         <div className="text-xs text-muted-foreground">
-          <strong>💡 Pro Tip:</strong> Hover over cards to see which team member can help with that section!
+          <strong>💡 Pro Tip:</strong> Each team member has unique expertise and personality!
         </div>
       </div>
     </div>
