@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, ChevronRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
 import { PHASE_CONFIG } from "@/data/cardDefinitions";
 
@@ -22,6 +22,7 @@ const PHASE_ICONS: Record<string, string> = {
 
 const Index = () => {
   const navigate = useNavigate();
+  const [tossedCards, setTossedCards] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -30,6 +31,22 @@ const Index = () => {
       }
     });
   }, [navigate]);
+
+  const handleCardToss = useCallback((index: number) => {
+    if (tossedCards[index]) return;
+    
+    setTossedCards(prev => ({ ...prev, [index]: true }));
+    
+    setTimeout(() => {
+      setTossedCards(prev => ({ ...prev, [index]: false }));
+    }, 1200);
+  }, [tossedCards]);
+
+  const generateTossDirection = (index: number) => ({
+    x: (Math.random() - 0.5) * 600,
+    y: -200 - Math.random() * 150,
+    rotate: (Math.random() - 0.5) * 720,
+  });
 
   const phases = Object.entries(PHASE_CONFIG);
   const characters = Object.values(TEAM_CHARACTERS);
@@ -109,35 +126,66 @@ const Index = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-          {[-30, -15, 0, 15, 30].map((rotation, i) => {
-              const iconKeys = ['vision', 'research', 'build', 'grow', 'vision'];
-              return (
-                <motion.div
-                  key={i}
-                  className="absolute w-16 h-24 md:w-20 md:h-28 rounded-lg border border-primary/30 bg-card/80 backdrop-blur-sm"
-                  style={{ 
-                    rotate: rotation,
-                    zIndex: 5 - Math.abs(i - 2)
-                  }}
-                  initial={{ y: 50, opacity: 0 }}
-                  animate={{ 
-                    y: 0, 
-                    opacity: 1,
-                    boxShadow: `0 0 ${20 + i * 5}px hsl(var(--primary) / 0.3)`
-                  }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  whileHover={{ y: -10, scale: 1.05 }}
-                >
-                  <div className="w-full h-full flex items-center justify-center p-2">
-                    <img 
-                      src={PHASE_ICONS[iconKeys[i]]} 
-                      alt={iconKeys[i]} 
-                      className="w-10 h-10 md:w-12 md:h-12 object-contain"
-                    />
-                  </div>
-                </motion.div>
-              );
-            })}
+            <AnimatePresence mode="popLayout">
+              {[-30, -15, 0, 15, 30].map((rotation, i) => {
+                const iconKeys = ['vision', 'research', 'build', 'grow', 'vision'];
+                const isTossed = tossedCards[i];
+                const tossDirection = generateTossDirection(i);
+                
+                return (
+                  <motion.div
+                    key={`card-${i}-${isTossed ? 'tossed' : 'idle'}`}
+                    className="absolute w-16 h-24 md:w-20 md:h-28 rounded-lg border border-primary/30 bg-card/80 backdrop-blur-sm cursor-pointer select-none"
+                    style={{ 
+                      zIndex: isTossed ? 10 : 5 - Math.abs(i - 2)
+                    }}
+                    initial={isTossed ? { rotate: rotation, y: 0, opacity: 1 } : { y: 50, opacity: 0, rotate: rotation }}
+                    animate={isTossed ? {
+                      x: tossDirection.x,
+                      y: tossDirection.y,
+                      rotate: tossDirection.rotate,
+                      opacity: 0,
+                      scale: 0.5,
+                    } : { 
+                      x: 0,
+                      y: 0, 
+                      rotate: rotation,
+                      opacity: 1,
+                      scale: 1,
+                      boxShadow: `0 0 ${20 + i * 5}px hsl(var(--primary) / 0.3)`
+                    }}
+                    exit={{
+                      x: tossDirection.x,
+                      y: tossDirection.y,
+                      rotate: tossDirection.rotate,
+                      opacity: 0,
+                      scale: 0.5,
+                    }}
+                    transition={isTossed ? { 
+                      duration: 0.6, 
+                      ease: [0.23, 1, 0.32, 1]
+                    } : { 
+                      delay: i * 0.1, 
+                      duration: 0.5,
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 20
+                    }}
+                    whileHover={!isTossed ? { y: -10, scale: 1.08, boxShadow: `0 0 30px hsl(var(--primary) / 0.5)` } : {}}
+                    whileTap={!isTossed ? { scale: 0.95 } : {}}
+                    onClick={() => handleCardToss(i)}
+                  >
+                    <div className="w-full h-full flex items-center justify-center p-2">
+                      <img 
+                        src={PHASE_ICONS[iconKeys[i]]} 
+                        alt={iconKeys[i]} 
+                        className="w-10 h-10 md:w-12 md:h-12 object-contain pointer-events-none"
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </motion.div>
 
           {/* Main Title */}
