@@ -31,28 +31,71 @@ const Dashboard = () => {
   const { projectLimit, isPro } = useSubscription();
 
   useEffect(() => {
-    checkAuth();
-    fetchDecks();
-  }, []);
+    let mounted = true;
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!mounted) return;
 
-    // Fetch username
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", session.user.id)
-      .single();
+        if (event === 'SIGNED_OUT' || !session) {
+          navigate("/auth");
+          return;
+        }
 
-    if (profile) {
-      setUsername(profile.username || session.user.email?.split("@")[0] || "User");
-    }
-  };
+        if (session) {
+          // Fetch profile using setTimeout to avoid deadlock
+          setTimeout(async () => {
+            if (!mounted) return;
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("username")
+              .eq("id", session.user.id)
+              .single();
+
+            if (profile && mounted) {
+              setUsername(profile.username || session.user.email?.split("@")[0] || "User");
+            }
+          }, 0);
+
+          fetchDecks();
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+
+      if (!session) {
+        // Don't redirect immediately if OAuth params present
+        const hasAuthParams = window.location.hash.includes('access_token') ||
+          window.location.search.includes('code=');
+        if (!hasAuthParams) {
+          navigate("/auth");
+        }
+      } else {
+        fetchDecks();
+        // Fetch username
+        supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", session.user.id)
+          .single()
+          .then(({ data: profile }) => {
+            if (profile && mounted) {
+              setUsername(profile.username || session.user.email?.split("@")[0] || "User");
+            }
+          });
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const fetchDecks = async () => {
     try {
