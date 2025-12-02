@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ForgeLoadingState } from './ForgeLoadingState';
+import { Sparkles } from 'lucide-react';
 
 interface CardRevealProps {
   isRevealing: boolean;
@@ -86,6 +87,19 @@ export const CardReveal = ({ isRevealing, imageUrl, evaluation, loadingStage }: 
                 >
                   ✨ FORGED
                 </motion.div>
+              </motion.div>
+            )}
+
+            {/* Fallback when no image */}
+            {!imageUrl && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="h-56 flex flex-col items-center justify-center text-muted-foreground gap-3"
+              >
+                <Sparkles className="w-10 h-10 text-primary" />
+                <span className="text-lg font-medium">Card Content Saved</span>
               </motion.div>
             )}
 
