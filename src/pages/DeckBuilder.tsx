@@ -12,9 +12,13 @@ import { CollaboratorManager } from '@/components/deck-builder/review/Collaborat
 import { DeckHealthDashboard } from '@/components/deck-builder/health/DeckHealthDashboard';
 import { TeamChatDrawer } from '@/components/deck-builder/chat/TeamChatDrawer';
 import { GroupChatDrawer } from '@/components/deck-builder/chat/GroupChatDrawer';
+import { PaywallOverlay } from '@/components/paywall/PaywallOverlay';
+import { SporeWallet } from '@/components/paywall/SporeWallet';
+import { SubscriptionBadge } from '@/components/paywall/SubscriptionBadge';
 import { useDeckCards } from '@/hooks/useDeckCards';
 import { useTeamChat } from '@/hooks/useTeamChat';
 import { useGroupChat } from '@/hooks/useGroupChat';
+import { useSubscription } from '@/hooks/useSubscription';
 import { getCardBySlot, CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
@@ -29,6 +33,7 @@ export default function DeckBuilder() {
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
   const [healthDashboardOpen, setHealthDashboardOpen] = useState(false);
   const { cards, saveCard, getCardBySlot: getDeckCard, getFilledCardsCount } = useDeckCards(deckId || '');
+  const { canAccessPhase } = useSubscription();
   
   // Team chat hook (single character)
   const {
@@ -155,7 +160,10 @@ export default function DeckBuilder() {
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex items-center gap-3">
+                <SporeWallet />
+                <SubscriptionBadge />
+                
                 <Button
                   variant="outline"
                   size="lg"
@@ -218,10 +226,22 @@ export default function DeckBuilder() {
               <PhaseSection phase="research" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection phase="build" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
+              {canAccessPhase('build') ? (
+                <PhaseSection phase="build" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
+              ) : (
+                <PaywallOverlay phase="build">
+                  <PhaseSection phase="build" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
+                </PaywallOverlay>
+              )}
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection phase="grow" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
+              {canAccessPhase('grow') ? (
+                <PhaseSection phase="grow" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
+              ) : (
+                <PaywallOverlay phase="grow">
+                  <PhaseSection phase="grow" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
+                </PaywallOverlay>
+              )}
             </motion.div>
           </motion.div>
         </div>
