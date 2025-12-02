@@ -226,6 +226,88 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_listings: {
+        Row: {
+          card_id: string
+          created_at: string
+          id: string
+          price_spore: number
+          price_usd: number | null
+          seller_id: string
+          sold_at: string | null
+          status: Database["public"]["Enums"]["marketplace_listing_status"]
+        }
+        Insert: {
+          card_id: string
+          created_at?: string
+          id?: string
+          price_spore: number
+          price_usd?: number | null
+          seller_id: string
+          sold_at?: string | null
+          status?: Database["public"]["Enums"]["marketplace_listing_status"]
+        }
+        Update: {
+          card_id?: string
+          created_at?: string
+          id?: string
+          price_spore?: number
+          price_usd?: number | null
+          seller_id?: string
+          sold_at?: string | null
+          status?: Database["public"]["Enums"]["marketplace_listing_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listings_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "deck_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_purchases: {
+        Row: {
+          buyer_id: string
+          id: string
+          listing_id: string
+          platform_fee_spore: number
+          price_spore: number
+          purchased_at: string
+          seller_earnings_spore: number
+          seller_id: string
+        }
+        Insert: {
+          buyer_id: string
+          id?: string
+          listing_id: string
+          platform_fee_spore: number
+          price_spore: number
+          purchased_at?: string
+          seller_earnings_spore: number
+          seller_id: string
+        }
+        Update: {
+          buyer_id?: string
+          id?: string
+          listing_id?: string
+          platform_fee_spore?: number
+          price_spore?: number
+          purchased_at?: string
+          seller_earnings_spore?: number
+          seller_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_purchases_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -282,6 +364,75 @@ export type Database = {
           },
         ]
       }
+      spore_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          reference_id: string | null
+          transaction_type: Database["public"]["Enums"]["spore_transaction_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          transaction_type: Database["public"]["Enums"]["spore_transaction_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          transaction_type?: Database["public"]["Enums"]["spore_transaction_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          spore_balance: number
+          started_at: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          spore_balance?: number
+          started_at?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          spore_balance?: number
+          started_at?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -292,7 +443,15 @@ export type Database = {
     Enums: {
       collaborator_role: "reviewer" | "editor"
       comment_type: "comment" | "suggestion" | "approval"
+      marketplace_listing_status: "active" | "sold" | "removed"
       review_status: "pending" | "in_progress" | "completed"
+      spore_transaction_type:
+        | "subscription_credit"
+        | "purchase"
+        | "sale"
+        | "bonus"
+        | "refund"
+      subscription_tier: "free" | "pro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -422,7 +581,16 @@ export const Constants = {
     Enums: {
       collaborator_role: ["reviewer", "editor"],
       comment_type: ["comment", "suggestion", "approval"],
+      marketplace_listing_status: ["active", "sold", "removed"],
       review_status: ["pending", "in_progress", "completed"],
+      spore_transaction_type: [
+        "subscription_credit",
+        "purchase",
+        "sale",
+        "bonus",
+        "refund",
+      ],
+      subscription_tier: ["free", "pro"],
     },
   },
 } as const
