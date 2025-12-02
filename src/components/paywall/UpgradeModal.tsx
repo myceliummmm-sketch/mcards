@@ -34,6 +34,13 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
   const handleUpgrade = async () => {
     setLoading(true);
     try {
+      // Verify user is authenticated first
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please log in to upgrade your subscription.');
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-checkout');
       
       if (error) throw error;
