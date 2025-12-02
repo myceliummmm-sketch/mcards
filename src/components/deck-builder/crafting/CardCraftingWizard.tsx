@@ -12,7 +12,7 @@ interface CardCraftingWizardProps {
   definition: CardDefinition;
   initialData: Record<string, any>;
   onChange: (data: Record<string, any>) => void;
-  onForge: () => void;
+  onForge: (formData: Record<string, any>) => void;
   isForging: boolean;
 }
 
@@ -117,7 +117,7 @@ export const CardCraftingWizard = ({
           definition={definition}
           formData={formData}
           onEdit={handleEditFromReview}
-          onForge={onForge}
+          onForge={() => onForge(formData)}
           isForging={isForging}
         />
 
