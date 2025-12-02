@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, Scale, Star, Palette } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { PhaseIcon } from '../PhaseIcon';
+import type { CardPhase } from '@/data/cardDefinitions';
 
 interface PhaseBreakdown {
   phase: string;
@@ -32,12 +34,6 @@ interface MetricBreakdownProps {
 }
 
 export function MetricBreakdown({ completion, balance, quality, variety }: MetricBreakdownProps) {
-  const phaseIcons: Record<string, string> = {
-    vision: '🔮',
-    research: '🔬',
-    build: '🔧',
-    grow: '🚀'
-  };
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -74,14 +70,15 @@ export function MetricBreakdown({ completion, balance, quality, variety }: Metri
             <span className="text-sm text-muted-foreground">Even distribution</span>
           </div>
           <div className="space-y-2">
-            {balance.phaseBreakdown.map((phase) => (
-              <div key={phase.phase} className="flex items-center gap-2">
-                <span className="text-sm w-20">
-                  {phaseIcons[phase.phase]} {phase.phase}
-                </span>
-                <Progress value={phase.percentage} className="flex-1 h-2" />
+            {balance.phaseBreakdown.map((phaseData) => (
+              <div key={phaseData.phase} className="flex items-center gap-2">
+                <div className="flex items-center gap-1 w-24">
+                  <PhaseIcon phase={phaseData.phase as CardPhase} size="xs" />
+                  <span className="text-sm capitalize">{phaseData.phase}</span>
+                </div>
+                <Progress value={phaseData.percentage} className="flex-1 h-2" />
                 <span className="text-xs text-muted-foreground w-12 text-right">
-                  {phase.filled}/{phase.total}
+                  {phaseData.filled}/{phaseData.total}
                 </span>
               </div>
             ))}

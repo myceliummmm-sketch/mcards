@@ -11,6 +11,10 @@ import { Rarity } from '@/data/rarityConfig';
 import { useToast } from '@/hooks/use-toast';
 import { useUserDecks } from '@/hooks/useUserDecks';
 import { useRecommendations } from '@/hooks/useRecommendations';
+import visionIcon from '@/assets/icons/vision.png';
+import researchIcon from '@/assets/icons/research.png';
+import buildIcon from '@/assets/icons/build.png';
+import growIcon from '@/assets/icons/grow.png';
 
 export default function Marketplace() {
   const { toast } = useToast();
@@ -35,10 +39,10 @@ export default function Marketplace() {
 
   // Mock deck gaps (for Gap Filler Mode)
   const deckGaps = [
-    { phase: 'vision', filled: 3, total: 5, icon: '🔮', color: 'purple' },
-    { phase: 'research', filled: 4, total: 6, icon: '🔬', color: 'blue' },
-    { phase: 'build', filled: 2, total: 6, icon: '🔧', color: 'orange' },
-    { phase: 'grow', filled: 5, total: 5, icon: '🚀', color: 'green' },
+    { phase: 'vision', filled: 3, total: 5, icon: visionIcon, color: 'purple' },
+    { phase: 'research', filled: 4, total: 6, icon: researchIcon, color: 'blue' },
+    { phase: 'build', filled: 2, total: 6, icon: buildIcon, color: 'orange' },
+    { phase: 'grow', filled: 5, total: 5, icon: growIcon, color: 'green' },
   ];
 
   const gapPhases = deckGaps.filter((g) => g.filled < g.total).map((g) => g.phase);

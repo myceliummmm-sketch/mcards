@@ -7,9 +7,11 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { RarityBadge } from './RarityBadge';
 import { PriceTag } from './PriceTag';
 import { WhyRecommended } from './WhyRecommended';
+import { PhaseIcon } from '@/components/deck-builder/PhaseIcon';
 import { MarketplaceCard } from '@/data/mockMarketplaceData';
 import { cn } from '@/lib/utils';
 import { RARITY_CONFIG } from '@/data/rarityConfig';
+import type { CardPhase } from '@/data/cardDefinitions';
 
 interface CardQuickViewProps {
   card: MarketplaceCard | null;
@@ -45,13 +47,6 @@ export const CardQuickView = ({
     research: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
     build: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
     grow: 'bg-green-500/10 text-green-400 border-green-500/30',
-  };
-
-  const phaseIcons = {
-    vision: '🔮',
-    research: '🔬',
-    build: '🔧',
-    grow: '🚀',
   };
 
   return (
@@ -119,8 +114,9 @@ export const CardQuickView = ({
           <div className="space-y-3">
             <h2 className="text-3xl font-bold text-glow">{card.title}</h2>
             <div className="flex flex-wrap gap-2">
-              <Badge className={cn('text-sm border', phaseColors[card.phase])}>
-                {phaseIcons[card.phase]} {card.phase.toUpperCase()}
+              <Badge className={cn('text-sm border flex items-center gap-1', phaseColors[card.phase])}>
+                <PhaseIcon phase={card.phase as CardPhase} size="sm" />
+                {card.phase.toUpperCase()}
               </Badge>
               <Badge variant="outline" className="text-sm capitalize">
                 {card.cardType}
