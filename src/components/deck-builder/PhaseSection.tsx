@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { FlippableCard } from './FlippableCard';
+import { PhaseIcon } from './PhaseIcon';
 import { PHASE_CONFIG, getCardsByPhase, type CardPhase } from '@/data/cardDefinitions';
 import { cn } from '@/lib/utils';
 import type { Database } from '@/integrations/supabase/types';
@@ -37,7 +38,7 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId }: PhaseSectionP
         >
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-4">
-              <span className="text-3xl">{config.icon}</span>
+              <PhaseIcon phase={phase} size="lg" />
               <div className="text-left">
                 <h2 className="text-2xl font-display font-bold text-foreground">
                   {config.name}

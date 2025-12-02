@@ -1,5 +1,6 @@
 import { TEAM_CHARACTERS, type TeamCharacter } from '@/data/teamCharacters';
 import { CharacterCard } from './CharacterCard';
+import aiTeamIcon from '@/assets/icons/ai-team.png';
 
 interface TeamPanelProps {
   activeCharacterId?: string;
@@ -12,7 +13,10 @@ export const TeamPanel = ({ activeCharacterId, onCharacterClick }: TeamPanelProp
   return (
     <div className="w-80 p-6 bg-card/50 backdrop-blur-sm border-l border-border overflow-y-auto">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-foreground mb-2">🤖 AI Team</h2>
+        <div className="flex items-center gap-2 mb-2">
+          <img src={aiTeamIcon} alt="AI Team" className="w-8 h-8 object-contain" />
+          <h2 className="text-xl font-bold text-foreground">AI Team</h2>
+        </div>
         <p className="text-sm text-muted-foreground">
           Click a team member to chat with them
         </p>

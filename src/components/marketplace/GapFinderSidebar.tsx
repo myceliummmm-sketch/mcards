@@ -63,7 +63,7 @@ export const GapFinderSidebar = ({ gaps, onPhaseClick, activePhase }: GapFinderS
               <div className="flex-1 space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">{gap.icon}</span>
+                    <img src={gap.icon} alt={gap.phase} className="w-5 h-5 object-contain" />
                     <span className="font-medium capitalize">{gap.phase}</span>
                   </div>
                   <div className="flex items-center gap-2">

@@ -2,6 +2,7 @@ import { Lock, Check, Sparkles } from 'lucide-react';
 import { PHASE_CONFIG, CARD_DEFINITIONS, type CardPhase } from '@/data/cardDefinitions';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { PhaseIcon } from '../PhaseIcon';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -68,7 +69,7 @@ export function DeckThumbnails({ cards }: DeckThumbnailsProps) {
                 {/* Phase header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{config.icon}</span>
+                    <PhaseIcon phase={phase} size="sm" />
                     <span className="text-sm font-medium text-foreground">{config.name}</span>
                   </div>
                   <span className="text-xs text-muted-foreground">

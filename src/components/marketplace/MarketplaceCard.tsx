@@ -6,9 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { RarityBadge } from './RarityBadge';
 import { PriceTag } from './PriceTag';
+import { PhaseIcon } from '@/components/deck-builder/PhaseIcon';
 import { MarketplaceCard as MarketplaceCardType } from '@/data/mockMarketplaceData';
 import { cn } from '@/lib/utils';
 import { RARITY_CONFIG } from '@/data/rarityConfig';
+import type { CardPhase } from '@/data/cardDefinitions';
 
 interface MarketplaceCardProps {
   card: MarketplaceCardType;
@@ -37,13 +39,6 @@ export const MarketplaceCard = ({
     research: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
     build: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
     grow: 'bg-green-500/10 text-green-400 border-green-500/30',
-  };
-
-  const phaseIcons = {
-    vision: '🔮',
-    research: '🔬',
-    build: '🔧',
-    grow: '🚀',
   };
 
   return (
@@ -89,7 +84,8 @@ export const MarketplaceCard = ({
         <div className="absolute top-2 left-2 right-2 flex items-start justify-between z-10">
           <div className="flex flex-col gap-2">
             {/* Phase Badge */}
-            <Badge className={cn('text-xs border backdrop-blur-md', phaseColors[card.phase])}>
+            <Badge className={cn('text-xs border backdrop-blur-md flex items-center gap-1', phaseColors[card.phase])}>
+              <PhaseIcon phase={card.phase as CardPhase} size="xs" />
               {card.phase.toUpperCase()}
             </Badge>
             {/* Type Badge */}
