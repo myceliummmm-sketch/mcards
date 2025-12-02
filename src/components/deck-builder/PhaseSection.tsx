@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Lock } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -7,6 +8,7 @@ import {
 } from '@/components/ui/accordion';
 import { FlippableCard } from './FlippableCard';
 import { PHASE_CONFIG, getCardsByPhase, type CardPhase } from '@/data/cardDefinitions';
+import { cn } from '@/lib/utils';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -40,9 +42,41 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId }: PhaseSectionP
                 <h2 className="text-2xl font-display font-bold text-foreground">
                   {config.name}
                 </h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {definitions.length} cards in this phase
-                </p>
+                {/* Mini thumbnails - visible in header */}
+                <div className="flex gap-1.5 mt-2">
+                  {definitions.map(def => {
+                    const cardData = cards.find(c => c.card_slot === def.slot);
+                    const hasData = cardData?.card_data && Object.keys(cardData.card_data as object).length > 0;
+                    const imageUrl = cardData?.card_image_url;
+                    
+                    return (
+                      <div 
+                        key={def.slot}
+                        className={cn(
+                          'w-7 h-10 rounded-sm overflow-hidden border-2 transition-all flex items-center justify-center',
+                          hasData 
+                            ? 'shadow-sm' 
+                            : 'border-dashed bg-muted/30'
+                        )}
+                        style={{ 
+                          borderColor: hasData ? config.color : 'hsl(var(--muted-foreground) / 0.3)'
+                        }}
+                        title={hasData ? `#${String(def.slot).padStart(2, '0')} - Crafted` : `#${String(def.slot).padStart(2, '0')} - Not crafted`}
+                      >
+                        {imageUrl ? (
+                          <img src={imageUrl} className="w-full h-full object-cover" alt="" />
+                        ) : hasData ? (
+                          <div 
+                            className="w-full h-full" 
+                            style={{ background: `${config.color}40` }} 
+                          />
+                        ) : (
+                          <Lock className="w-3 h-3 text-muted-foreground/40" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
             
