@@ -69,7 +69,7 @@ export const ForgeRevealOverlay = ({
                 loadingStage={loadingStage}
               />
 
-              {/* Show evaluation details when complete */}
+              {/* Show evaluation details when complete AND evaluation exists */}
               {forgingStage === 'complete' && evaluation && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -106,23 +106,25 @@ export const ForgeRevealOverlay = ({
                   >
                     <EvaluationMatrix evaluation={evaluation} />
                   </motion.div>
+                </motion.div>
+              )}
 
-                   {/* Action Button - Prominent */}
-                   <motion.div
-                     initial={{ opacity: 0, y: 20 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     transition={{ delay: 1.6 }}
-                     className="flex gap-3 justify-center pt-6 pb-4"
-                   >
-                     <Button
-                       onClick={onDismiss}
-                       size="lg"
-                       className="gap-2 bg-primary hover:bg-primary/90 shadow-xl shadow-primary/30 text-base px-8 py-6"
-                     >
-                       <Eye className="w-5 h-5" />
-                       Continue Editing
-                     </Button>
-                   </motion.div>
+              {/* Action Button - ALWAYS show when complete (outside evaluation conditional) */}
+              {forgingStage === 'complete' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: evaluation ? 1.6 : 0.8 }}
+                  className="flex gap-3 justify-center pt-6 pb-4"
+                >
+                  <Button
+                    onClick={onDismiss}
+                    size="lg"
+                    className="gap-2 bg-primary hover:bg-primary/90 shadow-xl shadow-primary/30 text-base px-8 py-6"
+                  >
+                    <Eye className="w-5 h-5" />
+                    Continue Editing
+                  </Button>
                 </motion.div>
               )}
              </motion.div>
