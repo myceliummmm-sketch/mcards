@@ -58,7 +58,13 @@ export const useDeckCards = (deckId: string) => {
     };
   }, [deckId]);
 
-  const saveCard = async (cardSlot: number, cardType: string, cardData: any) => {
+  const saveCard = async (
+    cardSlot: number, 
+    cardType: string, 
+    cardData: any,
+    imageUrl?: string,
+    evaluation?: any
+  ) => {
     try {
       // Use UPSERT to handle race conditions gracefully
       const { error } = await supabase
@@ -68,6 +74,8 @@ export const useDeckCards = (deckId: string) => {
           card_slot: cardSlot,
           card_type: cardType,
           card_data: cardData,
+          card_image_url: imageUrl || null,
+          evaluation: evaluation || null,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'deck_id,card_slot'

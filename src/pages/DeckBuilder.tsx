@@ -63,14 +63,8 @@ export default function DeckBuilder() {
     const cardDefinition = getCardBySlot(editingSlot);
     if (!cardDefinition) return;
 
-    // Merge all data together
-    const fullData = {
-      ...data,
-      ...(imageUrl && { card_image_url: imageUrl }),
-      ...(evaluation && { evaluation })
-    };
-
-    await saveCard(editingSlot, cardDefinition.cardType, fullData);
+    // Save card data to dedicated columns (not nested in card_data)
+    await saveCard(editingSlot, cardDefinition.cardType, data, imageUrl, evaluation);
   };
 
   const handleGeneratePrompt = () => {
@@ -213,8 +207,8 @@ export default function DeckBuilder() {
           onClose={handleCloseEditor}
           definition={editingCardDefinition}
           initialData={editingCardData?.card_data || {}}
-          cardImageUrl={(editingCardData?.card_data as any)?.card_image_url}
-          evaluation={(editingCardData?.card_data as any)?.evaluation}
+          cardImageUrl={editingCardData?.card_image_url || undefined}
+          evaluation={editingCardData?.evaluation || undefined}
           cardId={editingCardData?.id}
           onSave={handleSaveCard}
         />
