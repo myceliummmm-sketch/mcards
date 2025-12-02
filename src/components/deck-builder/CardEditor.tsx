@@ -68,14 +68,26 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
     }));
   };
 
-  const handleSave = async (silent = false, autoMagic = false) => {
+  const handleSave = async (silent = false, autoMagic = false, formDataOverride?: Record<string, any>) => {
+    const dataToUse = formDataOverride || formData;
+    
+    // Check required fields with the data we're actually using
+    const requiredFieldsFilledNow = definition.fields
+      .filter(f => f.required)
+      .every(f => {
+        const value = dataToUse[f.name];
+        return value !== undefined && value !== null && value !== '';
+      });
+    
+    console.log('handleSave called:', { silent, autoMagic, hasOverride: !!formDataOverride, requiredFieldsFilledNow });
+    
     setIsSaving(true);
     try {
       let finalImageUrl = currentImageUrl;
       let finalEvaluation = currentEvaluation;
 
       // If this is a "Forge Card" click (autoMagic=true), do the full magical flow
-      if (autoMagic && requiredFieldsFilled) {
+      if (autoMagic && requiredFieldsFilledNow) {
         setForgingStage('forging');
         let hasErrors = false;
         
@@ -92,7 +104,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             const { data: imageData, error: imageError } = await supabase.functions.invoke('generate-card-image', {
               body: { 
                 cardSlot: definition.slot,
-                cardContent: formData
+                cardContent: dataToUse
               }
             });
 
@@ -126,7 +138,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             const { data: evalData, error: evalError } = await supabase.functions.invoke('evaluate-card', {
               body: {
                 cardType: definition.title,
-                cardContent: formData,
+                cardContent: dataToUse,
                 cardDefinition: {
                   coreQuestion: definition.coreQuestion,
                   formula: definition.formula
@@ -173,8 +185,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
         }, 1200);
       }
 
-      // Save everything together
-      await onSave(formData, finalImageUrl, finalEvaluation);
+      // Save everything together - use the override data if provided
+      await onSave(dataToUse, finalImageUrl, finalEvaluation);
       
       if (!silent && !autoMagic) {
         toast({
@@ -350,7 +362,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   definition={definition}
                   initialData={formData}
                   onChange={setFormData}
-                  onForge={() => handleSave(false, true)}
+                  onForge={(wizardFormData) => handleSave(false, true, wizardFormData)}
                   isForging={isSaving}
                 />
               ) : (
