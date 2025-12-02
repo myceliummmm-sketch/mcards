@@ -224,6 +224,7 @@ export default function DeckBuilder() {
       {deckId && (
         <DeckHealthDashboard
           deckId={deckId}
+          cards={cards}
           isOpen={healthDashboardOpen}
           onClose={() => setHealthDashboardOpen(false)}
         />
