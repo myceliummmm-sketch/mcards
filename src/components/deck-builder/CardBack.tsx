@@ -13,7 +13,32 @@ interface CardBackProps {
 }
 
 const TeamRatingsPreview = ({ evaluation }: { evaluation: any }) => {
-  const characterIds = ['evergreen', 'prisma', 'phoenix', 'techpriest', 'toxic', 'virgilia', 'zen'];
+  // Map character IDs to the criteria they evaluate
+  const characterToCriteria: Record<string, string | string[]> = {
+    evergreen: 'impact',
+    prisma: ['relevance', 'actionability'], // Prisma evaluates 2 criteria
+    phoenix: 'market_fit',
+    techpriest: 'depth',
+    toxic: 'credibility',
+    virgilia: 'clarity',
+  };
+  
+  const characterIds = ['evergreen', 'prisma', 'phoenix', 'techpriest', 'toxic', 'virgilia'];
+  
+  const getScoreForCharacter = (charId: string): number => {
+    const criteria = characterToCriteria[charId];
+    if (!criteria) return 0;
+    
+    if (Array.isArray(criteria)) {
+      // Average multiple criteria scores
+      const scores = criteria
+        .map(c => evaluation[c]?.score || 0)
+        .filter(s => s > 0);
+      return scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+    }
+    
+    return evaluation[criteria]?.score || 0;
+  };
   
   const getScoreColor = (score: number) => {
     if (score >= 8) return 'bg-cyan-500';
@@ -30,10 +55,10 @@ const TeamRatingsPreview = ({ evaluation }: { evaluation: any }) => {
       </div>
 
       {/* Character Avatars Grid */}
-      <div className="grid grid-cols-4 gap-2 justify-items-center">
+      <div className="grid grid-cols-3 gap-2 justify-items-center">
         {characterIds.map((charId) => {
           const character = TEAM_CHARACTERS[charId];
-          const score = evaluation.breakdown?.[charId] || 0;
+          const score = getScoreForCharacter(charId);
           
           return (
             <div key={charId} className="flex flex-col items-center gap-1">
