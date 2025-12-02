@@ -37,7 +37,7 @@ serve(async (req) => {
     console.log('Evaluating card:', cardType);
 
     // Construct evaluation prompt
-    const prompt = `You are a team of startup experts evaluating a "${cardType}" card for a product deck.
+    const prompt = `You are a team of critical startup experts evaluating a "${cardType}" card for a product deck.
 
 Card Question: ${cardDefinition.coreQuestion}
 Card Formula: ${cardDefinition.formula}
@@ -45,22 +45,37 @@ Card Formula: ${cardDefinition.formula}
 Card Content:
 ${JSON.stringify(cardContent, null, 2)}
 
-Evaluate this card on the following 7 criteria. For each criterion, provide:
-1. A score from 1-10 (where 1 is poor and 10 is excellent)
-2. A brief explanation (1-2 sentences) from the perspective of the assigned team member
+CRITICAL SCORING GUIDELINES:
+- Evaluate each criterion INDEPENDENTLY based on the ACTUAL content provided
+- Use the FULL 1-10 range - do NOT default to middle scores
+- Be CRITICAL and DISCRIMINATING - not everything deserves a 7
+- Empty, placeholder, or vague content should score 1-3
+- Generic content without specifics should score 4-5
+- Adequate content with some details should score 6-7
+- Strong content with evidence/research should score 8-9
+- Exceptional, compelling content should score 10
 
-Criteria:
+SCORING RUBRIC:
+- 1-2: Missing, empty, or placeholder content (e.g., "lorem ipsum", "TBD", single words)
+- 3-4: Vague, generic statements lacking any specifics or evidence
+- 5-6: Adequate but surface-level, needs more depth or supporting details
+- 7-8: Good with specific details, clear rationale, and some evidence
+- 9-10: Excellent with compelling evidence, unique insights, and thorough analysis
+
+Evaluate on these 7 criteria:
 ${CRITERIA.map(c => `- ${c.name}: ${c.description} (Evaluator: ${c.evaluator})`).join('\n')}
 
-Respond ONLY with valid JSON in this exact format:
+For each criterion, provide a score (1-10) and a brief explanation (1-2 sentences) from the evaluator's perspective.
+
+Respond ONLY with valid JSON:
 {
-  "depth": { "score": 7, "explanation": "..." },
-  "relevance": { "score": 8, "explanation": "..." },
-  "credibility": { "score": 6, "explanation": "..." },
-  "actionability": { "score": 8, "explanation": "..." },
-  "impact": { "score": 7, "explanation": "..." },
-  "clarity": { "score": 9, "explanation": "..." },
-  "market_fit": { "score": 7, "explanation": "..." }
+  "depth": { "score": YOUR_SCORE, "explanation": "Your evaluation..." },
+  "relevance": { "score": YOUR_SCORE, "explanation": "Your evaluation..." },
+  "credibility": { "score": YOUR_SCORE, "explanation": "Your evaluation..." },
+  "actionability": { "score": YOUR_SCORE, "explanation": "Your evaluation..." },
+  "impact": { "score": YOUR_SCORE, "explanation": "Your evaluation..." },
+  "clarity": { "score": YOUR_SCORE, "explanation": "Your evaluation..." },
+  "market_fit": { "score": YOUR_SCORE, "explanation": "Your evaluation..." }
 }`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
