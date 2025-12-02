@@ -4,16 +4,21 @@ import { RefreshCw } from 'lucide-react';
 import { HealthScoreCard } from './HealthScoreCard';
 import { MetricBreakdown } from './MetricBreakdown';
 import { AITipsPanel } from './AITipsPanel';
+import { DeckThumbnails } from './DeckThumbnails';
 import { useDeckHealth } from '@/hooks/useDeckHealth';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Database } from '@/integrations/supabase/types';
+
+type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
 
 interface DeckHealthDashboardProps {
   deckId: string;
+  cards: DeckCard[];
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function DeckHealthDashboard({ deckId, isOpen, onClose }: DeckHealthDashboardProps) {
+export function DeckHealthDashboard({ deckId, cards, isOpen, onClose }: DeckHealthDashboardProps) {
   const { healthData, isLoading, refresh } = useDeckHealth(deckId);
 
   return (
@@ -38,6 +43,7 @@ export function DeckHealthDashboard({ deckId, isOpen, onClose }: DeckHealthDashb
         {isLoading ? (
           <div className="space-y-6">
             <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-32 w-full" />
             <div className="grid gap-4 md:grid-cols-2">
               <Skeleton className="h-40" />
               <Skeleton className="h-40" />
@@ -50,6 +56,9 @@ export function DeckHealthDashboard({ deckId, isOpen, onClose }: DeckHealthDashb
           <div className="space-y-6">
             {/* Overall Score */}
             <HealthScoreCard score={healthData.overallScore} />
+
+            {/* Visual Deck Collection */}
+            <DeckThumbnails cards={cards} />
 
             {/* Metrics Breakdown */}
             <MetricBreakdown
