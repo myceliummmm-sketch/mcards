@@ -5,11 +5,13 @@ import { CardBack } from './CardBack';
 import { ReviewBadge } from './review/ReviewBadge';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useDeckCards } from '@/hooks/useDeckCards';
+import type { Database } from '@/integrations/supabase/types';
+
+type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
 
 interface FlippableCardProps {
   definition: CardDefinition;
-  cardData?: any;
-  cardId?: string;
+  cardRow?: DeckCard;
   isInsight?: boolean;
   onEdit: () => void;
   deckId: string;
@@ -17,8 +19,7 @@ interface FlippableCardProps {
 
 export const FlippableCard = ({ 
   definition, 
-  cardData,
-  cardId,
+  cardRow,
   isInsight = false,
   onEdit,
   deckId
@@ -26,13 +27,18 @@ export const FlippableCard = ({
   const [isFlipped, setIsFlipped] = useState(false);
   const { updateCardImage } = useDeckCards(deckId);
 
-  const isEmpty = !cardData || Object.keys(cardData).length === 0;
-  const isComplete = !isEmpty && cardData.completed === true;
-  const preview = cardData?.summary || cardData?.description || cardData?.content || '';
-  const evaluation = cardData?.evaluation;
+  // Read from dedicated columns, not from card_data
+  const cardContent = cardRow?.card_data as Record<string, any> | null;
+  const imageUrl = cardRow?.card_image_url;
+  const evaluation = cardRow?.evaluation as { overall?: number } | null;
+  const cardId = cardRow?.id;
 
-  const handleRegenerateImage = async (imageUrl: string) => {
-    await updateCardImage(definition.slot, imageUrl);
+  const isEmpty = !cardContent || Object.keys(cardContent).length === 0;
+  const isComplete = !isEmpty && (cardContent as any)?.completed === true;
+  const preview = cardContent?.summary || cardContent?.description || cardContent?.content || '';
+
+  const handleRegenerateImage = async (newImageUrl: string) => {
+    await updateCardImage(definition.slot, newImageUrl);
   };
 
   const getCardStyle = () => {
@@ -74,7 +80,7 @@ export const FlippableCard = ({
             isComplete={isComplete}
             isInsight={isInsight}
             preview={preview}
-            imageUrl={cardData?.card_image_url}
+            imageUrl={imageUrl || undefined}
             evaluationScore={evaluation?.overall}
           />
         </motion.div>
@@ -91,7 +97,7 @@ export const FlippableCard = ({
         >
           <CardBack
             definition={definition}
-            content={cardData}
+            content={cardContent}
             evaluation={evaluation}
             isEmpty={isEmpty}
             onEdit={() => {
