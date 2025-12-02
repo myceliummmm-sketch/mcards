@@ -93,10 +93,33 @@ Return ONLY a JSON array of 3 strings, nothing else. Example format:
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-
+    console.log('Full AI response:', JSON.stringify(data, null, 2));
+    
+    // Handle different response formats
+    let content = data.choices?.[0]?.message?.content;
+    
+    // Some models return tool_calls instead of content
+    if (!content && data.choices?.[0]?.message?.tool_calls) {
+      const toolCall = data.choices[0].message.tool_calls[0];
+      if (toolCall?.function?.arguments) {
+        content = toolCall.function.arguments;
+      }
+    }
+    
+    // Handle refusal or empty responses
     if (!content) {
-      throw new Error('No content in AI response');
+      console.error('No content found in response. Full data:', JSON.stringify(data));
+      // Return fallback suggestions
+      return new Response(
+        JSON.stringify({ 
+          suggestions: [
+            'Enter a specific, actionable description',
+            'Describe the key benefit or outcome',
+            'Focus on your target audience needs'
+          ]
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     console.log('Raw AI response:', content);
