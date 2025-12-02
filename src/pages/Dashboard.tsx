@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, LogOut, Loader2, Sparkles } from "lucide-react";
+import { Plus, LogOut, Loader2, Sparkles, Settings } from "lucide-react";
 import { DeckCard } from "@/components/DeckCard";
 import { CreateDeckDialog } from "@/components/CreateDeckDialog";
 import { SporeWallet } from "@/components/paywall/SporeWallet";
@@ -149,6 +149,9 @@ const Dashboard = () => {
             <SubscriptionBadge />
             <Button variant="outline" onClick={() => navigate('/marketplace')}>
               🛒 Marketplace
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
+              <Settings className="h-5 w-5" />
             </Button>
             <Button variant="ghost" size="icon" onClick={handleSignOut}>
               <LogOut className="h-5 w-5" />
