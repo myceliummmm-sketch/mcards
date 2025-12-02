@@ -11,8 +11,10 @@ import { CardEditor } from '@/components/deck-builder/CardEditor';
 import { CollaboratorManager } from '@/components/deck-builder/review/CollaboratorManager';
 import { DeckHealthDashboard } from '@/components/deck-builder/health/DeckHealthDashboard';
 import { TeamChatDrawer } from '@/components/deck-builder/chat/TeamChatDrawer';
+import { GroupChatDrawer } from '@/components/deck-builder/chat/GroupChatDrawer';
 import { useDeckCards } from '@/hooks/useDeckCards';
 import { useTeamChat } from '@/hooks/useTeamChat';
+import { useGroupChat } from '@/hooks/useGroupChat';
 import { getCardBySlot, CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
@@ -28,7 +30,7 @@ export default function DeckBuilder() {
   const [healthDashboardOpen, setHealthDashboardOpen] = useState(false);
   const { cards, saveCard, getCardBySlot: getDeckCard, getFilledCardsCount } = useDeckCards(deckId || '');
   
-  // Team chat hook
+  // Team chat hook (single character)
   const {
     activeCharacter,
     messages: chatMessages,
@@ -38,6 +40,21 @@ export default function DeckBuilder() {
     closeChat,
     sendMessage: sendChatMessage,
   } = useTeamChat({ deckId: deckId || '', cards });
+
+  // Group chat hook (multiple characters)
+  const {
+    selectedCharacters: groupSelectedCharacters,
+    messages: groupMessages,
+    isStreaming: isGroupStreaming,
+    currentResponder,
+    isOpen: isGroupChatOpen,
+    toggleCharacter: toggleGroupCharacter,
+    addCharacter: addGroupCharacter,
+    removeCharacter: removeGroupCharacter,
+    openGroupChat,
+    closeGroupChat,
+    sendMessage: sendGroupMessage,
+  } = useGroupChat({ deckId: deckId || '', cards });
 
   useEffect(() => {
     const fetchDeck = async () => {
@@ -214,9 +231,12 @@ export default function DeckBuilder() {
       <TeamPanel 
         activeCharacterId={activeCharacter || undefined}
         onCharacterClick={openChat}
+        selectedGroupCharacters={groupSelectedCharacters}
+        onToggleGroupCharacter={toggleGroupCharacter}
+        onStartGroupChat={openGroupChat}
       />
 
-      {/* Team Chat Drawer */}
+      {/* Single Character Chat Drawer */}
       <TeamChatDrawer
         isOpen={isChatOpen}
         onClose={closeChat}
@@ -224,6 +244,19 @@ export default function DeckBuilder() {
         messages={chatMessages}
         isStreaming={isChatStreaming}
         onSendMessage={sendChatMessage}
+      />
+
+      {/* Group Chat Drawer */}
+      <GroupChatDrawer
+        isOpen={isGroupChatOpen}
+        onClose={closeGroupChat}
+        selectedCharacters={groupSelectedCharacters}
+        messages={groupMessages}
+        isStreaming={isGroupStreaming}
+        currentResponder={currentResponder}
+        onSendMessage={sendGroupMessage}
+        onAddCharacter={addGroupCharacter}
+        onRemoveCharacter={removeGroupCharacter}
       />
 
       {/* Card Editor Modal */}
