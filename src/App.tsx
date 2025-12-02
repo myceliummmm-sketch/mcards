@@ -8,6 +8,8 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import DeckBuilder from "./pages/DeckBuilder";
 import Marketplace from "./pages/Marketplace";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/deck/:deckId" element={<DeckBuilder />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/checkout-success" element={<CheckoutSuccess />} />
+          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

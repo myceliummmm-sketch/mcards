@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ArrowLeft, Share2, Activity } from 'lucide-react';
+import { ArrowLeft, Share2, Activity, Settings } from 'lucide-react';
 import { PhaseSection } from '@/components/deck-builder/PhaseSection';
 import { TeamPanel } from '@/components/deck-builder/TeamPanel';
 import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
@@ -163,6 +163,14 @@ export default function DeckBuilder() {
               <div className="flex items-center gap-3">
                 <SporeWallet />
                 <SubscriptionBadge />
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate('/settings')}
+                >
+                  <Settings className="w-5 h-5" />
+                </Button>
                 
                 <Button
                   variant="outline"
