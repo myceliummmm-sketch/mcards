@@ -108,13 +108,44 @@ Respond ONLY with valid JSON:
       throw new Error('No evaluation generated');
     }
 
-    // Parse JSON from response
+    // Parse JSON from response - with robust cleaning
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
+      console.error('No JSON found in response:', content);
       throw new Error('Invalid response format');
     }
 
-    const evaluation = JSON.parse(jsonMatch[0]);
+    let jsonString = jsonMatch[0];
+    
+    // Clean common JSON issues from AI responses
+    // Remove any markdown code block markers that might be inside
+    jsonString = jsonString.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    
+    // Fix unescaped newlines within string values
+    jsonString = jsonString.replace(/(?<=:\s*"[^"]*)\n(?=[^"]*")/g, '\\n');
+    
+    // Try to parse, with fallback cleaning
+    let evaluation;
+    try {
+      evaluation = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('Initial parse failed, attempting cleanup:', parseError);
+      
+      // More aggressive cleanup: replace problematic characters in string values
+      // This regex finds string values and escapes internal quotes
+      jsonString = jsonString.replace(/"explanation":\s*"([^"]*)"/g, (_match: string, p1: string) => {
+        const cleaned = p1.replace(/"/g, '\\"').replace(/\n/g, ' ');
+        return `"explanation": "${cleaned}"`;
+      });
+      
+      try {
+        evaluation = JSON.parse(jsonString);
+      } catch (secondError) {
+        console.error('Second parse failed:', secondError);
+        console.error('Problematic JSON:', jsonString.substring(0, 500));
+        throw new Error('Failed to parse AI response as JSON');
+      }
+    }
 
     // Add evaluator names to each criterion
     const enrichedEvaluation: any = {};
