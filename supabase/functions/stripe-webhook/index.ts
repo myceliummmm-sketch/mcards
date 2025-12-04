@@ -8,7 +8,9 @@ const logStep = (step: string, details?: any) => {
 };
 
 const PRO_PRODUCT_ID = "prod_TX0ugwhZbz8zLD";
-const MONTHLY_SPORE_CREDIT = 200;
+const ULTRA_PRODUCT_ID = "prod_TXlKvoG6KH1jD1";
+const PRO_MONTHLY_SPORE = 200;
+const ULTRA_MONTHLY_SPORE = 500;
 
 serve(async (req) => {
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
@@ -52,23 +54,27 @@ serve(async (req) => {
         const userId = session.metadata?.user_id;
         const customerId = session.customer as string;
         const subscriptionId = session.subscription as string;
+        const tier = session.metadata?.tier || 'pro';
 
         if (!userId) {
           logStep("ERROR", { message: "No user_id in session metadata" });
           break;
         }
 
-        logStep("Processing checkout completion", { userId, customerId, subscriptionId });
+        logStep("Processing checkout completion", { userId, customerId, subscriptionId, tier });
 
-        // Update subscription to pro and credit initial SPORE
+        // Determine SPORE credit based on tier
+        const sporeCredit = tier === 'ultra' ? ULTRA_MONTHLY_SPORE : PRO_MONTHLY_SPORE;
+
+        // Update subscription and credit initial SPORE
         const { error: updateError } = await supabaseClient
           .from('user_subscriptions')
           .upsert({
             user_id: userId,
-            tier: 'pro',
+            tier: tier,
             stripe_customer_id: customerId,
             stripe_subscription_id: subscriptionId,
-            spore_balance: MONTHLY_SPORE_CREDIT,
+            spore_balance: sporeCredit,
             started_at: new Date().toISOString(),
           }, { onConflict: 'user_id' });
 
@@ -78,12 +84,12 @@ serve(async (req) => {
           // Record SPORE transaction
           await supabaseClient.from('spore_transactions').insert({
             user_id: userId,
-            amount: MONTHLY_SPORE_CREDIT,
+            amount: sporeCredit,
             transaction_type: 'subscription_credit',
-            description: 'Initial Pro subscription SPORE credit',
+            description: `Initial ${tier.toUpperCase()} subscription SPORE credit`,
             reference_id: subscriptionId,
           });
-          logStep("Subscription activated and SPORE credited", { userId, spore: MONTHLY_SPORE_CREDIT });
+          logStep("Subscription activated and SPORE credited", { userId, tier, spore: sporeCredit });
         }
         break;
       }
@@ -101,15 +107,17 @@ serve(async (req) => {
 
         logStep("Processing recurring invoice payment", { customerId, subscriptionId });
 
-        // Find user by stripe_customer_id
+        // Find user and their tier by stripe_customer_id
         const { data: subData } = await supabaseClient
           .from('user_subscriptions')
-          .select('user_id, spore_balance')
+          .select('user_id, spore_balance, tier')
           .eq('stripe_customer_id', customerId)
           .maybeSingle();
 
         if (subData) {
-          const newBalance = (subData.spore_balance || 0) + MONTHLY_SPORE_CREDIT;
+          // Determine SPORE credit based on tier
+          const sporeCredit = subData.tier === 'ultra' ? ULTRA_MONTHLY_SPORE : PRO_MONTHLY_SPORE;
+          const newBalance = (subData.spore_balance || 0) + sporeCredit;
           
           await supabaseClient
             .from('user_subscriptions')
@@ -118,13 +126,13 @@ serve(async (req) => {
 
           await supabaseClient.from('spore_transactions').insert({
             user_id: subData.user_id,
-            amount: MONTHLY_SPORE_CREDIT,
+            amount: sporeCredit,
             transaction_type: 'subscription_credit',
-            description: 'Monthly Pro subscription SPORE credit',
+            description: `Monthly ${subData.tier?.toUpperCase()} subscription SPORE credit`,
             reference_id: subscriptionId,
           });
 
-          logStep("Monthly SPORE credited", { userId: subData.user_id, newBalance });
+          logStep("Monthly SPORE credited", { userId: subData.user_id, tier: subData.tier, newBalance });
         }
         break;
       }

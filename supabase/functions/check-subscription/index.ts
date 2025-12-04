@@ -13,7 +13,7 @@ const logStep = (step: string, details?: any) => {
 };
 
 const PRO_PRODUCT_ID = "prod_TX0ugwhZbz8zLD";
-
+const ULTRA_PRODUCT_ID = "prod_TXlKvoG6KH1jD1";
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -88,7 +88,9 @@ serve(async (req) => {
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       const productId = subscription.items.data[0].price.product;
       
-      if (productId === PRO_PRODUCT_ID) {
+      if (productId === ULTRA_PRODUCT_ID) {
+        tier = 'ultra';
+      } else if (productId === PRO_PRODUCT_ID) {
         tier = 'pro';
       }
       

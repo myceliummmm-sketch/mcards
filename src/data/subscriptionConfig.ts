@@ -15,8 +15,8 @@ export const STRIPE_CONFIG = {
     price_usd: 29,
   },
   ultra: {
-    product_id: 'prod_PLACEHOLDER_ULTRA',
-    price_id: 'price_PLACEHOLDER_ULTRA',
+    product_id: 'prod_TXlKvoG6KH1jD1',
+    price_id: 'price_1Safo8Kp2fw6elhvCZmsGV7t',
     price_usd: 79,
   },
 } as const;
