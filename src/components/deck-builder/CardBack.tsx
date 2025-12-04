@@ -47,15 +47,15 @@ const TeamRatingsPreview = ({ evaluation }: { evaluation: any }) => {
   };
 
   return (
-    <div className="backdrop-blur-md bg-black/40 border border-white/30 rounded-lg p-4">
+    <div className="backdrop-blur-md bg-black/40 border border-white/30 rounded-lg p-6">
       {/* Overall Score */}
-      <div className="text-center mb-3">
-        <div className="text-2xl font-bold text-white">{evaluation.overall}/10</div>
-        <div className="text-xs text-white/70">Overall Score</div>
+      <div className="text-center mb-4">
+        <div className="text-3xl font-bold text-white">{evaluation.overall}/10</div>
+        <div className="text-sm text-white/70">Overall Score</div>
       </div>
 
       {/* Character Avatars Grid */}
-      <div className="grid grid-cols-3 gap-2 justify-items-center">
+      <div className="grid grid-cols-3 gap-3 justify-items-center">
         {characterIds.map((charId) => {
           const character = TEAM_CHARACTERS[charId];
           const score = getScoreForCharacter(charId);
@@ -63,11 +63,11 @@ const TeamRatingsPreview = ({ evaluation }: { evaluation: any }) => {
           return (
             <div key={charId} className="flex flex-col items-center gap-1">
               <div className="relative">
-                <Avatar className="w-8 h-8 border border-white/30">
+                <Avatar className="w-10 h-10 border border-white/30">
                   <AvatarImage src={character.avatar} alt={character.name} />
-                  <AvatarFallback className="text-xs">{character.emoji}</AvatarFallback>
+                  <AvatarFallback className="text-sm">{character.emoji}</AvatarFallback>
                 </Avatar>
-                <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ${getScoreColor(score)} border border-black/50 flex items-center justify-center text-[8px] font-bold text-white`}>
+                <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full ${getScoreColor(score)} border border-black/50 flex items-center justify-center text-[10px] font-bold text-white`}>
                   {score}
                 </div>
               </div>
