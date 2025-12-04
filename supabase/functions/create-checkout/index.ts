@@ -35,7 +35,7 @@ serve(async (req) => {
     // Price IDs for each tier
     const priceIds: Record<string, string> = {
       pro: "price_1SZwsNKp2fw6elhvTYBWq1QW",
-      ultra: Deno.env.get("STRIPE_ULTRA_PRICE_ID") || "price_PLACEHOLDER_ULTRA",
+      ultra: "price_1Safo8Kp2fw6elhvCZmsGV7t",
     };
 
     const priceId = priceIds[tier];
