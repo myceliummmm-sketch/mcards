@@ -47,7 +47,7 @@ export const TeamPanel = ({
 
   return (
     <>
-      <div className="w-80 p-6 bg-card/50 backdrop-blur-sm border-l border-border overflow-y-auto">
+      <div className="w-80 p-6 bg-card/50 backdrop-blur-sm border-r border-border overflow-y-auto">
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <img src={aiTeamIcon} alt="AI Team" className="w-8 h-8 object-contain" />

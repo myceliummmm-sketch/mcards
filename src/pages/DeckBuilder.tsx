@@ -128,6 +128,15 @@ export default function DeckBuilder() {
 
   return (
     <div className="min-h-screen bg-background flex">
+      {/* AI Team sidebar - Left side for collaborative feel */}
+      <TeamPanel 
+        activeCharacterId={activeCharacter || undefined}
+        onCharacterClick={openChat}
+        selectedGroupCharacters={groupSelectedCharacters}
+        onToggleGroupCharacter={toggleGroupCharacter}
+        onStartGroupChat={openGroupChat}
+      />
+
       {/* Main content */}
       <div className="flex-1 overflow-y-auto">
         {/* Sticky header */}
@@ -254,15 +263,6 @@ export default function DeckBuilder() {
           </motion.div>
         </div>
       </div>
-
-      {/* AI Team sidebar */}
-      <TeamPanel 
-        activeCharacterId={activeCharacter || undefined}
-        onCharacterClick={openChat}
-        selectedGroupCharacters={groupSelectedCharacters}
-        onToggleGroupCharacter={toggleGroupCharacter}
-        onStartGroupChat={openGroupChat}
-      />
 
       {/* Single Character Chat Drawer */}
       <TeamChatDrawer
