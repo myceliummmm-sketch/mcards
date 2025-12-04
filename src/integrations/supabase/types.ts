@@ -451,7 +451,7 @@ export type Database = {
         | "sale"
         | "bonus"
         | "refund"
-      subscription_tier: "free" | "pro"
+      subscription_tier: "free" | "pro" | "ultra"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -590,7 +590,7 @@ export const Constants = {
         "bonus",
         "refund",
       ],
-      subscription_tier: ["free", "pro"],
+      subscription_tier: ["free", "pro", "ultra"],
     },
   },
 } as const
