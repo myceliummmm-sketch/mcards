@@ -12,7 +12,7 @@ import { CollaboratorManager } from '@/components/deck-builder/review/Collaborat
 import { DeckHealthDashboard } from '@/components/deck-builder/health/DeckHealthDashboard';
 import { TeamChatDrawer } from '@/components/deck-builder/chat/TeamChatDrawer';
 import { GroupChatDrawer } from '@/components/deck-builder/chat/GroupChatDrawer';
-import { PaywallOverlay } from '@/components/paywall/PaywallOverlay';
+
 import { SporeWallet } from '@/components/paywall/SporeWallet';
 import { SubscriptionBadge } from '@/components/paywall/SubscriptionBadge';
 import { useDeckCards } from '@/hooks/useDeckCards';
@@ -243,22 +243,22 @@ export default function DeckBuilder() {
               <PhaseSection phase="research" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              {canAccessPhase('build') ? (
-                <PhaseSection phase="build" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
-              ) : (
-                <PaywallOverlay phase="build">
-                  <PhaseSection phase="build" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
-                </PaywallOverlay>
-              )}
+              <PhaseSection 
+                phase="build" 
+                cards={cards} 
+                onEditCard={handleEditCard} 
+                deckId={deckId || ''} 
+                locked={!canAccessPhase('build')}
+              />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              {canAccessPhase('grow') ? (
-                <PhaseSection phase="grow" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
-              ) : (
-                <PaywallOverlay phase="grow">
-                  <PhaseSection phase="grow" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
-                </PaywallOverlay>
-              )}
+              <PhaseSection 
+                phase="grow" 
+                cards={cards} 
+                onEditCard={handleEditCard} 
+                deckId={deckId || ''} 
+                locked={!canAccessPhase('grow')}
+              />
             </motion.div>
           </motion.div>
         </div>
