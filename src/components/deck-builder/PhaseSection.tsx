@@ -11,6 +11,8 @@ import { FlippableCard } from './FlippableCard';
 import { PhaseIcon } from './PhaseIcon';
 import { Badge } from '@/components/ui/badge';
 import { UpgradeModal } from '@/components/paywall/UpgradeModal';
+import { GenerateWebsiteButton } from './GenerateWebsiteButton';
+import { GenerateWebsiteModal } from './GenerateWebsiteModal';
 import { PHASE_CONFIG, getCardsByPhase, type CardPhase } from '@/data/cardDefinitions';
 import { cn } from '@/lib/utils';
 import type { Database } from '@/integrations/supabase/types';
@@ -29,6 +31,7 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId, locked = false 
   const config = PHASE_CONFIG[phase];
   const definitions = getCardsByPhase(phase);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [websiteModalOpen, setWebsiteModalOpen] = useState(false);
   
   const filledCount = definitions.filter(def => 
     cards.some(c => c.card_slot === def.slot && c.card_data && Object.keys(c.card_data).length > 0)
@@ -108,6 +111,17 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId, locked = false 
             </div>
             
             <div className="flex items-center gap-4">
+              {/* Generate Website Button - Only for Vision phase */}
+              {phase === 'vision' && !locked && (
+                <div onClick={(e) => e.stopPropagation()}>
+                  <GenerateWebsiteButton
+                    filledCount={filledCount}
+                    totalCount={definitions.length}
+                    onClick={() => setWebsiteModalOpen(true)}
+                  />
+                </div>
+              )}
+              
               <div className="flex items-center gap-2">
                 <div 
                   className={cn(
@@ -172,6 +186,15 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId, locked = false 
       </Accordion>
       
       <UpgradeModal open={upgradeModalOpen} onOpenChange={setUpgradeModalOpen} />
+      
+      {phase === 'vision' && (
+        <GenerateWebsiteModal
+          open={websiteModalOpen}
+          onOpenChange={setWebsiteModalOpen}
+          cards={cards}
+          deckId={deckId}
+        />
+      )}
     </>
   );
 };
