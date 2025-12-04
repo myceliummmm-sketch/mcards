@@ -12,6 +12,9 @@ interface ForgeRevealOverlayProps {
   loadingStage: 'idle' | 'channeling' | 'summoning' | 'evaluating';
   imageUrl?: string;
   evaluation?: any;
+  cardTitle?: string;
+  cardType?: string;
+  cardData?: Record<string, any>;
   onDismiss: () => void;
 }
 
@@ -21,6 +24,9 @@ export const ForgeRevealOverlay = ({
   loadingStage, 
   imageUrl, 
   evaluation,
+  cardTitle,
+  cardType,
+  cardData,
   onDismiss 
 }: ForgeRevealOverlayProps) => {
   if (!isActive || forgingStage === 'idle') return null;
@@ -67,6 +73,9 @@ export const ForgeRevealOverlay = ({
                 imageUrl={imageUrl}
                 evaluation={evaluation}
                 loadingStage={loadingStage}
+                cardTitle={cardTitle}
+                cardType={cardType}
+                cardData={cardData}
               />
 
               {/* Show evaluation details when complete AND evaluation exists */}

@@ -33,22 +33,20 @@ export const ForgeLoadingState = ({ stage }: ForgeLoadingStateProps) => {
   const Icon = config.icon;
 
   return (
-    <div className="relative h-64 flex items-center justify-center overflow-hidden">
+    <div className="relative h-64 flex flex-col items-center justify-center overflow-hidden">
       {/* Animated background particles */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 flex items-center justify-center">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-2 h-2 rounded-full bg-primary/30"
             initial={{ 
-              x: '50%', 
-              y: '50%',
               scale: 0,
               opacity: 0 
             }}
             animate={{
-              x: `${Math.cos(i * 30 * Math.PI / 180) * 100 + 50}%`,
-              y: `${Math.sin(i * 30 * Math.PI / 180) * 100 + 50}%`,
+              x: Math.cos(i * 30 * Math.PI / 180) * 80,
+              y: Math.sin(i * 30 * Math.PI / 180) * 80,
               scale: [0, 1, 0],
               opacity: [0, 1, 0]
             }}
@@ -100,35 +98,11 @@ export const ForgeLoadingState = ({ stage }: ForgeLoadingStateProps) => {
         <Icon className={`w-10 h-10 ${config.color}`} />
       </motion.div>
 
-      {/* Floating particles effect */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={`particle-${i}`}
-          className="absolute w-1 h-1 rounded-full bg-accent/60"
-          initial={{ 
-            x: '50%',
-            y: '50%',
-            opacity: 0
-          }}
-          animate={{
-            x: `${50 + (i % 2 === 0 ? 1 : -1) * 30}%`,
-            y: ['50%', '20%', '50%'],
-            opacity: [0, 1, 0]
-          }}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            delay: i * 0.4,
-            ease: 'easeInOut'
-          }}
-        />
-      ))}
-
-      {/* Stage text */}
+      {/* Stage text - now inside the flex container */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center"
+        className="mt-8 text-center"
       >
         <p className={`text-sm font-medium ${config.color} text-glow`}>
           {config.text}

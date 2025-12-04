@@ -1,15 +1,31 @@
 import { motion } from 'framer-motion';
 import { ForgeLoadingState } from './ForgeLoadingState';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, FileText } from 'lucide-react';
 
 interface CardRevealProps {
   isRevealing: boolean;
   imageUrl?: string;
   evaluation?: any;
   loadingStage: 'idle' | 'channeling' | 'summoning' | 'evaluating';
+  cardTitle?: string;
+  cardType?: string;
+  cardData?: Record<string, any>;
 }
 
-export const CardReveal = ({ isRevealing, imageUrl, evaluation, loadingStage }: CardRevealProps) => {
+export const CardReveal = ({ 
+  isRevealing, 
+  imageUrl, 
+  evaluation, 
+  loadingStage,
+  cardTitle,
+  cardType,
+  cardData
+}: CardRevealProps) => {
+  // Get filled fields for summary display
+  const filledFields = cardData 
+    ? Object.entries(cardData).filter(([_, value]) => value && String(value).trim() !== '')
+    : [];
+
   return (
     <div className="perspective-1000 w-full">
       <motion.div
@@ -90,16 +106,69 @@ export const CardReveal = ({ isRevealing, imageUrl, evaluation, loadingStage }: 
               </motion.div>
             )}
 
-            {/* Fallback when no image */}
+            {/* Enhanced fallback when no image - show card preview */}
             {!imageUrl && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
-                className="h-56 flex flex-col items-center justify-center text-muted-foreground gap-3"
+                className="p-5"
               >
-                <Sparkles className="w-10 h-10 text-primary" />
-                <span className="text-lg font-medium">Card Content Saved</span>
+                {/* Card Header */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-primary" />
+                    <span className="text-lg font-bold text-foreground">
+                      {cardTitle || 'Strategy Card'}
+                    </span>
+                  </div>
+                  <motion.div 
+                    className="bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+                  >
+                    ✨ FORGED
+                  </motion.div>
+                </div>
+
+                {cardType && (
+                  <span className="inline-block text-xs bg-secondary/20 text-secondary-foreground px-2 py-1 rounded mb-4">
+                    {cardType}
+                  </span>
+                )}
+
+                {/* Card Data Summary */}
+                {filledFields.length > 0 ? (
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                    {filledFields.slice(0, 4).map(([key, value], index) => (
+                      <motion.div
+                        key={key}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 + index * 0.1 }}
+                        className="flex flex-col gap-0.5"
+                      >
+                        <span className="text-[10px] uppercase text-muted-foreground font-mono tracking-wide">
+                          {key.replace(/_/g, ' ')}
+                        </span>
+                        <span className="text-sm text-foreground line-clamp-1">
+                          {String(value).substring(0, 80)}{String(value).length > 80 ? '...' : ''}
+                        </span>
+                      </motion.div>
+                    ))}
+                    {filledFields.length > 4 && (
+                      <span className="text-xs text-muted-foreground">
+                        +{filledFields.length - 4} more fields
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-4 text-muted-foreground gap-2">
+                    <Sparkles className="w-8 h-8 text-primary" />
+                    <span className="text-sm">Card Content Saved</span>
+                  </div>
+                )}
               </motion.div>
             )}
 
