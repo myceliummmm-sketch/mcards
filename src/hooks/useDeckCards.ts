@@ -83,6 +83,9 @@ export const useDeckCards = (deckId: string) => {
 
       if (error) throw error;
 
+      // Immediately refresh cards to ensure UI updates
+      await fetchCards();
+
       toast({
         title: 'Card saved',
         description: 'Your card has been updated successfully'

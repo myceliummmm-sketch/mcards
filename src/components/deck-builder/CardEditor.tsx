@@ -394,6 +394,9 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                 imageUrl={currentImageUrl}
                 evaluation={currentEvaluation}
                 loadingStage={loadingStage}
+                cardTitle={definition.title}
+                cardType={definition.cardType === 'insight' ? 'Insight Card' : 'Template Card'}
+                cardData={formData}
               />
             ) : currentImageUrl ? (
               <motion.div
@@ -500,6 +503,9 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           loadingStage={loadingStage}
           imageUrl={currentImageUrl}
           evaluation={currentEvaluation}
+          cardTitle={definition.title}
+          cardType={definition.cardType === 'insight' ? 'Insight Card' : 'Template Card'}
+          cardData={formData}
           onDismiss={() => {
             setForgingStage('idle');
             setLoadingStage('idle');
