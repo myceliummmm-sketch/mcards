@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { triggerForgeConfetti } from './ForgeConfetti';
+import { toast } from 'sonner';
 
 interface GenerateWebsiteButtonProps {
   filledCount: number;
@@ -42,9 +43,14 @@ export const GenerateWebsiteButton = ({
   const isReady = filledCount === totalCount;
 
   const handleClick = () => {
-    if (isReady) {
-      triggerForgeConfetti();
+    if (!isReady) {
+      const remaining = totalCount - filledCount;
+      toast.info(`Keep crafting! ${remaining} more card${remaining > 1 ? 's' : ''} to go`, {
+        description: "Complete all Vision cards to generate your website brief"
+      });
+      return;
     }
+    triggerForgeConfetti();
     onClick();
   };
 
