@@ -68,12 +68,7 @@ const Dashboard = () => {
       if (!mounted) return;
 
       if (!session) {
-        // Don't redirect immediately if OAuth params present
-        const hasAuthParams = window.location.hash.includes('access_token') ||
-          window.location.search.includes('code=');
-        if (!hasAuthParams) {
-          navigate("/auth");
-        }
+        navigate("/auth");
       } else {
         fetchDecks();
         // Fetch username
