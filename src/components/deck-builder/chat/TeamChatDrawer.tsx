@@ -39,8 +39,8 @@ export const TeamChatDrawer = ({
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent 
-        side="right" 
-        className="w-[400px] sm:w-[450px] p-0 flex flex-col bg-card border-l border-border"
+        side="left" 
+        className="w-[400px] sm:w-[450px] p-0 flex flex-col bg-card border-r border-border"
       >
         {/* Header */}
         <SheetHeader className="p-4 border-b border-border bg-muted/30">
