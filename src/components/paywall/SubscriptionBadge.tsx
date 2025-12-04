@@ -1,4 +1,4 @@
-import { Crown, User } from 'lucide-react';
+import { Crown, User, Diamond } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useSubscription } from '@/hooks/useSubscription';
 
@@ -7,6 +7,15 @@ export function SubscriptionBadge() {
 
   if (loading) {
     return null;
+  }
+
+  if (tier === 'ultra') {
+    return (
+      <Badge className="bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white gap-1 border-0">
+        <Diamond className="h-3 w-3" />
+        ULTRA
+      </Badge>
+    );
   }
 
   if (tier === 'pro') {

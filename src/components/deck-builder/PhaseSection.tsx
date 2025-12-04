@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Crown } from 'lucide-react';
+import { Lock, Crown, Diamond } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -65,10 +65,19 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId, locked = false 
                   <h2 className="text-2xl font-display font-bold text-foreground">
                     {config.name}
                   </h2>
-                  {locked && (
+                  {locked && phase !== 'pivot' && (
                     <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 gap-1">
                       <Crown className="w-3 h-3" />
                       PRO
+                    </Badge>
+                  )}
+                  {locked && phase === 'pivot' && (
+                    <Badge 
+                      variant="secondary" 
+                      className="bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-violet-400 border-violet-500/30 gap-1"
+                    >
+                      <Diamond className="w-3 h-3" />
+                      ULTRA
                     </Badge>
                   )}
                 </div>

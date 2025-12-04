@@ -22,6 +22,7 @@ interface UseSubscriptionReturn {
   loading: boolean;
   error: string | null;
   isPro: boolean;
+  isUltra: boolean;
   tier: SubscriptionTier;
   sporeBalance: number;
   canAccessPhase: (phase: string) => boolean;
@@ -104,13 +105,15 @@ export function useSubscription(): UseSubscriptionReturn {
   }, [fetchSubscription]);
 
   const tier = subscription?.tier || SUBSCRIPTION_TIERS.free;
-  const isPro = tier === SUBSCRIPTION_TIERS.pro;
+  const isPro = tier === SUBSCRIPTION_TIERS.pro || tier === SUBSCRIPTION_TIERS.ultra;
+  const isUltra = tier === SUBSCRIPTION_TIERS.ultra;
 
   return {
     subscription,
     loading,
     error,
     isPro,
+    isUltra,
     tier,
     sporeBalance: subscription?.sporeBalance || 0,
     canAccessPhase: (phase: string) => canAccessPhase(tier, phase),
