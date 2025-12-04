@@ -27,6 +27,20 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    // Parse request body for tier
+    const body = await req.json().catch(() => ({}));
+    const tier = body.tier || 'pro';
+    logStep("Requested tier", { tier });
+
+    // Price IDs for each tier
+    const priceIds: Record<string, string> = {
+      pro: "price_1SZwsNKp2fw6elhvTYBWq1QW",
+      ultra: Deno.env.get("STRIPE_ULTRA_PRICE_ID") || "price_PLACEHOLDER_ULTRA",
+    };
+
+    const priceId = priceIds[tier];
+    if (!priceId) throw new Error(`Invalid tier: ${tier}`);
+
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
     logStep("Authorization header found");
@@ -63,7 +77,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: "price_1SZwsNKp2fw6elhvTYBWq1QW",
+          price: priceId,
           quantity: 1,
         },
       ],
@@ -72,6 +86,7 @@ serve(async (req) => {
       cancel_url: `${origin}/dashboard?subscription=canceled`,
       metadata: {
         user_id: user.id,
+        tier: tier,
       },
     });
 

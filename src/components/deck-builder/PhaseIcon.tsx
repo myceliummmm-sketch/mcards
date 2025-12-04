@@ -5,12 +5,14 @@ import visionIcon from '@/assets/icons/vision.png';
 import researchIcon from '@/assets/icons/research.png';
 import buildIcon from '@/assets/icons/build.png';
 import growIcon from '@/assets/icons/grow.png';
+import pivotIcon from '@/assets/icons/pivot.png';
 
 const PHASE_ICONS: Record<CardPhase, string> = {
   vision: visionIcon,
   research: researchIcon,
   build: buildIcon,
   grow: growIcon,
+  pivot: pivotIcon,
 };
 
 interface PhaseIconProps {

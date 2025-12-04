@@ -123,8 +123,8 @@ export default function DeckBuilder() {
 
   if (!deck) return null;
 
-  const filledCards = getFilledCardsCount();
-  const totalCards = 22;
+const filledCards = getFilledCardsCount();
+  const totalCards = canAccessPhase('pivot') ? 26 : 22;
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -258,6 +258,15 @@ export default function DeckBuilder() {
                 onEditCard={handleEditCard} 
                 deckId={deckId || ''} 
                 locked={!canAccessPhase('grow')}
+              />
+            </motion.div>
+            <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
+              <PhaseSection 
+                phase="pivot" 
+                cards={cards} 
+                onEditCard={handleEditCard} 
+                deckId={deckId || ''} 
+                locked={!canAccessPhase('pivot')}
               />
             </motion.div>
           </motion.div>

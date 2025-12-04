@@ -2,6 +2,7 @@
 export const SUBSCRIPTION_TIERS = {
   free: 'free',
   pro: 'pro',
+  ultra: 'ultra',
 } as const;
 
 export type SubscriptionTier = typeof SUBSCRIPTION_TIERS[keyof typeof SUBSCRIPTION_TIERS];
@@ -13,12 +14,18 @@ export const STRIPE_CONFIG = {
     price_id: 'price_1SZwsNKp2fw6elhvTYBWq1QW',
     price_usd: 29,
   },
+  ultra: {
+    product_id: 'prod_PLACEHOLDER_ULTRA',
+    price_id: 'price_PLACEHOLDER_ULTRA',
+    price_usd: 79,
+  },
 } as const;
 
 // Phase access configuration
 export const FREE_PHASES = ['vision', 'research'] as const;
 export const PRO_PHASES = ['build', 'grow'] as const;
-export const ALL_PHASES = [...FREE_PHASES, ...PRO_PHASES] as const;
+export const ULTRA_PHASES = ['pivot'] as const;
+export const ALL_PHASES = [...FREE_PHASES, ...PRO_PHASES, ...ULTRA_PHASES] as const;
 
 // AI Advisor access configuration
 export const FREE_ADVISORS = ['evergreen', 'prisma', 'phoenix'] as const;
@@ -35,11 +42,18 @@ export const SUBSCRIPTION_FEATURES = {
     monthlySpore: 0,
   },
   pro: {
-    phases: ALL_PHASES,
+    phases: [...FREE_PHASES, ...PRO_PHASES],
     advisors: ALL_ADVISORS,
     projectLimit: 5,
     canSellOnMarketplace: true,
     monthlySpore: 200,
+  },
+  ultra: {
+    phases: ALL_PHASES,
+    advisors: ALL_ADVISORS,
+    projectLimit: 10,
+    canSellOnMarketplace: true,
+    monthlySpore: 500,
   },
 } as const;
 

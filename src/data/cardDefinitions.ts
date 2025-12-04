@@ -1,4 +1,4 @@
-export type CardPhase = 'vision' | 'research' | 'build' | 'grow';
+export type CardPhase = 'vision' | 'research' | 'build' | 'grow' | 'pivot';
 export type CardType = 'template' | 'insight' | 'both';
 export type FieldType = 'text' | 'textarea' | 'select' | 'repeatable';
 
@@ -53,6 +53,13 @@ export const PHASE_CONFIG = {
     color: 'hsl(30 90% 55%)',
     description: 'HOW it grows',
     slots: [18, 19, 20, 21, 22]
+  },
+  pivot: {
+    name: 'PIVOT',
+    icon: '🔄',
+    color: 'hsl(280 80% 55%)',
+    description: 'WHEN to change direction',
+    slots: [23, 24, 25, 26]
   }
 };
 
@@ -453,6 +460,79 @@ export const CARD_DEFINITIONS: CardDefinition[] = [
       { name: 'healthy_user_definition', label: 'Healthy User Definition', type: 'textarea', placeholder: 'What defines an engaged user?', required: true },
       { name: 'retention_benchmarks', label: 'Retention Benchmarks', type: 'text', placeholder: 'e.g., D1: 40%, D7: 25%, D30: 15%', required: true },
       { name: 'activation_metric', label: 'Activation Metric', type: 'text', placeholder: 'What action = "activated"?', required: true }
+    ]
+  },
+
+  // ============= PIVOT PHASE (4 cards) - ULTRA tier =============
+  {
+    id: 'signal',
+    slot: 23,
+    phase: 'pivot',
+    title: 'SIGNAL',
+    coreQuestion: 'What tells us to pivot?',
+    formula: 'Metric: [X] below [Y%] for [Z weeks]. User feedback: [pattern]',
+    example: 'D30 retention <10% for 8 weeks despite 3 major updates',
+    aiHelpers: ['toxic', 'prisma'],
+    cardType: 'both',
+    fields: [
+      { name: 'failing_metric', label: 'Failing Metric', type: 'text', placeholder: 'e.g., D30 retention, conversion rate', required: true },
+      { name: 'benchmark_gap', label: 'Gap vs Benchmark', type: 'text', placeholder: 'e.g., 8% vs 15% target', required: true },
+      { name: 'duration', label: 'How Long?', type: 'text', placeholder: 'e.g., 8 weeks', required: true },
+      { name: 'attempts_made', label: 'Attempts Made', type: 'textarea', placeholder: 'What have you tried?', required: true },
+      { name: 'user_feedback_pattern', label: 'User Feedback Pattern', type: 'textarea', placeholder: 'Common complaints or requests', required: true }
+    ]
+  },
+  {
+    id: 'reframe',
+    slot: 24,
+    phase: 'pivot',
+    title: 'REFRAME',
+    coreQuestion: 'What problem are we actually solving?',
+    formula: 'Original: [X]. Reframe: [Y]. Evidence: [Z]',
+    example: 'Original: fitness tracking. Reframe: accountability partner',
+    aiHelpers: ['evergreen', 'zen'],
+    cardType: 'both',
+    fields: [
+      { name: 'original_problem', label: 'Original Problem Statement', type: 'textarea', placeholder: 'What we thought we were solving', required: true },
+      { name: 'reframed_problem', label: 'Reframed Problem', type: 'textarea', placeholder: 'What the real problem might be', required: true },
+      { name: 'evidence', label: 'Supporting Evidence', type: 'textarea', placeholder: 'Data, interviews, or observations', required: true },
+      { name: 'core_insight', label: 'Core Insight', type: 'textarea', placeholder: 'What did we learn?', required: true }
+    ]
+  },
+  {
+    id: 'new_audience',
+    slot: 25,
+    phase: 'pivot',
+    title: 'NEW AUDIENCE',
+    coreQuestion: 'Who should we serve instead?',
+    formula: 'From [A] to [B]. Why: [reason]. Size: [X]',
+    example: 'From casual gym-goers to busy parents. Why: higher retention',
+    aiHelpers: ['phoenix', 'prisma'],
+    cardType: 'both',
+    fields: [
+      { name: 'current_audience', label: 'Current Audience', type: 'text', placeholder: 'Who we target now', required: true },
+      { name: 'proposed_audience', label: 'Proposed New Audience', type: 'text', placeholder: 'Who we should target', required: true },
+      { name: 'pivot_reason', label: 'Why This Audience?', type: 'textarea', placeholder: 'Evidence for better fit', required: true },
+      { name: 'market_size', label: 'New Market Size', type: 'text', placeholder: 'TAM/SAM for new audience', required: true },
+      { name: 'acquisition_strategy', label: 'How to Reach Them', type: 'textarea', placeholder: 'New acquisition channels', required: true }
+    ]
+  },
+  {
+    id: 'revised_value',
+    slot: 26,
+    phase: 'pivot',
+    title: 'REVISED VALUE',
+    coreQuestion: 'What new value do we offer?',
+    formula: 'Old value: [X]. New value: [Y]. Price change: [Z]',
+    example: 'Old: workout library. New: personal AI coach. Price: $9→$19',
+    aiHelpers: ['evergreen', 'virgilia'],
+    cardType: 'both',
+    fields: [
+      { name: 'old_value_prop', label: 'Old Value Proposition', type: 'textarea', placeholder: 'What we offered before', required: true },
+      { name: 'new_value_prop', label: 'New Value Proposition', type: 'textarea', placeholder: 'What we offer now', required: true },
+      { name: 'key_differentiator', label: 'Key Differentiator', type: 'textarea', placeholder: 'What makes this unique?', required: true },
+      { name: 'price_change', label: 'Pricing Change', type: 'text', placeholder: 'e.g., $9→$19/mo', required: true },
+      { name: 'mvp_timeline', label: 'MVP Timeline', type: 'text', placeholder: 'Time to test new proposition', required: true }
     ]
   }
 ];
