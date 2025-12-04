@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ForgeLoadingState } from './ForgeLoadingState';
 import { CardReveal } from './CardReveal';
 import { EvaluationMatrix } from './EvaluationMatrix';
-import { Sparkles, Eye } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface ForgeRevealOverlayProps {
   isActive: boolean;
@@ -15,6 +15,7 @@ interface ForgeRevealOverlayProps {
   cardTitle?: string;
   cardType?: string;
   cardData?: Record<string, any>;
+  slot?: number;
   onDismiss: () => void;
 }
 
@@ -27,6 +28,7 @@ export const ForgeRevealOverlay = ({
   cardTitle,
   cardType,
   cardData,
+  slot,
   onDismiss 
 }: ForgeRevealOverlayProps) => {
   if (!isActive || forgingStage === 'idle') return null;
@@ -76,6 +78,7 @@ export const ForgeRevealOverlay = ({
                 cardTitle={cardTitle}
                 cardType={cardType}
                 cardData={cardData}
+                slot={slot}
               />
 
               {/* Show evaluation details when complete AND evaluation exists */}
@@ -131,8 +134,8 @@ export const ForgeRevealOverlay = ({
                     size="lg"
                     className="gap-2 bg-primary hover:bg-primary/90 shadow-xl shadow-primary/30 text-base px-8 py-6"
                   >
-                    <Eye className="w-5 h-5" />
-                    Continue Editing
+                    <Sparkles className="w-5 h-5" />
+                    Craft more cards!
                   </Button>
                 </motion.div>
               )}

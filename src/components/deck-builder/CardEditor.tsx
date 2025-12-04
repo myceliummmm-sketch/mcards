@@ -506,6 +506,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           cardTitle={definition.title}
           cardType={definition.cardType === 'insight' ? 'Insight Card' : 'Template Card'}
           cardData={formData}
+          slot={definition.slot}
           onDismiss={() => {
             setForgingStage('idle');
             setLoadingStage('idle');
