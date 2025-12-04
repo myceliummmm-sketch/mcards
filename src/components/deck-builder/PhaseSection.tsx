@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock } from 'lucide-react';
+import { Lock, Crown } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -8,6 +9,8 @@ import {
 } from '@/components/ui/accordion';
 import { FlippableCard } from './FlippableCard';
 import { PhaseIcon } from './PhaseIcon';
+import { Badge } from '@/components/ui/badge';
+import { UpgradeModal } from '@/components/paywall/UpgradeModal';
 import { PHASE_CONFIG, getCardsByPhase, type CardPhase } from '@/data/cardDefinitions';
 import { cn } from '@/lib/utils';
 import type { Database } from '@/integrations/supabase/types';
@@ -19,30 +22,53 @@ interface PhaseSectionProps {
   cards: DeckCard[];
   onEditCard: (slot: number) => void;
   deckId: string;
+  locked?: boolean;
 }
 
-export const PhaseSection = ({ phase, cards, onEditCard, deckId }: PhaseSectionProps) => {
+export const PhaseSection = ({ phase, cards, onEditCard, deckId, locked = false }: PhaseSectionProps) => {
   const config = PHASE_CONFIG[phase];
   const definitions = getCardsByPhase(phase);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   
   const filledCount = definitions.filter(def => 
     cards.some(c => c.card_slot === def.slot && c.card_data && Object.keys(c.card_data).length > 0)
   ).length;
 
+  const handleAccordionClick = (e: React.MouseEvent) => {
+    if (locked) {
+      e.preventDefault();
+      e.stopPropagation();
+      setUpgradeModalOpen(true);
+    }
+  };
+
   return (
-    <Accordion type="single" collapsible defaultValue={phase}>
-      <AccordionItem value={phase} className="border-b-0">
-        <AccordionTrigger 
-          className="hover:no-underline group py-6 px-6 rounded-lg mb-4 border-2 transition-all"
-          style={{ borderColor: config.color }}
-        >
-          <div className="flex items-center justify-between w-full">
+    <>
+      <Accordion type="single" collapsible defaultValue={locked ? undefined : phase}>
+        <AccordionItem value={phase} className="border-b-0">
+          <AccordionTrigger 
+            className={cn(
+              "hover:no-underline group py-6 px-6 rounded-lg mb-4 border-2 transition-all",
+              locked && "opacity-70 cursor-pointer"
+            )}
+            style={{ borderColor: locked ? `${config.color}80` : config.color }}
+            onClick={handleAccordionClick}
+          >
+            <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-4">
               <PhaseIcon phase={phase} size="lg" />
               <div className="text-left">
-                <h2 className="text-2xl font-display font-bold text-foreground">
-                  {config.name}
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-display font-bold text-foreground">
+                    {config.name}
+                  </h2>
+                  {locked && (
+                    <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 gap-1">
+                      <Crown className="w-3 h-3" />
+                      PRO
+                    </Badge>
+                  )}
+                </div>
                 {/* Mini thumbnails - visible in header */}
                 <div className="flex gap-1.5 mt-2">
                   {definitions.map(def => {
@@ -83,13 +109,21 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId }: PhaseSectionP
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-16 h-16 rounded-full border-4 flex items-center justify-center font-bold text-lg"
+                <div 
+                  className={cn(
+                    "w-16 h-16 rounded-full border-4 flex items-center justify-center font-bold text-lg",
+                    locked && "opacity-60"
+                  )}
                   style={{ 
-                    borderColor: config.color,
-                    color: config.color 
+                    borderColor: locked ? `${config.color}80` : config.color,
+                    color: locked ? `${config.color}80` : config.color 
                   }}
                 >
-                  {filledCount}/{definitions.length}
+                  {locked ? (
+                    <Lock className="w-6 h-6" />
+                  ) : (
+                    `${filledCount}/${definitions.length}`
+                  )}
                 </div>
               </div>
             </div>
@@ -135,6 +169,9 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId }: PhaseSectionP
           </motion.div>
         </AccordionContent>
       </AccordionItem>
-    </Accordion>
+      </Accordion>
+      
+      <UpgradeModal open={upgradeModalOpen} onOpenChange={setUpgradeModalOpen} />
+    </>
   );
 };
