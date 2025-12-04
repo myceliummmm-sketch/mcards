@@ -25,11 +25,23 @@ const Index = () => {
   const [tossedCards, setTossedCards] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
+    // Check existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate("/dashboard");
       }
     });
+
+    // Listen for auth state changes (handles OAuth redirect landing here)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          navigate("/dashboard");
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const handleCardToss = useCallback((index: number) => {
