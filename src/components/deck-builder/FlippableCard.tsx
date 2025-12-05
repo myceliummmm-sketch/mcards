@@ -6,6 +6,7 @@ import { ReviewBadge } from './review/ReviewBadge';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useDeckCards } from '@/hooks/useDeckCards';
 import type { Database } from '@/integrations/supabase/types';
+import type { Rarity } from '@/data/rarityConfig';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
 
@@ -16,6 +17,33 @@ interface FlippableCardProps {
   onEdit: () => void;
   deckId: string;
 }
+
+// Get rarity from evaluation score
+const getCardRarity = (score?: number): Rarity => {
+  if (!score) return 'common';
+  if (score <= 3) return 'common';
+  if (score <= 5) return 'uncommon';
+  if (score <= 7) return 'rare';
+  if (score <= 9) return 'epic';
+  return 'legendary';
+};
+
+// Get glow class based on rarity
+const getRarityGlowClass = (score?: number): string => {
+  const rarity = getCardRarity(score);
+  switch (rarity) {
+    case 'legendary':
+      return 'rarity-glow-legendary';
+    case 'epic':
+      return 'rarity-glow-epic';
+    case 'rare':
+      return 'rarity-glow-rare';
+    case 'uncommon':
+      return 'rarity-glow-uncommon';
+    default:
+      return '';
+  }
+};
 
 export const FlippableCard = ({ 
   definition, 
@@ -54,8 +82,11 @@ export const FlippableCard = ({
     return 'border-status-empty border-dashed';
   };
 
+  // Only apply rarity glow to forged cards with images
+  const rarityGlowClass = imageUrl ? getRarityGlowClass(evaluation?.overall) : '';
+
   return (
-    <div className="relative w-full aspect-[3/4] perspective-1000">
+    <div className={`relative w-full aspect-[3/4] perspective-1000 rounded-xl ${rarityGlowClass}`}>
       {cardId && <ReviewBadge cardId={cardId} />}
       
       <motion.div
