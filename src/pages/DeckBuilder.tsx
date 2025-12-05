@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ArrowLeft, Share2, Activity, Settings } from 'lucide-react';
 import { PhaseSection } from '@/components/deck-builder/PhaseSection';
-import { ResearchPhaseSection } from '@/components/deck-builder/research/ResearchPhaseSection';
+
+// Lazy load research component to isolate potential errors
+const ResearchPhaseSection = lazy(() => 
+  import('@/components/deck-builder/research/ResearchPhaseSection').then(mod => ({ default: mod.ResearchPhaseSection }))
+);
 import { TeamPanel } from '@/components/deck-builder/TeamPanel';
 import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
 import { CardEditor } from '@/components/deck-builder/CardEditor';
@@ -241,7 +245,9 @@ const filledCards = getFilledCardsCount();
               <PhaseSection phase="vision" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <ResearchPhaseSection deckId={deckId || ''} />
+              <Suspense fallback={<div className="py-8 text-center animate-pulse">Loading research...</div>}>
+                <ResearchPhaseSection deckId={deckId || ''} />
+              </Suspense>
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
               <PhaseSection 
