@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,8 +30,18 @@ export function DiscussionDrawer({
 }: DiscussionDrawerProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [selectedCharacter, setSelectedCharacter] = useState(evaluators[0] || 'evergreen');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Safe default for selected character - handle empty evaluators
+  const safeEvaluators = evaluators && evaluators.length > 0 ? evaluators : ['evergreen'];
+  const [selectedCharacter, setSelectedCharacter] = useState(safeEvaluators[0]);
+
+  // Update selected character if evaluators change
+  useEffect(() => {
+    if (safeEvaluators.length > 0 && !safeEvaluators.includes(selectedCharacter)) {
+      setSelectedCharacter(safeEvaluators[0]);
+    }
+  }, [safeEvaluators, selectedCharacter]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -63,6 +73,8 @@ export function DiscussionDrawer({
     }
   };
 
+  const selectedChar = getCharacterById(selectedCharacter);
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[85vh]">
@@ -70,9 +82,10 @@ export function DiscussionDrawer({
           <DrawerTitle>Discuss: {cardTitle}</DrawerTitle>
           
           {/* Character selector */}
-          <div className="flex gap-2 mt-2">
-            {evaluators.map(charId => {
+          <div className="flex gap-2 mt-2 flex-wrap">
+            {safeEvaluators.map(charId => {
               const char = getCharacterById(charId);
+              if (!char) return null;
               return (
                 <button
                   key={charId}
@@ -84,10 +97,10 @@ export function DiscussionDrawer({
                     }`}
                 >
                   <Avatar className="w-4 h-4">
-                    {char?.avatar && <AvatarImage src={char.avatar} />}
-                    <AvatarFallback className="text-[8px]">{char?.emoji}</AvatarFallback>
+                    {char.avatar && <AvatarImage src={char.avatar} />}
+                    <AvatarFallback className="text-[8px]">{char.emoji}</AvatarFallback>
                   </Avatar>
-                  {char?.name}
+                  {char.name}
                 </button>
               );
             })}
@@ -136,14 +149,14 @@ export function DiscussionDrawer({
               );
             })}
             
-            {isLoading && (
+            {isLoading && selectedChar && (
               <div className="flex gap-2">
                 <Avatar className="w-8 h-8">
-                  {getCharacterById(selectedCharacter)?.avatar && (
-                    <AvatarImage src={getCharacterById(selectedCharacter)?.avatar} />
+                  {selectedChar.avatar && (
+                    <AvatarImage src={selectedChar.avatar} />
                   )}
                   <AvatarFallback>
-                    {getCharacterById(selectedCharacter)?.emoji}
+                    {selectedChar.emoji}
                   </AvatarFallback>
                 </Avatar>
                 <div className="bg-muted px-3 py-2 rounded-lg">
