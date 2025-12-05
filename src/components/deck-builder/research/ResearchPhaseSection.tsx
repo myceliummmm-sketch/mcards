@@ -2,12 +2,9 @@ import { motion } from 'framer-motion';
 import { CARD_DEFINITIONS, RESEARCH_CARD_SLOTS } from '@/data/cardDefinitions';
 import { useResearch } from '@/hooks/useResearch';
 import { Progress } from '@/components/ui/progress';
-import { Lock, Unlock, CheckCircle, Search, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Lock, Unlock, CheckCircle } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { Suspense, lazy } from 'react';
-
-const ResearchCard = lazy(() => import('./ResearchCard').then(m => ({ default: m.ResearchCard })));
+import { ResearchCard } from './ResearchCard';
 
 interface ResearchPhaseSectionProps {
   deckId: string;
@@ -98,22 +95,16 @@ export function ResearchPhaseSection({ deckId }: ResearchPhaseSectionProps) {
 
             return (
               <ErrorBoundary key={definition.slot}>
-                <Suspense fallback={
-                  <div className="w-full aspect-[3/4] rounded-xl border border-border bg-muted/20 flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-                  </div>
-                }>
-                  <ResearchCard
-                    definition={definition}
-                    result={result}
-                    isUnlocked={isUnlocked}
-                    isResearching={isCurrentlyResearching}
-                    onStartResearch={() => startResearch(definition.slot)}
-                    onAccept={() => acceptResearch(definition.slot)}
-                    onDiscuss={(message, characterId) => discussResearch(definition.slot, message, characterId)}
-                    deckId={deckId}
-                  />
-                </Suspense>
+                <ResearchCard
+                  definition={definition}
+                  result={result}
+                  isUnlocked={isUnlocked}
+                  isResearching={isCurrentlyResearching}
+                  onStartResearch={() => startResearch(definition.slot)}
+                  onAccept={() => acceptResearch(definition.slot)}
+                  onDiscuss={(message, characterId) => discussResearch(definition.slot, message, characterId)}
+                  deckId={deckId}
+                />
               </ErrorBoundary>
             );
           })}
