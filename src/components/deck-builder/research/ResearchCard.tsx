@@ -34,7 +34,7 @@ export function ResearchCard({
 
   const status = result?.status || 'locked';
   const rarity = (result?.final_rarity as Rarity) || 'common';
-  const rarityConfig = RARITY_CONFIG[rarity];
+  const rarityConfig = RARITY_CONFIG[rarity] || RARITY_CONFIG.common;
 
   const getStatusDisplay = () => {
     if (!isUnlocked) return { icon: Lock, text: 'Locked', color: 'text-muted-foreground' };
@@ -143,8 +143,8 @@ export function ResearchCard({
                 <div className="mt-auto pt-2 border-t border-border/50">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Quality Score</span>
-                    <span className={rarityConfig.textColor}>
-                      {result.rarity_scores?.final_score?.toFixed(1) || '?'}/10
+                    <span className={rarityConfig?.textColor || 'text-muted-foreground'}>
+                      {(result.rarity_scores as any)?.final_score?.toFixed?.(1) || '?'}/10
                     </span>
                   </div>
                 </div>
