@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import { CARD_DEFINITIONS, RESEARCH_CARD_SLOTS } from '@/data/cardDefinitions';
 import { useResearch } from '@/hooks/useResearch';
-import { ResearchCard } from './ResearchCard';
 import { Progress } from '@/components/ui/progress';
-import { Lock, Unlock, CheckCircle } from 'lucide-react';
+import { Lock, Unlock, CheckCircle, Search, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ResearchPhaseSectionProps {
   deckId: string;
@@ -17,7 +17,6 @@ export function ResearchPhaseSection({ deckId }: ResearchPhaseSectionProps) {
     isResearching,
     startResearch,
     acceptResearch,
-    discussResearch,
     getResultForSlot,
     canResearchSlot
   } = useResearch(deckId);
@@ -29,7 +28,7 @@ export function ResearchPhaseSection({ deckId }: ResearchPhaseSectionProps) {
   if (isLoading) {
     return (
       <div className="py-8 text-center">
-        <div className="animate-pulse">Loading research status...</div>
+        <div className="animate-pulse text-muted-foreground">Loading research status...</div>
       </div>
     );
   }
@@ -78,32 +77,60 @@ export function ResearchPhaseSection({ deckId }: ResearchPhaseSectionProps) {
             Complete Vision Phase First
           </h3>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Fill out all 5 Vision cards to unlock AI-powered research. 
-            The team will analyze market data based on your vision.
+            Fill out all 5 Vision cards to unlock AI-powered research.
           </p>
         </div>
       )}
 
-      {/* Research Cards Grid */}
+      {/* Research Cards Grid - Simplified */}
       {isReady && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {researchCards.map((definition) => {
             const result = getResultForSlot(definition.slot);
             const isUnlocked = canResearchSlot(definition.slot);
             const isCurrentlyResearching = isResearching === definition.slot;
+            const status = result?.status || 'locked';
 
             return (
-              <ResearchCard
+              <div
                 key={definition.slot}
-                definition={definition}
-                result={result}
-                isUnlocked={isUnlocked}
-                isResearching={isCurrentlyResearching}
-                onStartResearch={() => startResearch(definition.slot)}
-                onAccept={() => acceptResearch(definition.slot)}
-                onDiscuss={(msg, char) => discussResearch(definition.slot, msg, char)}
-                deckId={deckId}
-              />
+                className={`rounded-xl border p-4 ${
+                  !isUnlocked ? 'opacity-50 border-border' : 
+                  status === 'accepted' ? 'border-green-500' : 'border-border'
+                }`}
+              >
+                <div className="text-xs text-muted-foreground mb-2">R-{definition.slot - 5}</div>
+                <h3 className="font-bold text-foreground text-sm mb-2">{definition.title}</h3>
+                <p className="text-xs text-muted-foreground mb-4">{definition.coreQuestion}</p>
+                
+                <div className="flex flex-col items-center justify-center min-h-[60px]">
+                  {!isUnlocked && (
+                    <Lock className="w-6 h-6 text-muted-foreground" />
+                  )}
+                  
+                  {isUnlocked && status === 'locked' && !isCurrentlyResearching && (
+                    <Button size="sm" onClick={() => startResearch(definition.slot)}>
+                      <Search className="w-3 h-3 mr-1" />
+                      Research
+                    </Button>
+                  )}
+                  
+                  {isCurrentlyResearching && (
+                    <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                  )}
+                  
+                  {status === 'ready' && (
+                    <Button size="sm" onClick={() => acceptResearch(definition.slot)}>
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Accept
+                    </Button>
+                  )}
+                  
+                  {status === 'accepted' && (
+                    <CheckCircle className="w-6 h-6 text-green-500" />
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>
