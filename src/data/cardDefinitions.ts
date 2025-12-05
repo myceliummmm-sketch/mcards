@@ -1,6 +1,7 @@
 export type CardPhase = 'vision' | 'research' | 'build' | 'grow' | 'pivot';
-export type CardType = 'template' | 'insight' | 'both';
+export type CardType = 'template' | 'insight' | 'both' | 'research';
 export type FieldType = 'text' | 'textarea' | 'select' | 'repeatable';
+export type ResearchStatus = 'locked' | 'researching' | 'ready' | 'accepted';
 
 export interface FormFieldConfig {
   name: string;
@@ -9,7 +10,7 @@ export interface FormFieldConfig {
   placeholder?: string;
   required: boolean;
   options?: string[];
-  maxRepeats?: number; // For repeatable fields
+  maxRepeats?: number;
 }
 
 export interface CardDefinition {
@@ -20,9 +21,11 @@ export interface CardDefinition {
   coreQuestion: string;
   formula: string;
   example?: string;
-  aiHelpers: string[]; // Character IDs
+  aiHelpers: string[];
   cardType: CardType;
   fields: FormFieldConfig[];
+  isResearchCard?: boolean;
+  researchFocus?: string;
 }
 
 export const PHASE_CONFIG = {
@@ -38,28 +41,28 @@ export const PHASE_CONFIG = {
     icon: '🔬',
     color: 'hsl(200 70% 55%)',
     description: 'WHAT we know',
-    slots: [6, 7, 8, 9, 10, 11]
+    slots: [6, 7, 8, 9, 10]
   },
   build: {
     name: 'BUILD',
     icon: '🔧',
     color: 'hsl(140 70% 50%)',
     description: 'HOW it works',
-    slots: [12, 13, 14, 15, 16, 17]
+    slots: [11, 12, 13, 14, 15]
   },
   grow: {
     name: 'GROW',
     icon: '🚀',
     color: 'hsl(30 90% 55%)',
     description: 'HOW it grows',
-    slots: [18, 19, 20, 21, 22]
+    slots: [16, 17, 18, 19, 20]
   },
   pivot: {
     name: 'PIVOT',
     icon: '🔄',
     color: 'hsl(280 80% 55%)',
     description: 'WHEN to change direction',
-    slots: [23, 24, 25, 26]
+    slots: [21, 22, 23, 24, 25]
   }
 };
 
@@ -155,115 +158,103 @@ export const CARD_DEFINITIONS: CardDefinition[] = [
     ]
   },
 
-  // ============= RESEARCH PHASE (6 cards) =============
+  // ============= RESEARCH PHASE (5 AI-driven cards) =============
   {
-    id: 'competitor',
+    id: 'market_map',
     slot: 6,
     phase: 'research',
-    title: 'COMPETITOR',
-    coreQuestion: 'Who already solves this problem?',
-    formula: "Top-N: [list]. Gap: [what they don't do]. Wedge: [your entry]",
-    aiHelpers: ['toxic', 'prisma'],
-    cardType: 'both',
+    title: 'MARKET MAP',
+    coreQuestion: 'What does the competitive landscape look like?',
+    formula: 'Market size: [X]. Key players: [list]. Our position: [where]',
+    aiHelpers: ['phoenix', 'evergreen'],
+    cardType: 'research',
+    isResearchCard: true,
+    researchFocus: 'market_landscape',
     fields: [
-      { name: 'competitors_list', label: 'Main Competitors', type: 'textarea', placeholder: 'List top competitors and brief description', required: true },
-      { name: 'their_pricing', label: 'Competitor Pricing', type: 'text', placeholder: 'e.g., $10-50/month', required: true },
-      { name: 'their_weaknesses', label: 'Their Weaknesses', type: 'textarea', placeholder: 'What do they do poorly?', required: true },
-      { name: 'market_gap', label: 'Market Gap', type: 'textarea', placeholder: "What's missing in the market?", required: true },
-      { name: 'your_wedge', label: 'Your Competitive Advantage', type: 'textarea', placeholder: 'How are you different/better?', required: true }
+      { name: 'market_size', label: 'Market Size', type: 'text', placeholder: 'AI-researched market size', required: false },
+      { name: 'key_players', label: 'Key Players', type: 'textarea', placeholder: 'AI-researched competitors', required: false },
+      { name: 'market_trends', label: 'Market Trends', type: 'textarea', placeholder: 'AI-researched trends', required: false },
+      { name: 'our_position', label: 'Our Position', type: 'textarea', placeholder: 'AI-determined positioning', required: false }
     ]
   },
   {
-    id: 'market',
+    id: 'competitor_analysis',
     slot: 7,
     phase: 'research',
-    title: 'MARKET',
-    coreQuestion: "What's the size of opportunity?",
-    formula: "TAM: [X], SAM: [Y], SOM: [Z]. Growth: [%]. Timing: [why now]",
-    aiHelpers: ['evergreen', 'phoenix'],
-    cardType: 'both',
+    title: 'COMPETITOR ANALYSIS',
+    coreQuestion: 'How do competitors stack up?',
+    formula: 'Strengths: [X]. Weaknesses: [Y]. Our advantage: [Z]',
+    aiHelpers: ['toxic', 'prisma'],
+    cardType: 'research',
+    isResearchCard: true,
+    researchFocus: 'competitor_deep_dive',
     fields: [
-      { name: 'tam', label: 'Total Addressable Market', type: 'text', placeholder: 'e.g., $5B', required: true },
-      { name: 'sam', label: 'Serviceable Addressable Market', type: 'text', placeholder: 'e.g., $500M', required: true },
-      { name: 'som', label: 'Serviceable Obtainable Market', type: 'text', placeholder: 'e.g., $10M in year 1', required: true },
-      { name: 'growth_rate', label: 'Market Growth Rate', type: 'text', placeholder: 'e.g., 25% YoY', required: true },
-      { name: 'timing_reason', label: 'Why Now?', type: 'textarea', placeholder: 'Why is now the right time?', required: true },
-      { name: 'data_source', label: 'Data Source', type: 'text', placeholder: 'e.g., Gartner Report 2024', required: false }
+      { name: 'competitor_strengths', label: 'Competitor Strengths', type: 'textarea', placeholder: 'AI-researched strengths', required: false },
+      { name: 'competitor_weaknesses', label: 'Competitor Weaknesses', type: 'textarea', placeholder: 'AI-researched weaknesses', required: false },
+      { name: 'pricing_analysis', label: 'Pricing Analysis', type: 'textarea', placeholder: 'AI-researched pricing', required: false },
+      { name: 'our_advantage', label: 'Our Competitive Advantage', type: 'textarea', placeholder: 'AI-determined advantage', required: false }
     ]
   },
   {
-    id: 'user_voice',
+    id: 'user_insights',
     slot: 8,
     phase: 'research',
-    title: 'USER VOICE',
+    title: 'USER INSIGHTS',
     coreQuestion: 'What do real users say?',
-    formula: 'Top complaints: [list with %]. Opportunity: [what to do]',
+    formula: 'Pain points: [list]. Desires: [list]. Behavior: [patterns]',
     aiHelpers: ['prisma', 'zen'],
-    cardType: 'both',
+    cardType: 'research',
+    isResearchCard: true,
+    researchFocus: 'user_research',
     fields: [
-      { name: 'complaints_list', label: 'Top User Complaints', type: 'textarea', placeholder: 'List main complaints with percentages if available', required: true },
-      { name: 'percentages', label: 'Percentage Breakdown', type: 'text', placeholder: 'e.g., 40% say too complex, 35% say too expensive', required: false },
-      { name: 'opportunity', label: 'Opportunity', type: 'textarea', placeholder: 'What does this reveal about opportunities?', required: true },
-      { name: 'data_source', label: 'Data Source', type: 'text', placeholder: 'e.g., Reddit analysis, user interviews', required: true },
-      { name: 'sample_size', label: 'Sample Size', type: 'text', placeholder: 'e.g., 500 users, 2000 comments', required: false }
+      { name: 'user_pain_points', label: 'User Pain Points', type: 'textarea', placeholder: 'AI-researched pain points', required: false },
+      { name: 'user_desires', label: 'User Desires', type: 'textarea', placeholder: 'AI-researched desires', required: false },
+      { name: 'behavior_patterns', label: 'Behavior Patterns', type: 'textarea', placeholder: 'AI-researched behaviors', required: false },
+      { name: 'key_quotes', label: 'Key User Quotes', type: 'textarea', placeholder: 'AI-found quotes', required: false }
     ]
   },
   {
-    id: 'insight_9',
+    id: 'risk_assessment',
     slot: 9,
     phase: 'research',
-    title: 'INSIGHT',
-    coreQuestion: 'What important knowledge do we have?',
-    formula: '[Fact]. Data: [source]. Applicable to: [areas]',
-    aiHelpers: ['prisma', 'toxic'],
-    cardType: 'insight',
+    title: 'RISK ASSESSMENT',
+    coreQuestion: 'What could go wrong?',
+    formula: 'Risk: [X]. Probability: [%]. Mitigation: [strategy]',
+    aiHelpers: ['toxic', 'techpriest'],
+    cardType: 'research',
+    isResearchCard: true,
+    researchFocus: 'risk_analysis',
     fields: [
-      { name: 'insight_text', label: 'The Insight', type: 'textarea', placeholder: 'Describe the key insight or finding', required: true },
-      { name: 'data_source', label: 'Data Source', type: 'text', placeholder: 'Where does this data come from?', required: true },
-      { name: 'sample_size', label: 'Sample Size (Optional)', type: 'text', placeholder: 'e.g., N=5000', required: false },
-      { name: 'applicable_to', label: 'Applicable To', type: 'text', placeholder: 'Which industries/products?', required: true },
-      { name: 'action_item', label: 'Action Item', type: 'textarea', placeholder: 'What should be done based on this insight?', required: true }
+      { name: 'market_risks', label: 'Market Risks', type: 'textarea', placeholder: 'AI-identified market risks', required: false },
+      { name: 'technical_risks', label: 'Technical Risks', type: 'textarea', placeholder: 'AI-identified tech risks', required: false },
+      { name: 'competitive_risks', label: 'Competitive Risks', type: 'textarea', placeholder: 'AI-identified competitive risks', required: false },
+      { name: 'mitigation_strategies', label: 'Mitigation Strategies', type: 'textarea', placeholder: 'AI-suggested mitigations', required: false }
     ]
   },
   {
-    id: 'insight_10',
+    id: 'opportunity_score',
     slot: 10,
     phase: 'research',
-    title: 'INSIGHT',
-    coreQuestion: 'What important knowledge do we have?',
-    formula: '[Fact]. Data: [source]. Applicable to: [areas]',
-    aiHelpers: ['phoenix', 'techpriest'],
-    cardType: 'insight',
+    title: 'OPPORTUNITY SCORE',
+    coreQuestion: 'Should we proceed?',
+    formula: 'Verdict: [GO/CONDITIONAL GO/PIVOT/STOP]. Score: [X/100]',
+    aiHelpers: ['evergreen', 'phoenix', 'toxic'],
+    cardType: 'research',
+    isResearchCard: true,
+    researchFocus: 'synthesis',
     fields: [
-      { name: 'insight_text', label: 'The Insight', type: 'textarea', placeholder: 'Describe the key insight or finding', required: true },
-      { name: 'data_source', label: 'Data Source', type: 'text', placeholder: 'Where does this data come from?', required: true },
-      { name: 'sample_size', label: 'Sample Size (Optional)', type: 'text', placeholder: 'e.g., N=5000', required: false },
-      { name: 'applicable_to', label: 'Applicable To', type: 'text', placeholder: 'Which industries/products?', required: true },
-      { name: 'action_item', label: 'Action Item', type: 'textarea', placeholder: 'What should be done based on this insight?', required: true }
-    ]
-  },
-  {
-    id: 'insight_11',
-    slot: 11,
-    phase: 'research',
-    title: 'INSIGHT',
-    coreQuestion: 'What important knowledge do we have?',
-    formula: '[Fact]. Data: [source]. Applicable to: [areas]',
-    aiHelpers: ['virgilia', 'zen'],
-    cardType: 'insight',
-    fields: [
-      { name: 'insight_text', label: 'The Insight', type: 'textarea', placeholder: 'Describe the key insight or finding', required: true },
-      { name: 'data_source', label: 'Data Source', type: 'text', placeholder: 'Where does this data come from?', required: true },
-      { name: 'sample_size', label: 'Sample Size (Optional)', type: 'text', placeholder: 'e.g., N=5000', required: false },
-      { name: 'applicable_to', label: 'Applicable To', type: 'text', placeholder: 'Which industries/products?', required: true },
-      { name: 'action_item', label: 'Action Item', type: 'textarea', placeholder: 'What should be done based on this insight?', required: true }
+      { name: 'overall_score', label: 'Overall Score', type: 'text', placeholder: 'AI-calculated score', required: false },
+      { name: 'verdict', label: 'Verdict', type: 'text', placeholder: 'GO / CONDITIONAL GO / PIVOT / STOP', required: false },
+      { name: 'key_strengths', label: 'Key Strengths', type: 'textarea', placeholder: 'AI-identified strengths', required: false },
+      { name: 'key_concerns', label: 'Key Concerns', type: 'textarea', placeholder: 'AI-identified concerns', required: false },
+      { name: 'recommendations', label: 'Recommendations', type: 'textarea', placeholder: 'AI recommendations', required: false }
     ]
   },
 
-  // ============= BUILD PHASE (6 cards) =============
+  // ============= BUILD PHASE (5 cards, slots 11-15) =============
   {
     id: 'features',
-    slot: 12,
+    slot: 11,
     phase: 'build',
     title: 'FEATURES',
     coreQuestion: 'What can the product do?',
@@ -285,7 +276,7 @@ export const CARD_DEFINITIONS: CardDefinition[] = [
   },
   {
     id: 'flow',
-    slot: 13,
+    slot: 12,
     phase: 'build',
     title: 'FLOW',
     coreQuestion: 'How does user get value?',
@@ -302,7 +293,7 @@ export const CARD_DEFINITIONS: CardDefinition[] = [
   },
   {
     id: 'screens',
-    slot: 14,
+    slot: 13,
     phase: 'build',
     title: 'SCREENS',
     coreQuestion: 'What screens are needed?',
@@ -322,7 +313,7 @@ export const CARD_DEFINITIONS: CardDefinition[] = [
   },
   {
     id: 'data',
-    slot: 15,
+    slot: 14,
     phase: 'build',
     title: 'DATA',
     coreQuestion: 'What data do we store?',
@@ -338,8 +329,8 @@ export const CARD_DEFINITIONS: CardDefinition[] = [
     ]
   },
   {
-    id: 'ux_pattern_16',
-    slot: 16,
+    id: 'ux_pattern',
+    slot: 15,
     phase: 'build',
     title: 'UX PATTERN',
     coreQuestion: 'What UX pattern should we use?',
@@ -352,190 +343,181 @@ export const CARD_DEFINITIONS: CardDefinition[] = [
       { name: 'how_it_works', label: 'How It Works', type: 'textarea', placeholder: 'Describe the UX pattern', required: true },
       { name: 'expected_result', label: 'Expected Result', type: 'text', placeholder: 'e.g., +40% retention', required: true },
       { name: 'applicable_to', label: 'Applicable To', type: 'text', placeholder: 'Industries/products where this works', required: true },
-      { name: 'implementation_tips', label: 'Implementation Tips', type: 'textarea', placeholder: 'How to implement effectively', required: false }
-    ]
-  },
-  {
-    id: 'ux_pattern_17',
-    slot: 17,
-    phase: 'build',
-    title: 'UX PATTERN',
-    coreQuestion: 'What UX pattern should we use?',
-    formula: '[Pattern]: [how it works]. Result: [metric]. Works in: [areas]',
-    example: 'Progress Visualization: +35% completion rate',
-    aiHelpers: ['virgilia', 'prisma'],
-    cardType: 'both',
-    fields: [
-      { name: 'pattern_name', label: 'Pattern Name', type: 'text', placeholder: 'e.g., Progress Visualization', required: true },
-      { name: 'how_it_works', label: 'How It Works', type: 'textarea', placeholder: 'Describe the UX pattern', required: true },
-      { name: 'expected_result', label: 'Expected Result', type: 'text', placeholder: 'e.g., +35% completion', required: true },
-      { name: 'applicable_to', label: 'Applicable To', type: 'text', placeholder: 'Industries/products where this works', required: true },
-      { name: 'implementation_tips', label: 'Implementation Tips', type: 'textarea', placeholder: 'How to implement effectively', required: false }
+      { name: 'data_source', label: 'Data Source', type: 'text', placeholder: 'e.g., Nir Eyal research', required: false }
     ]
   },
 
-  // ============= GROW PHASE (5 cards) =============
+  // ============= GROW PHASE (5 cards, slots 16-20) =============
   {
-    id: 'style',
+    id: 'pricing',
+    slot: 16,
+    phase: 'grow',
+    title: 'PRICING',
+    coreQuestion: 'How do we price this?',
+    formula: 'Free: [X]. Pro: [Y]. Enterprise: [Z]',
+    aiHelpers: ['phoenix', 'evergreen'],
+    cardType: 'template',
+    fields: [
+      { name: 'free_tier', label: 'Free Tier', type: 'textarea', placeholder: 'What\'s included in free?', required: true },
+      { name: 'pro_tier', label: 'Pro Tier', type: 'textarea', placeholder: 'What\'s included in paid?', required: true },
+      { name: 'pro_price', label: 'Pro Price', type: 'text', placeholder: 'e.g., $9.99/month', required: true },
+      { name: 'enterprise_tier', label: 'Enterprise Tier (Optional)', type: 'textarea', placeholder: 'Enterprise features', required: false },
+      { name: 'pricing_strategy', label: 'Pricing Strategy', type: 'select', required: true, options: ['Freemium', 'Free Trial', 'Pay-as-you-go', 'Subscription', 'One-time'] }
+    ]
+  },
+  {
+    id: 'acquisition',
+    slot: 17,
+    phase: 'grow',
+    title: 'ACQUISITION',
+    coreQuestion: 'How do we get users?',
+    formula: 'Channel: [X]. CAC: [Y]. LTV: [Z]. Ratio: [LTV/CAC]',
+    aiHelpers: ['phoenix', 'prisma'],
+    cardType: 'template',
+    fields: [
+      { name: 'primary_channel', label: 'Primary Channel', type: 'text', placeholder: 'e.g., SEO, Paid ads, Referral', required: true },
+      { name: 'secondary_channels', label: 'Secondary Channels', type: 'textarea', placeholder: 'Other acquisition channels', required: true },
+      { name: 'target_cac', label: 'Target CAC', type: 'text', placeholder: 'e.g., $5 per user', required: true },
+      { name: 'expected_ltv', label: 'Expected LTV', type: 'text', placeholder: 'e.g., $50 per user', required: true },
+      { name: 'ltv_cac_ratio', label: 'LTV/CAC Ratio', type: 'text', placeholder: 'e.g., 10:1', required: false }
+    ]
+  },
+  {
+    id: 'retention',
     slot: 18,
     phase: 'grow',
-    title: 'STYLE',
-    coreQuestion: 'How does it look and feel?',
-    formula: 'Mood: [X]. Colors: [Y]. References: [Z]',
-    example: 'Calm Tech: soft gradients, pastel, lots of whitespace. Reference: Headspace',
-    aiHelpers: ['virgilia'],
-    cardType: 'both',
+    title: 'RETENTION',
+    coreQuestion: 'How do we keep users?',
+    formula: 'Hook: [X]. Habit: [Y]. Target D30: [Z%]',
+    aiHelpers: ['prisma', 'zen'],
+    cardType: 'template',
     fields: [
-      { name: 'mood', label: 'Overall Mood', type: 'text', placeholder: 'e.g., energetic, calm, professional', required: true },
-      { name: 'color_palette', label: 'Color Palette', type: 'text', placeholder: 'e.g., neon cyan, electric purple', required: true },
-      { name: 'typography', label: 'Typography', type: 'text', placeholder: 'e.g., bold sans-serif, modern', required: true },
-      { name: 'references', label: 'Reference Apps/Brands', type: 'textarea', placeholder: 'e.g., Nike Training Club, Headspace', required: true },
-      { name: 'ui_style', label: 'UI Style', type: 'select', required: true, options: ['Modern', 'Classic', 'Minimal', 'Bold'] }
+      { name: 'hook_mechanism', label: 'Hook Mechanism', type: 'textarea', placeholder: 'What brings users back?', required: true },
+      { name: 'habit_loop', label: 'Habit Loop', type: 'textarea', placeholder: 'Trigger → Action → Reward', required: true },
+      { name: 'target_d1', label: 'Target D1 Retention', type: 'text', placeholder: 'e.g., 40%', required: true },
+      { name: 'target_d7', label: 'Target D7 Retention', type: 'text', placeholder: 'e.g., 20%', required: true },
+      { name: 'target_d30', label: 'Target D30 Retention', type: 'text', placeholder: 'e.g., 10%', required: true }
     ]
   },
   {
-    id: 'money',
+    id: 'virality',
     slot: 19,
     phase: 'grow',
-    title: 'MONEY',
-    coreQuestion: 'How do we make money?',
-    formula: 'Model: [X]. Price: [Y]. Conversion benchmark: [Z%]',
-    example: 'Freemium: Free + $9.99/mo. Conversion 2-5%. 7-day trial +30%',
-    aiHelpers: ['evergreen', 'phoenix'],
-    cardType: 'both',
-    fields: [
-      { name: 'model_type', label: 'Model Type', type: 'select', required: true, options: ['Freemium', 'Subscription', 'One-time', 'Usage-based'] },
-      { name: 'price_tiers', label: 'Pricing Structure', type: 'textarea', placeholder: 'Describe tiers and pricing', required: true },
-      { name: 'conversion_benchmark', label: 'Expected Conversion Rate', type: 'text', placeholder: 'e.g., 2-5%', required: true },
-      { name: 'trial_strategy', label: 'Free Trial Details', type: 'text', placeholder: 'e.g., 7-day free trial', required: false },
-      { name: 'paywall_trigger', label: 'Paywall Trigger', type: 'textarea', placeholder: 'When does paywall appear?', required: true }
-    ]
-  },
-  {
-    id: 'channel',
-    slot: 20,
-    phase: 'grow',
-    title: 'CHANNEL',
-    coreQuestion: 'Where do we find users?',
-    formula: 'Channel [N]: [name], CAC: $[X], specifics: [Y]',
-    example: 'Fitness B2C: Instagram Reels CAC $2-4, TikTok CAC $1-3. Timing: January +300%',
-    aiHelpers: ['phoenix'],
-    cardType: 'both',
-    fields: [
-      { name: 'channels_list', label: 'Acquisition Channels', type: 'textarea', placeholder: 'List channels and strategy for each', required: true },
-      { name: 'cac_per_channel', label: 'CAC Estimates', type: 'text', placeholder: 'e.g., Instagram $2-4, TikTok $1-3', required: true },
-      { name: 'best_timing', label: 'Best Timing', type: 'text', placeholder: 'When to focus on each channel', required: false },
-      { name: 'creative_tips', label: 'Creative/Content Tips', type: 'textarea', placeholder: 'What content works best?', required: false }
-    ]
-  },
-  {
-    id: 'viral',
-    slot: 21,
-    phase: 'grow',
-    title: 'VIRAL',
-    coreQuestion: 'How do users bring others?',
-    formula: 'Trigger: [X] → Action: [Y] → Result: K-factor [Z]',
-    example: 'Achievement Sharing: achievement → beautiful card → Stories. K=0.3',
+    title: 'VIRALITY',
+    coreQuestion: 'How does it spread?',
+    formula: 'Mechanic: [X]. K-factor: [Y]. Cycle time: [Z days]',
     aiHelpers: ['phoenix', 'virgilia'],
-    cardType: 'both',
+    cardType: 'template',
     fields: [
-      { name: 'trigger_moment', label: 'Trigger Moment', type: 'textarea', placeholder: 'What triggers sharing?', required: true },
-      { name: 'share_mechanic', label: 'Share Mechanic', type: 'textarea', placeholder: 'How does sharing work?', required: true },
-      { name: 'k_factor_benchmark', label: 'Expected K-factor', type: 'text', placeholder: 'e.g., 0.3 (30% bring 1 friend)', required: true },
-      { name: 'examples', label: 'Examples from Similar Products', type: 'textarea', placeholder: 'What works in similar apps?', required: false }
+      { name: 'viral_mechanic', label: 'Viral Mechanic', type: 'textarea', placeholder: 'How do users share?', required: true },
+      { name: 'share_trigger', label: 'Share Trigger', type: 'text', placeholder: 'What moment triggers sharing?', required: true },
+      { name: 'target_k_factor', label: 'Target K-Factor', type: 'text', placeholder: 'e.g., 1.2', required: false },
+      { name: 'cycle_time', label: 'Viral Cycle Time', type: 'text', placeholder: 'e.g., 3 days', required: false }
     ]
   },
   {
     id: 'metrics',
-    slot: 22,
+    slot: 20,
     phase: 'grow',
     title: 'METRICS',
-    coreQuestion: 'How do we measure success?',
-    formula: 'North Star: [X]. Benchmarks: D1 [Y%], D7 [Z%], D30 [W%]',
-    example: 'Fitness Apps: North Star = workouts/week. D30 retention 15%+',
-    aiHelpers: ['prisma', 'techpriest'],
-    cardType: 'both',
+    coreQuestion: 'What do we measure?',
+    formula: 'North Star: [X]. Leading: [Y]. Lagging: [Z]',
+    aiHelpers: ['evergreen', 'techpriest'],
+    cardType: 'template',
     fields: [
-      { name: 'north_star_metric', label: 'North Star Metric', type: 'text', placeholder: 'e.g., workouts per week', required: true },
-      { name: 'healthy_user_definition', label: 'Healthy User Definition', type: 'textarea', placeholder: 'What defines an engaged user?', required: true },
-      { name: 'retention_benchmarks', label: 'Retention Benchmarks', type: 'text', placeholder: 'e.g., D1: 40%, D7: 25%, D30: 15%', required: true },
-      { name: 'activation_metric', label: 'Activation Metric', type: 'text', placeholder: 'What action = "activated"?', required: true }
+      { name: 'north_star', label: 'North Star Metric', type: 'text', placeholder: 'e.g., Weekly Active Users', required: true },
+      { name: 'leading_metrics', label: 'Leading Indicators', type: 'textarea', placeholder: 'Metrics that predict success', required: true },
+      { name: 'lagging_metrics', label: 'Lagging Indicators', type: 'textarea', placeholder: 'Metrics that confirm success', required: true },
+      { name: 'measurement_cadence', label: 'Measurement Cadence', type: 'select', required: true, options: ['Daily', 'Weekly', 'Monthly', 'Quarterly'] }
     ]
   },
 
-  // ============= PIVOT PHASE (4 cards) - ULTRA tier =============
+  // ============= PIVOT PHASE (5 cards, slots 21-25) =============
   {
-    id: 'signal',
+    id: 'signals',
+    slot: 21,
+    phase: 'pivot',
+    title: 'SIGNALS',
+    coreQuestion: 'What tells us to change?',
+    formula: 'Red flag: [X] at [threshold]. Action: [Y]',
+    aiHelpers: ['toxic', 'evergreen'],
+    cardType: 'template',
+    fields: [
+      { name: 'red_flags', label: 'Red Flag Metrics', type: 'textarea', placeholder: 'What metrics indicate problems?', required: true },
+      { name: 'thresholds', label: 'Thresholds', type: 'textarea', placeholder: 'At what point do we act?', required: true },
+      { name: 'green_flags', label: 'Green Flag Metrics', type: 'textarea', placeholder: 'What indicates success?', required: true },
+      { name: 'review_cadence', label: 'Review Cadence', type: 'select', required: true, options: ['Weekly', 'Bi-weekly', 'Monthly'] }
+    ]
+  },
+  {
+    id: 'pivot_options',
+    slot: 22,
+    phase: 'pivot',
+    title: 'PIVOT OPTIONS',
+    coreQuestion: 'What alternatives do we have?',
+    formula: 'Option [N]: [description]. Trigger: [condition]',
+    aiHelpers: ['evergreen', 'phoenix'],
+    cardType: 'template',
+    fields: [
+      { name: 'option_1', label: 'Pivot Option 1', type: 'textarea', placeholder: 'Describe alternative direction', required: true },
+      { name: 'option_1_trigger', label: 'Option 1 Trigger', type: 'text', placeholder: 'What condition triggers this?', required: true },
+      { name: 'option_2', label: 'Pivot Option 2', type: 'textarea', placeholder: 'Describe alternative direction', required: true },
+      { name: 'option_2_trigger', label: 'Option 2 Trigger', type: 'text', placeholder: 'What condition triggers this?', required: true },
+      { name: 'option_3', label: 'Pivot Option 3 (Optional)', type: 'textarea', placeholder: 'Describe alternative direction', required: false }
+    ]
+  },
+  {
+    id: 'runway',
     slot: 23,
     phase: 'pivot',
-    title: 'SIGNAL',
-    coreQuestion: 'What tells us to pivot?',
-    formula: 'Metric: [X] below [Y%] for [Z weeks]. User feedback: [pattern]',
-    example: 'D30 retention <10% for 8 weeks despite 3 major updates',
-    aiHelpers: ['toxic', 'prisma'],
-    cardType: 'both',
+    title: 'RUNWAY',
+    coreQuestion: 'How long can we last?',
+    formula: 'Runway: [X months]. Burn: [Y/month]. Extend by: [Z]',
+    aiHelpers: ['evergreen', 'techpriest'],
+    cardType: 'template',
     fields: [
-      { name: 'failing_metric', label: 'Failing Metric', type: 'text', placeholder: 'e.g., D30 retention, conversion rate', required: true },
-      { name: 'benchmark_gap', label: 'Gap vs Benchmark', type: 'text', placeholder: 'e.g., 8% vs 15% target', required: true },
-      { name: 'duration', label: 'How Long?', type: 'text', placeholder: 'e.g., 8 weeks', required: true },
-      { name: 'attempts_made', label: 'Attempts Made', type: 'textarea', placeholder: 'What have you tried?', required: true },
-      { name: 'user_feedback_pattern', label: 'User Feedback Pattern', type: 'textarea', placeholder: 'Common complaints or requests', required: true }
+      { name: 'current_runway', label: 'Current Runway', type: 'text', placeholder: 'e.g., 12 months', required: true },
+      { name: 'monthly_burn', label: 'Monthly Burn Rate', type: 'text', placeholder: 'e.g., $10,000/month', required: true },
+      { name: 'extension_options', label: 'Runway Extension Options', type: 'textarea', placeholder: 'How to extend runway?', required: true },
+      { name: 'break_even_point', label: 'Break-Even Point', type: 'text', placeholder: 'When do we break even?', required: false }
     ]
   },
   {
-    id: 'reframe',
+    id: 'kill_criteria',
     slot: 24,
     phase: 'pivot',
-    title: 'REFRAME',
-    coreQuestion: 'What problem are we actually solving?',
-    formula: 'Original: [X]. Reframe: [Y]. Evidence: [Z]',
-    example: 'Original: fitness tracking. Reframe: accountability partner',
-    aiHelpers: ['evergreen', 'zen'],
-    cardType: 'both',
+    title: 'KILL CRITERIA',
+    coreQuestion: 'When do we stop?',
+    formula: 'Kill if: [condition] by [date]. Evidence: [data]',
+    aiHelpers: ['toxic', 'zen'],
+    cardType: 'template',
     fields: [
-      { name: 'original_problem', label: 'Original Problem Statement', type: 'textarea', placeholder: 'What we thought we were solving', required: true },
-      { name: 'reframed_problem', label: 'Reframed Problem', type: 'textarea', placeholder: 'What the real problem might be', required: true },
-      { name: 'evidence', label: 'Supporting Evidence', type: 'textarea', placeholder: 'Data, interviews, or observations', required: true },
-      { name: 'core_insight', label: 'Core Insight', type: 'textarea', placeholder: 'What did we learn?', required: true }
+      { name: 'kill_condition_1', label: 'Kill Condition 1', type: 'textarea', placeholder: 'Condition that triggers shutdown', required: true },
+      { name: 'kill_deadline_1', label: 'Deadline 1', type: 'text', placeholder: 'By when?', required: true },
+      { name: 'kill_condition_2', label: 'Kill Condition 2', type: 'textarea', placeholder: 'Another shutdown condition', required: false },
+      { name: 'kill_deadline_2', label: 'Deadline 2', type: 'text', placeholder: 'By when?', required: false },
+      { name: 'graceful_shutdown', label: 'Graceful Shutdown Plan', type: 'textarea', placeholder: 'How to wind down responsibly?', required: true }
     ]
   },
   {
-    id: 'new_audience',
+    id: 'lessons',
     slot: 25,
     phase: 'pivot',
-    title: 'NEW AUDIENCE',
-    coreQuestion: 'Who should we serve instead?',
-    formula: 'From [A] to [B]. Why: [reason]. Size: [X]',
-    example: 'From casual gym-goers to busy parents. Why: higher retention',
-    aiHelpers: ['phoenix', 'prisma'],
+    title: 'LESSONS',
+    coreQuestion: 'What did we learn?',
+    formula: 'Lesson: [X]. Evidence: [Y]. Apply to: [Z]',
+    aiHelpers: ['zen', 'evergreen'],
     cardType: 'both',
     fields: [
-      { name: 'current_audience', label: 'Current Audience', type: 'text', placeholder: 'Who we target now', required: true },
-      { name: 'proposed_audience', label: 'Proposed New Audience', type: 'text', placeholder: 'Who we should target', required: true },
-      { name: 'pivot_reason', label: 'Why This Audience?', type: 'textarea', placeholder: 'Evidence for better fit', required: true },
-      { name: 'market_size', label: 'New Market Size', type: 'text', placeholder: 'TAM/SAM for new audience', required: true },
-      { name: 'acquisition_strategy', label: 'How to Reach Them', type: 'textarea', placeholder: 'New acquisition channels', required: true }
-    ]
-  },
-  {
-    id: 'revised_value',
-    slot: 26,
-    phase: 'pivot',
-    title: 'REVISED VALUE',
-    coreQuestion: 'What new value do we offer?',
-    formula: 'Old value: [X]. New value: [Y]. Price change: [Z]',
-    example: 'Old: workout library. New: personal AI coach. Price: $9→$19',
-    aiHelpers: ['evergreen', 'virgilia'],
-    cardType: 'both',
-    fields: [
-      { name: 'old_value_prop', label: 'Old Value Proposition', type: 'textarea', placeholder: 'What we offered before', required: true },
-      { name: 'new_value_prop', label: 'New Value Proposition', type: 'textarea', placeholder: 'What we offer now', required: true },
-      { name: 'key_differentiator', label: 'Key Differentiator', type: 'textarea', placeholder: 'What makes this unique?', required: true },
-      { name: 'price_change', label: 'Pricing Change', type: 'text', placeholder: 'e.g., $9→$19/mo', required: true },
-      { name: 'mvp_timeline', label: 'MVP Timeline', type: 'text', placeholder: 'Time to test new proposition', required: true }
+      { name: 'key_learnings', label: 'Key Learnings', type: 'textarea', placeholder: 'What worked and what didn\'t?', required: true },
+      { name: 'evidence', label: 'Supporting Evidence', type: 'textarea', placeholder: 'Data that supports learnings', required: true },
+      { name: 'apply_forward', label: 'Apply to Future', type: 'textarea', placeholder: 'How to apply these lessons?', required: true },
+      { name: 'share_with', label: 'Share With', type: 'text', placeholder: 'Who should know this?', required: false }
     ]
   }
 ];
+
+export const RESEARCH_CARD_SLOTS = [6, 7, 8, 9, 10];
 
 export const getCardsByPhase = (phase: CardPhase): CardDefinition[] => {
   return CARD_DEFINITIONS.filter(card => card.phase === phase);
@@ -547,10 +529,10 @@ export const getCardBySlot = (slot: number): CardDefinition | undefined => {
 
 export const isCardComplete = (cardData: any, definition: CardDefinition): boolean => {
   if (!cardData) return false;
-  
   const requiredFields = definition.fields.filter(f => f.required);
-  return requiredFields.every(field => {
-    const value = cardData[field.name];
-    return value !== undefined && value !== null && value !== '';
-  });
+  return requiredFields.every(field => cardData[field.name] && cardData[field.name].trim() !== '');
+};
+
+export const isResearchCard = (slot: number): boolean => {
+  return RESEARCH_CARD_SLOTS.includes(slot);
 };
