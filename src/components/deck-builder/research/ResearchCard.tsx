@@ -19,6 +19,15 @@ interface ResearchCardProps {
   deckId: string;
 }
 
+// Default rarity scores for safe fallback
+const DEFAULT_RARITY_SCORES = {
+  depth: 0,
+  actionability: 0,
+  uniqueness: 0,
+  source_quality: 0,
+  final_score: 0
+};
+
 export function ResearchCard({
   definition,
   result,
@@ -36,6 +45,21 @@ export function ResearchCard({
   const rarity = (result?.final_rarity as Rarity) || 'common';
   const rarityConfig = RARITY_CONFIG[rarity] || RARITY_CONFIG.common;
 
+  // Safe extraction of rarity scores
+  const safeRarityScores = result?.rarity_scores 
+    ? (typeof result.rarity_scores === 'object' ? result.rarity_scores as any : DEFAULT_RARITY_SCORES)
+    : null;
+
+  // Safe extraction of team comments
+  const safeTeamComments = Array.isArray(result?.team_comments) 
+    ? result.team_comments as Array<{ characterId: string; comment: string; sentiment: string }>
+    : null;
+
+  // Safe extraction of findings
+  const safeFindings = result?.findings && typeof result.findings === 'object'
+    ? result.findings as Record<string, any>
+    : null;
+
   const getStatusDisplay = () => {
     if (!isUnlocked) return { icon: Lock, text: 'Locked', color: 'text-muted-foreground' };
     if (isResearching) return { icon: Loader2, text: 'Researching...', color: 'text-primary animate-spin' };
@@ -46,6 +70,11 @@ export function ResearchCard({
 
   const statusDisplay = getStatusDisplay();
   const StatusIcon = statusDisplay.icon;
+
+  // Safe AI helpers with fallback
+  const safeAiHelpers = definition?.aiHelpers && Array.isArray(definition.aiHelpers) 
+    ? definition.aiHelpers 
+    : ['evergreen'];
 
   return (
     <>
@@ -139,12 +168,12 @@ export function ResearchCard({
               </div>
 
               {/* Rarity indicator for ready/accepted */}
-              {(status === 'ready' || status === 'accepted') && result && (
+              {(status === 'ready' || status === 'accepted') && safeRarityScores && (
                 <div className="mt-auto pt-2 border-t border-border/50">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Quality Score</span>
                     <span className={rarityConfig?.textColor || 'text-muted-foreground'}>
-                      {(result.rarity_scores as any)?.final_score?.toFixed?.(1) || '?'}/10
+                      {safeRarityScores.final_score?.toFixed?.(1) || '?'}/10
                     </span>
                   </div>
                 </div>
@@ -159,43 +188,39 @@ export function ResearchCard({
               exit={{ rotateY: -180, opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {result && (
-                <>
-                  <TeamFindings
-                    findings={result.findings}
-                    teamComments={result.team_comments}
-                    rarityScores={result.rarity_scores}
-                    verdict={result.verdict}
-                  />
+              <TeamFindings
+                findings={safeFindings}
+                teamComments={safeTeamComments}
+                rarityScores={safeRarityScores}
+                verdict={result?.verdict || null}
+              />
 
-                  {status === 'ready' && (
-                    <div className="mt-auto pt-3 flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 gap-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowDiscussion(true);
-                        }}
-                      >
-                        <MessageCircle className="w-3 h-3" />
-                        Discuss
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1 gap-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAccept();
-                        }}
-                      >
-                        <CheckCircle className="w-3 h-3" />
-                        Take it!
-                      </Button>
-                    </div>
-                  )}
-                </>
+              {status === 'ready' && (
+                <div className="mt-auto pt-3 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowDiscussion(true);
+                    }}
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                    Discuss
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="flex-1 gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAccept();
+                    }}
+                  >
+                    <CheckCircle className="w-3 h-3" />
+                    Take it!
+                  </Button>
+                </div>
               )}
             </motion.div>
           )}
@@ -206,7 +231,7 @@ export function ResearchCard({
         open={showDiscussion}
         onOpenChange={setShowDiscussion}
         cardTitle={definition.title}
-        evaluators={definition.aiHelpers}
+        evaluators={safeAiHelpers}
         onSendMessage={onDiscuss}
       />
     </>

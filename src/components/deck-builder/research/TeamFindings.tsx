@@ -3,20 +3,22 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 
+interface RarityScores {
+  depth: number;
+  actionability: number;
+  uniqueness: number;
+  source_quality: number;
+  final_score: number;
+}
+
 interface TeamFindingsProps {
-  findings: Record<string, any>;
+  findings: Record<string, any> | null;
   teamComments: Array<{
     characterId: string;
     comment: string;
     sentiment: string;
-  }>;
-  rarityScores: {
-    depth: number;
-    actionability: number;
-    uniqueness: number;
-    source_quality: number;
-    final_score: number;
-  };
+  }> | null;
+  rarityScores: RarityScores | null;
   verdict?: string | null;
 }
 
@@ -38,6 +40,22 @@ export function TeamFindings({ findings, teamComments, rarityScores, verdict }: 
     }
   };
 
+  // Early return if no rarity scores available
+  if (!rarityScores) {
+    return (
+      <div className="space-y-3 text-xs">
+        {verdict && (
+          <div className="text-center mb-4">
+            <Badge className={`text-lg px-4 py-2 ${getVerdictColor(verdict)}`}>
+              {verdict.replace('_', ' ')}
+            </Badge>
+          </div>
+        )}
+        <p className="text-center text-muted-foreground">Research data loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3 text-xs">
       {/* Verdict (if present - for Opportunity Score card) */}
@@ -56,11 +74,11 @@ export function TeamFindings({ findings, teamComments, rarityScores, verdict }: 
           <div key={key} className="flex items-center gap-2">
             <span className="w-16 text-muted-foreground">{label}</span>
             <Progress 
-              value={(rarityScores[key as keyof typeof rarityScores] as number || 0) * 10} 
+              value={((rarityScores[key as keyof RarityScores] as number) || 0) * 10} 
               className="h-1.5 flex-1"
             />
             <span className="w-6 text-right text-foreground">
-              {rarityScores[key as keyof typeof rarityScores] || 0}
+              {rarityScores[key as keyof RarityScores] || 0}
             </span>
           </div>
         ))}
