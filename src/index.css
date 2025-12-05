@@ -279,55 +279,130 @@
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 
-  /* Empty card gradients by phase */
+  /* ===== CYBERPUNK EMPTY CARD SYSTEM ===== */
+  
+  /* Animated grid mesh overlay */
+  .card-empty-grid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: grid-scroll 20s linear infinite;
+  }
+
+  @keyframes grid-scroll {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(20px, 20px); }
+  }
+
+  /* Scanline overlay */
+  .card-empty-scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* Phase-specific radial glow colors */
+  .phase-glow-vision {
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.4) 0%, transparent 60%);
+  }
+  .phase-glow-research {
+    background: radial-gradient(circle at center, rgba(6, 182, 212, 0.4) 0%, transparent 60%);
+  }
+  .phase-glow-build {
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.4) 0%, transparent 60%);
+  }
+  .phase-glow-grow {
+    background: radial-gradient(circle at center, rgba(251, 146, 60, 0.4) 0%, transparent 60%);
+  }
+  .phase-glow-pivot {
+    background: radial-gradient(circle at center, rgba(168, 85, 247, 0.4) 0%, transparent 60%);
+  }
+
+  /* Empty card base gradients (kept for fallback) */
   .card-empty-vision {
-    background: linear-gradient(135deg, 
-      rgba(139, 92, 246, 0.3) 0%, 
-      rgba(59, 130, 246, 0.2) 50%,
-      rgba(139, 92, 246, 0.3) 100%);
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
+    --phase-color: 139, 92, 246;
   }
-
   .card-empty-research {
-    background: linear-gradient(135deg, 
-      rgba(6, 182, 212, 0.3) 0%, 
-      rgba(14, 165, 233, 0.2) 50%,
-      rgba(6, 182, 212, 0.3) 100%);
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
+    --phase-color: 6, 182, 212;
   }
-
   .card-empty-build {
-    background: linear-gradient(135deg, 
-      rgba(16, 185, 129, 0.3) 0%, 
-      rgba(5, 150, 105, 0.2) 50%,
-      rgba(16, 185, 129, 0.3) 100%);
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
+    --phase-color: 16, 185, 129;
   }
-
   .card-empty-grow {
-    background: linear-gradient(135deg, 
-      rgba(251, 146, 60, 0.3) 0%, 
-      rgba(234, 179, 8, 0.2) 50%,
-      rgba(251, 146, 60, 0.3) 100%);
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
+    --phase-color: 251, 146, 60;
   }
-
   .card-empty-pivot {
-    background: linear-gradient(135deg, 
-      rgba(168, 85, 247, 0.3) 0%, 
-      rgba(192, 132, 252, 0.2) 50%,
-      rgba(139, 92, 246, 0.3) 100%);
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
+    --phase-color: 168, 85, 247;
   }
 
   @keyframes gradient-shift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
+  }
+
+  /* Center orb pulse animation */
+  @keyframes orb-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  .orb-pulse {
+    animation: orb-pulse 3s ease-in-out infinite;
+  }
+
+  /* ===== RARITY GLOW SYSTEM ===== */
+  
+  @keyframes legendary-glow {
+    0%, 100% { 
+      box-shadow: 0 0 30px rgba(234, 179, 8, 0.5), 0 0 60px rgba(234, 179, 8, 0.25), 0 0 90px rgba(234, 179, 8, 0.1);
+    }
+    50% { 
+      box-shadow: 0 0 40px rgba(234, 179, 8, 0.7), 0 0 80px rgba(234, 179, 8, 0.35), 0 0 120px rgba(234, 179, 8, 0.15);
+    }
+  }
+
+  @keyframes epic-glow {
+    0%, 100% { 
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4), 0 0 50px rgba(168, 85, 247, 0.2);
+    }
+    50% { 
+      box-shadow: 0 0 35px rgba(168, 85, 247, 0.6), 0 0 70px rgba(168, 85, 247, 0.3);
+    }
+  }
+
+  .rarity-glow-legendary {
+    animation: legendary-glow 2s ease-in-out infinite;
+  }
+
+  .rarity-glow-epic {
+    animation: epic-glow 3s ease-in-out infinite;
+  }
+
+  .rarity-glow-rare {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.15);
+  }
+
+  .rarity-glow-uncommon {
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
   }
 
   /* === CRYSTAL BUILDER FIELD GUIDE — 1989 Edition === */

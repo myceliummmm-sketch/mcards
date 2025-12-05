@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { RarityBadge } from '@/components/marketplace/RarityBadge';
 import { Rarity } from '@/data/rarityConfig';
+import { PhaseIcon } from './PhaseIcon';
 
 interface CardFrontProps {
   definition: CardDefinition;
@@ -27,14 +28,14 @@ export const CardFront = ({
   imageUrl,
   evaluationScore
 }: CardFrontProps) => {
-  const getEmptyGradient = () => {
+  const getPhaseGlowClass = () => {
     const phase = definition.phase?.toLowerCase();
-    if (phase === 'vision') return 'card-empty-vision';
-    if (phase === 'research') return 'card-empty-research';
-    if (phase === 'build') return 'card-empty-build';
-    if (phase === 'grow') return 'card-empty-grow';
-    if (phase === 'pivot') return 'card-empty-pivot';
-    return 'card-empty-vision';
+    if (phase === 'vision') return 'phase-glow-vision';
+    if (phase === 'research') return 'phase-glow-research';
+    if (phase === 'build') return 'phase-glow-build';
+    if (phase === 'grow') return 'phase-glow-grow';
+    if (phase === 'pivot') return 'phase-glow-pivot';
+    return 'phase-glow-vision';
   };
 
   return (
@@ -42,7 +43,7 @@ export const CardFront = ({
       className="relative w-full h-full overflow-hidden"
       whileHover={{ scale: 1.01 }}
     >
-      {/* Background: Image or gradient */}
+      {/* Background: Image or cyberpunk empty state */}
       <div className="absolute inset-0">
         {imageUrl ? (
           <img 
@@ -51,12 +52,35 @@ export const CardFront = ({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className={`w-full h-full ${getEmptyGradient()}`} />
+          /* Cyberpunk Empty Card State */
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            {/* Dark cyberpunk base */}
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+            
+            {/* Animated grid mesh */}
+            <div className="absolute inset-0 card-empty-grid" />
+            
+            {/* Phase-colored radial glow */}
+            <div className={`absolute inset-0 ${getPhaseGlowClass()}`} />
+            
+            {/* Center orb with phase icon */}
+            <div className="relative z-10 flex flex-col items-center gap-3">
+              <div className="w-16 h-16 rounded-full bg-white/5 border border-white/20 flex items-center justify-center orb-pulse backdrop-blur-sm">
+                <PhaseIcon phase={definition.phase} size="lg" className="opacity-60" />
+              </div>
+              <span className="text-[10px] text-white/40 font-mono tracking-[0.2em] uppercase">
+                AWAITING FORGE
+              </span>
+            </div>
+            
+            {/* Scanlines overlay */}
+            <div className="absolute inset-0 card-empty-scanlines pointer-events-none" />
+          </div>
         )}
       </div>
 
-      {/* Subtle dark overlay */}
-      <div className="absolute inset-0 bg-black/20" />
+      {/* Subtle dark overlay for forged cards */}
+      {imageUrl && <div className="absolute inset-0 bg-black/20" />}
 
       {/* Glassmorphism Card Title Overlay */}
       <div className="absolute bottom-0 left-0 right-0 p-3">
