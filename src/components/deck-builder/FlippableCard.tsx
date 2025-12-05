@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CardFront } from './CardFront';
 import { CardBack } from './CardBack';
 import { ReviewBadge } from './review/ReviewBadge';
@@ -45,6 +45,23 @@ const getRarityGlowClass = (score?: number): string => {
   }
 };
 
+// Get flash color based on rarity
+const getRarityFlashColor = (score?: number): string => {
+  const rarity = getCardRarity(score);
+  switch (rarity) {
+    case 'legendary':
+      return 'rgba(234, 179, 8, 0.8)';
+    case 'epic':
+      return 'rgba(168, 85, 247, 0.7)';
+    case 'rare':
+      return 'rgba(59, 130, 246, 0.6)';
+    case 'uncommon':
+      return 'rgba(34, 197, 94, 0.5)';
+    default:
+      return 'rgba(255, 255, 255, 0.4)';
+  }
+};
+
 export const FlippableCard = ({ 
   definition, 
   cardRow,
@@ -53,6 +70,7 @@ export const FlippableCard = ({
   deckId
 }: FlippableCardProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showFlash, setShowFlash] = useState(false);
   const { updateCardImage } = useDeckCards(deckId);
 
   // Read from dedicated columns, not from card_data
@@ -84,16 +102,42 @@ export const FlippableCard = ({
 
   // Only apply rarity glow to forged cards with images
   const rarityGlowClass = imageUrl ? getRarityGlowClass(evaluation?.overall) : '';
+  const isForged = !!imageUrl;
+
+  const handleFlip = (toFlipped: boolean) => {
+    // Trigger flash effect when flipping a forged card
+    if (isForged && toFlipped !== isFlipped) {
+      setShowFlash(true);
+      setTimeout(() => setShowFlash(false), 400);
+    }
+    setIsFlipped(toFlipped);
+  };
 
   return (
     <div className={`relative w-full aspect-[3/4] perspective-1000 rounded-xl ${rarityGlowClass}`}>
       {cardId && <ReviewBadge cardId={cardId} />}
       
+      {/* Flash effect overlay */}
+      <AnimatePresence>
+        {showFlash && isForged && (
+          <motion.div
+            className="absolute inset-0 z-50 rounded-xl pointer-events-none"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: [0, 1, 0], scale: [0.8, 1.2, 1.5] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            style={{
+              background: `radial-gradient(circle at center, ${getRarityFlashColor(evaluation?.overall)} 0%, transparent 70%)`,
+            }}
+          />
+        )}
+      </AnimatePresence>
+      
       <motion.div
         className="relative w-full h-full preserve-3d cursor-pointer"
         initial={false}
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: 'spring' }}
+        transition={{ duration: 0.6, type: 'spring', stiffness: 100, damping: 20 }}
         whileHover={{ scale: 1.02 }}
       >
         {/* Front face */}
@@ -103,7 +147,7 @@ export const FlippableCard = ({
             backfaceVisibility: 'hidden',
             pointerEvents: isFlipped ? 'none' : 'auto'
           }}
-          onClick={() => setIsFlipped(true)}
+          onClick={() => handleFlip(true)}
         >
           <CardFront
             definition={definition}
@@ -124,7 +168,7 @@ export const FlippableCard = ({
             rotateY: 180,
             pointerEvents: isFlipped ? 'auto' : 'none'
           }}
-          onClick={() => setIsFlipped(false)}
+          onClick={() => handleFlip(false)}
         >
           <CardBack
             definition={definition}

@@ -369,23 +369,65 @@
     animation: orb-pulse 3s ease-in-out infinite;
   }
 
-  /* ===== RARITY GLOW SYSTEM ===== */
+  /* ===== RARITY GLOW SYSTEM - Enhanced Multi-Layer ===== */
   
   @keyframes legendary-glow {
     0%, 100% { 
-      box-shadow: 0 0 30px rgba(234, 179, 8, 0.5), 0 0 60px rgba(234, 179, 8, 0.25), 0 0 90px rgba(234, 179, 8, 0.1);
+      box-shadow: 
+        0 0 20px rgba(234, 179, 8, 0.7),
+        0 0 40px rgba(234, 179, 8, 0.5), 
+        0 0 80px rgba(234, 179, 8, 0.3),
+        0 0 120px rgba(234, 179, 8, 0.15);
     }
     50% { 
-      box-shadow: 0 0 40px rgba(234, 179, 8, 0.7), 0 0 80px rgba(234, 179, 8, 0.35), 0 0 120px rgba(234, 179, 8, 0.15);
+      box-shadow: 
+        0 0 30px rgba(234, 179, 8, 0.9),
+        0 0 60px rgba(234, 179, 8, 0.6), 
+        0 0 100px rgba(234, 179, 8, 0.4),
+        0 0 150px rgba(234, 179, 8, 0.2);
     }
   }
 
   @keyframes epic-glow {
     0%, 100% { 
-      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4), 0 0 50px rgba(168, 85, 247, 0.2);
+      box-shadow: 
+        0 0 15px rgba(168, 85, 247, 0.6),
+        0 0 35px rgba(168, 85, 247, 0.4), 
+        0 0 60px rgba(168, 85, 247, 0.2);
     }
     50% { 
-      box-shadow: 0 0 35px rgba(168, 85, 247, 0.6), 0 0 70px rgba(168, 85, 247, 0.3);
+      box-shadow: 
+        0 0 25px rgba(168, 85, 247, 0.8),
+        0 0 50px rgba(168, 85, 247, 0.5), 
+        0 0 80px rgba(168, 85, 247, 0.3);
+    }
+  }
+
+  @keyframes rare-glow {
+    0%, 100% { 
+      box-shadow: 
+        0 0 12px rgba(59, 130, 246, 0.5),
+        0 0 30px rgba(59, 130, 246, 0.3), 
+        0 0 50px rgba(59, 130, 246, 0.15);
+    }
+    50% { 
+      box-shadow: 
+        0 0 18px rgba(59, 130, 246, 0.6),
+        0 0 40px rgba(59, 130, 246, 0.4), 
+        0 0 65px rgba(59, 130, 246, 0.2);
+    }
+  }
+
+  @keyframes uncommon-glow {
+    0%, 100% { 
+      box-shadow: 
+        0 0 10px rgba(34, 197, 94, 0.4),
+        0 0 25px rgba(34, 197, 94, 0.2);
+    }
+    50% { 
+      box-shadow: 
+        0 0 15px rgba(34, 197, 94, 0.5),
+        0 0 35px rgba(34, 197, 94, 0.25);
     }
   }
 
@@ -394,15 +436,15 @@
   }
 
   .rarity-glow-epic {
-    animation: epic-glow 3s ease-in-out infinite;
+    animation: epic-glow 2.5s ease-in-out infinite;
   }
 
   .rarity-glow-rare {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.15);
+    animation: rare-glow 3s ease-in-out infinite;
   }
 
   .rarity-glow-uncommon {
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+    animation: uncommon-glow 4s ease-in-out infinite;
   }
 
   /* === CRYSTAL BUILDER FIELD GUIDE — 1989 Edition === */
