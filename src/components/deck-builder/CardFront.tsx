@@ -33,6 +33,7 @@ export const CardFront = ({
     if (phase === 'research') return 'card-empty-research';
     if (phase === 'build') return 'card-empty-build';
     if (phase === 'grow') return 'card-empty-grow';
+    if (phase === 'pivot') return 'card-empty-pivot';
     return 'card-empty-vision';
   };
 
@@ -56,6 +57,15 @@ export const CardFront = ({
 
       {/* Subtle dark overlay */}
       <div className="absolute inset-0 bg-black/20" />
+
+      {/* Glassmorphism Card Title Overlay */}
+      <div className="absolute bottom-0 left-0 right-0 p-3">
+        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg px-4 py-2 shadow-lg">
+          <span className="text-white/90 text-sm font-semibold tracking-widest uppercase">
+            {definition.title}
+          </span>
+        </div>
+      </div>
 
       {/* Minimal slot badge */}
       <div className="absolute top-2 left-2 backdrop-blur-md bg-black/40 border border-white/30 rounded px-2 py-1">

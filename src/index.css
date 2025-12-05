@@ -316,6 +316,15 @@
     animation: gradient-shift 8s ease infinite;
   }
 
+  .card-empty-pivot {
+    background: linear-gradient(135deg, 
+      rgba(168, 85, 247, 0.3) 0%, 
+      rgba(192, 132, 252, 0.2) 50%,
+      rgba(139, 92, 246, 0.3) 100%);
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
   @keyframes gradient-shift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
