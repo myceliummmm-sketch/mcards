@@ -35,3 +35,12 @@ verify_jwt = false
 
 [functions.generate-website-brief]
 verify_jwt = true
+
+[functions.research-orchestrator]
+verify_jwt = true
+
+[functions.research-execute]
+verify_jwt = true
+
+[functions.research-discuss]
+verify_jwt = true

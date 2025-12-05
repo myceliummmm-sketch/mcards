@@ -364,6 +364,106 @@ export type Database = {
           },
         ]
       }
+      research_results: {
+        Row: {
+          accepted_at: string | null
+          card_slot: number
+          created_at: string
+          deck_id: string
+          final_rarity: string | null
+          findings: Json
+          id: string
+          rarity_scores: Json
+          researched_at: string | null
+          sources: Json
+          status: Database["public"]["Enums"]["research_status"]
+          team_comments: Json
+          updated_at: string
+          verdict: Database["public"]["Enums"]["research_verdict"] | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          card_slot: number
+          created_at?: string
+          deck_id: string
+          final_rarity?: string | null
+          findings?: Json
+          id?: string
+          rarity_scores?: Json
+          researched_at?: string | null
+          sources?: Json
+          status?: Database["public"]["Enums"]["research_status"]
+          team_comments?: Json
+          updated_at?: string
+          verdict?: Database["public"]["Enums"]["research_verdict"] | null
+        }
+        Update: {
+          accepted_at?: string | null
+          card_slot?: number
+          created_at?: string
+          deck_id?: string
+          final_rarity?: string | null
+          findings?: Json
+          id?: string
+          rarity_scores?: Json
+          researched_at?: string | null
+          sources?: Json
+          status?: Database["public"]["Enums"]["research_status"]
+          team_comments?: Json
+          updated_at?: string
+          verdict?: Database["public"]["Enums"]["research_verdict"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "research_results_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      research_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_card_slot: number
+          deck_id: string
+          id: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["research_status"]
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_card_slot?: number
+          deck_id: string
+          id?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["research_status"]
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_card_slot?: number
+          deck_id?: string
+          id?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["research_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "research_sessions_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: true
+            referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spore_transactions: {
         Row: {
           amount: number
@@ -444,6 +544,8 @@ export type Database = {
       collaborator_role: "reviewer" | "editor"
       comment_type: "comment" | "suggestion" | "approval"
       marketplace_listing_status: "active" | "sold" | "removed"
+      research_status: "locked" | "researching" | "ready" | "accepted"
+      research_verdict: "go" | "conditional_go" | "pivot" | "stop"
       review_status: "pending" | "in_progress" | "completed"
       spore_transaction_type:
         | "subscription_credit"
@@ -582,6 +684,8 @@ export const Constants = {
       collaborator_role: ["reviewer", "editor"],
       comment_type: ["comment", "suggestion", "approval"],
       marketplace_listing_status: ["active", "sold", "removed"],
+      research_status: ["locked", "researching", "ready", "accepted"],
+      research_verdict: ["go", "conditional_go", "pivot", "stop"],
       review_status: ["pending", "in_progress", "completed"],
       spore_transaction_type: [
         "subscription_credit",
