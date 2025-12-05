@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ArrowLeft, Share2, Activity, Settings } from 'lucide-react';
 import { PhaseSection } from '@/components/deck-builder/PhaseSection';
+import { ResearchPhaseSection } from '@/components/deck-builder/research/ResearchPhaseSection';
 import { TeamPanel } from '@/components/deck-builder/TeamPanel';
 import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
 import { CardEditor } from '@/components/deck-builder/CardEditor';
@@ -240,7 +241,7 @@ const filledCards = getFilledCardsCount();
               <PhaseSection phase="vision" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection phase="research" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
+              <ResearchPhaseSection deckId={deckId || ''} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
               <PhaseSection 
