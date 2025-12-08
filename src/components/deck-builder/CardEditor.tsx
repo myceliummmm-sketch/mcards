@@ -15,6 +15,7 @@ import { CardComments } from './review/CardComments';
 import { ForgeRevealOverlay } from './ForgeRevealOverlay';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 
@@ -36,23 +37,21 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   const [currentEvaluation, setCurrentEvaluation] = useState(evaluation);
   const [forgingStage, setForgingStage] = useState<'idle' | 'forging' | 'revealing' | 'complete'>('idle');
   const [loadingStage, setLoadingStage] = useState<'idle' | 'channeling' | 'summoning' | 'evaluating'>('idle');
-  const [wizardMode, setWizardMode] = useState(true); // Default to wizard mode for new cards
+  const [wizardMode, setWizardMode] = useState(true);
   const { toast } = useToast();
+  const { t, language } = useTranslation();
 
-  // Update form data when initialData changes
   useEffect(() => {
     setFormData(initialData || {});
     setCurrentImageUrl(cardImageUrl);
     setCurrentEvaluation(evaluation);
-    // If card already has data, default to quick edit mode
     const hasExistingData = initialData && Object.keys(initialData).length > 0;
     setWizardMode(!hasExistingData);
   }, [initialData, cardImageUrl, evaluation]);
 
-  // Auto-save debounced
   useEffect(() => {
     if (!formData || Object.keys(formData).length === 0) return;
-    if (forgingStage !== 'idle') return; // Skip auto-save during forge
+    if (forgingStage !== 'idle') return;
 
     const timer = setTimeout(() => {
       handleSave(true);
@@ -71,7 +70,6 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   const handleSave = async (silent = false, autoMagic = false, formDataOverride?: Record<string, any>) => {
     const dataToUse = formDataOverride || formData;
     
-    // Check required fields with the data we're actually using
     const requiredFieldsFilledNow = definition.fields
       .filter(f => f.required)
       .every(f => {
@@ -79,25 +77,21 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
         return value !== undefined && value !== null && value !== '';
       });
     
-    console.log('handleSave called:', { silent, autoMagic, hasOverride: !!formDataOverride, requiredFieldsFilledNow });
-    
     setIsSaving(true);
     try {
       let finalImageUrl = currentImageUrl;
       let finalEvaluation = currentEvaluation;
 
-      // If this is a "Forge Card" click (autoMagic=true), do the full magical flow
       if (autoMagic && requiredFieldsFilledNow) {
         setForgingStage('forging');
         let hasErrors = false;
         
-        // Step 1: Generate image if not present
         if (!currentImageUrl) {
           try {
             setLoadingStage('channeling');
             toast({
-              title: '✨ Channeling creative energy...',
-              description: 'Crafting your card\'s visual identity.',
+              title: `✨ ${t('cardEditor.channeling')}`,
+              description: t('cardEditor.channelingDesc'),
             });
 
             setLoadingStage('summoning');
@@ -111,8 +105,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             if (imageError) {
               console.error('Image generation error:', imageError);
               toast({
-                title: '⚠️ Image generation failed',
-                description: 'Card will be forged without artwork.',
+                title: `⚠️ ${t('cardEditor.imageGenFailed')}`,
+                description: t('cardEditor.imageGenFailedDesc'),
                 variant: 'destructive'
               });
               hasErrors = true;
@@ -126,13 +120,12 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           }
         }
 
-        // Step 2: Generate evaluation if not present
         if (!currentEvaluation) {
           try {
             setLoadingStage('evaluating');
             toast({
-              title: '🔮 The team is reviewing...',
-              description: 'Evaluating your card\'s potential.',
+              title: `🔮 ${t('cardEditor.evaluating')}`,
+              description: t('cardEditor.evaluatingDesc'),
             });
 
             const { data: evalData, error: evalError } = await supabase.functions.invoke('evaluate-card', {
@@ -149,8 +142,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             if (evalError) {
               console.error('Evaluation error:', evalError);
               toast({
-                title: '⚠️ Evaluation unavailable',
-                description: 'Card forged but team evaluation couldn\'t be generated.',
+                title: `⚠️ ${t('cardEditor.evalUnavailable')}`,
+                description: t('cardEditor.evalUnavailableDesc'),
                 variant: 'destructive'
               });
               hasErrors = true;
@@ -164,10 +157,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           }
         }
 
-        // Always trigger reveal animation, even if there were errors
         setForgingStage('revealing');
         
-        // Wait for flip animation to complete, then trigger confetti
         setTimeout(() => {
           if (!hasErrors) {
             triggerForgeConfetti();
@@ -175,29 +166,28 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           setForgingStage('complete');
           
           toast({
-            title: hasErrors ? '⚠️ Card forged with issues' : '✨ Card forged successfully!',
+            title: hasErrors ? `⚠️ ${t('cardEditor.cardForgedWithIssues')}` : `✨ ${t('cardEditor.cardForged')}`,
             description: finalEvaluation 
-              ? `Overall score: ${finalEvaluation.overall}/10` 
+              ? `${t('cardEditor.overallScore')}: ${finalEvaluation.overall}/10` 
               : hasErrors 
-                ? 'Some features unavailable, but your card is saved.'
-                : 'Your card has been crafted.',
+                ? t('cardEditor.errorSaving')
+                : t('cardEditor.changesSaved'),
           });
         }, 1200);
       }
 
-      // Save everything together - use the override data if provided
       await onSave(dataToUse, finalImageUrl, finalEvaluation);
       
       if (!silent && !autoMagic) {
         toast({
-          title: '✨ Card saved',
-          description: 'Your changes have been saved.',
+          title: `✨ ${t('cardEditor.cardSaved')}`,
+          description: t('cardEditor.changesSaved'),
         });
       }
     } catch (error) {
       toast({
-        title: 'Error forging card',
-        description: 'There was an error saving your changes. Please try again.',
+        title: t('cardEditor.errorForging'),
+        description: t('cardEditor.errorSaving'),
         variant: 'destructive',
       });
       setForgingStage('idle');
@@ -206,7 +196,6 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
       setIsSaving(false);
     }
   };
-
 
   const requiredFieldsFilled = definition.fields
     .filter(f => f.required)
@@ -221,7 +210,6 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="right" className="w-full sm:max-w-3xl p-0">
-        {/* Header */}
         <SheetHeader className="px-6 py-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -232,7 +220,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                 className="gap-2 hover:bg-primary/10"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Return to Deck
+                {t('cardEditor.returnToDeck')}
               </Button>
               <Button
                 variant="ghost"
@@ -241,7 +229,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                 className="gap-2"
               >
                 <Wand2 className="w-4 h-4" />
-                {wizardMode ? 'Quick Edit' : 'Wizard Mode'}
+                {wizardMode ? t('cardEditor.quickEdit') : t('cardEditor.wizardMode')}
               </Button>
             </div>
             {!wizardMode && (
@@ -254,12 +242,12 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                 {isSaving ? (
                   <>
                     <Sparkles className="w-4 h-4 animate-spin" />
-                    Forging magic...
+                    {t('cardEditor.forgingMagic')}
                   </>
                 ) : (
                   <>
                     <Zap className="w-4 h-4" />
-                    Forge Card
+                    {t('cardEditor.forgeCard')}
                   </>
                 )}
               </Button>
@@ -270,15 +258,15 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             <div className="flex items-center gap-3">
               <Sparkles className="w-6 h-6 text-primary animate-pulse" />
               <span className="text-2xl font-display bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                CRAFTING CARD #{definition.slot}: {definition.title}
+                {t('cardEditor.craftingCard')} #{definition.slot}: {definition.title}
               </span>
               {definition.cardType === 'insight' ? (
                 <span className="text-sm bg-status-insight/20 text-status-insight px-2 py-1 rounded border border-status-insight/30">
-                  🔷 INSIGHT
+                  🔷 {t('cardEditor.insight')}
                 </span>
               ) : (
                 <span className="text-sm bg-muted text-muted-foreground px-2 py-1 rounded border border-border">
-                  🔲 TEMPLATE
+                  🔲 {t('cardEditor.template')}
                 </span>
               )}
             </div>
@@ -288,24 +276,22 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           </SheetTitle>
         </SheetHeader>
 
-        {/* Content */}
         <ScrollArea className="h-[calc(100vh-120px)]">
           <Tabs defaultValue="edit" className="w-full">
             <div className="px-6 pt-4">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="edit">
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Edit Card
+                  {t('cardEditor.editCard')}
                 </TabsTrigger>
                 <TabsTrigger value="reviews">
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Reviews
+                  {t('cardEditor.reviews')}
                 </TabsTrigger>
               </TabsList>
             </div>
 
             <TabsContent value="edit" className="px-6 py-6 space-y-6">
-              {/* Metadata Card - Shows card stats */}
               {initialData && Object.keys(initialData).length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -315,7 +301,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   <div className="flex items-center gap-2">
                     <span className="text-xl">⭐</span>
                     <div>
-                      <div className="text-xs text-muted-foreground uppercase font-mono">XP Earned</div>
+                      <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.xpEarned')}</div>
                       <div className="text-sm font-bold text-foreground">
                         {(() => {
                           let xp = 10;
@@ -328,18 +314,18 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   <div className="flex items-center gap-2">
                     <span className="text-xl">📊</span>
                     <div>
-                      <div className="text-xs text-muted-foreground uppercase font-mono">Score</div>
+                      <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.score')}</div>
                       <div className="text-sm font-bold text-foreground">
-                        {currentEvaluation?.overall ? `${currentEvaluation.overall.toFixed(1)}/10` : 'Not evaluated'}
+                        {currentEvaluation?.overall ? `${currentEvaluation.overall.toFixed(1)}/10` : t('cardEditor.notEvaluated')}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xl">📅</span>
                     <div>
-                      <div className="text-xs text-muted-foreground uppercase font-mono">Updated</div>
+                      <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.updated')}</div>
                       <div className="text-sm font-bold text-foreground">
-                        {initialData?.updated_at ? format(new Date(initialData.updated_at), 'MMM d, yyyy') : 'Never'}
+                        {initialData?.updated_at ? format(new Date(initialData.updated_at), 'MMM d, yyyy') : t('cardEditor.never')}
                       </div>
                     </div>
                   </div>
@@ -348,16 +334,15 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                       {initialData?.completed === true ? '✅' : Object.keys(initialData).length > 0 ? '⏳' : '⭕'}
                     </span>
                     <div>
-                      <div className="text-xs text-muted-foreground uppercase font-mono">Status</div>
+                      <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.status')}</div>
                       <div className="text-sm font-bold text-foreground">
-                        {initialData?.completed === true ? 'Complete' : Object.keys(initialData).length > 0 ? 'In Progress' : 'Empty'}
+                        {initialData?.completed === true ? t('cardEditor.complete') : Object.keys(initialData).length > 0 ? t('cardEditor.inProgress') : t('cardEditor.empty')}
                       </div>
                     </div>
                   </div>
                 </motion.div>
               )}
               {wizardMode ? (
-                /* Wizard Mode */
                 <CardCraftingWizard
                   definition={definition}
                   initialData={formData}
@@ -366,121 +351,112 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   isForging={isSaving}
                 />
               ) : (
-                /* Quick Edit Mode */
                 <>
-            {/* Formula & Example */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 bg-primary/5 border border-primary/20 rounded-lg"
-            >
-              <div className="text-xs font-bold text-primary mb-1">FORMULA</div>
-              <div className="text-sm text-foreground font-mono">{definition.formula}</div>
-              {definition.example && (
-                <>
-                  <div className="text-xs font-bold text-secondary mt-3 mb-1">EXAMPLE</div>
-                  <div className="text-sm text-muted-foreground italic">{definition.example}</div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-primary/5 border border-primary/20 rounded-lg"
+                  >
+                    <div className="text-xs font-bold text-primary mb-1">{t('cardEditor.formula')}</div>
+                    <div className="text-sm text-foreground font-mono">{definition.formula}</div>
+                    {definition.example && (
+                      <>
+                        <div className="text-xs font-bold text-secondary mt-3 mb-1">{t('cardEditor.example')}</div>
+                        <div className="text-sm text-muted-foreground italic">{definition.example}</div>
+                      </>
+                    )}
+                  </motion.div>
+
+                  <AIHelperHint characterId={primaryHelper} type="encouraging" />
+
+                  {forgingStage !== 'idle' ? (
+                    <CardReveal
+                      isRevealing={forgingStage === 'revealing' || forgingStage === 'complete'}
+                      imageUrl={currentImageUrl}
+                      evaluation={currentEvaluation}
+                      loadingStage={loadingStage}
+                      cardTitle={definition.title}
+                      cardType={definition.cardType === 'insight' ? t('cardEditor.insight') : t('cardEditor.template')}
+                      cardData={formData}
+                    />
+                  ) : currentImageUrl ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5"
+                    >
+                      <img 
+                        src={currentImageUrl} 
+                        alt="Card artwork"
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                      <div className="absolute bottom-3 left-3 text-xs font-bold text-primary">
+                        ✨ {t('cardEditor.cardVisual')}
+                      </div>
+                    </motion.div>
+                  ) : null}
+
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="space-y-4"
+                  >
+                    {definition.fields.map((field, index) => (
+                      <motion.div
+                        key={field.name}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.05 * index }}
+                      >
+                        <DynamicFormField
+                          field={field}
+                          value={formData[field.name]}
+                          onChange={(value) => handleFieldChange(field.name, value)}
+                        />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+
+                  {currentEvaluation && (
+                    <EvaluationMatrix evaluation={currentEvaluation} />
+                  )}
+
+                  {secondaryHelper && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <div className="border-t border-border pt-6 mt-6">
+                        <AIHelperHint characterId={secondaryHelper} type="challenging" />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      disabled
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      {t('common.search')} {t('dashboard.marketplace')}
+                      <span className="text-xs text-muted-foreground ml-2">(Coming soon)</span>
+                    </Button>
+                  </motion.div>
+
+                  {!requiredFieldsFilled && (
+                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+                      {language === 'ru' ? 'Заполните все обязательные поля (отмечены *)' : 'Please fill in all required fields (marked with *)'}
+                    </div>
+                  )}
                 </>
-              )}
-            </motion.div>
-
-            {/* Primary AI Helper Hint */}
-            <AIHelperHint characterId={primaryHelper} type="encouraging" />
-
-            {/* Magical Card Reveal or Preview */}
-            {forgingStage !== 'idle' ? (
-              <CardReveal
-                isRevealing={forgingStage === 'revealing' || forgingStage === 'complete'}
-                imageUrl={currentImageUrl}
-                evaluation={currentEvaluation}
-                loadingStage={loadingStage}
-                cardTitle={definition.title}
-                cardType={definition.cardType === 'insight' ? 'Insight Card' : 'Template Card'}
-                cardData={formData}
-              />
-            ) : currentImageUrl ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5"
-              >
-                <img 
-                  src={currentImageUrl} 
-                  alt="Card artwork"
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                <div className="absolute bottom-3 left-3 text-xs font-bold text-primary">
-                  ✨ CARD VISUAL
-                </div>
-              </motion.div>
-            ) : null}
-
-            {/* Form Fields */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-4"
-            >
-              {definition.fields.map((field, index) => (
-                <motion.div
-                  key={field.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * index }}
-                >
-                  <DynamicFormField
-                    field={field}
-                    value={formData[field.name]}
-                    onChange={(value) => handleFieldChange(field.name, value)}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* Evaluation Matrix */}
-            {currentEvaluation && (
-              <EvaluationMatrix evaluation={currentEvaluation} />
-            )}
-
-            {/* Secondary AI Helper Hint (Challenging) */}
-            {secondaryHelper && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <div className="border-t border-border pt-6 mt-6">
-                  <AIHelperHint characterId={secondaryHelper} type="challenging" />
-                </div>
-              </motion.div>
-            )}
-
-            {/* Marketplace CTA (Future) */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Button
-                variant="outline"
-                className="w-full gap-2"
-                disabled
-              >
-                <Sparkles className="w-4 h-4" />
-                Find similar insights in Marketplace
-                <span className="text-xs text-muted-foreground ml-2">(Coming soon)</span>
-              </Button>
-            </motion.div>
-
-                {/* Validation Status */}
-                {!requiredFieldsFilled && (
-                  <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
-                    Please fill in all required fields (marked with *)
-                  </div>
-                )}
-              </>
               )}
             </TabsContent>
 
@@ -489,14 +465,13 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                 <CardComments cardId={cardId} />
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  Save this card first to enable comments and reviews
+                  {language === 'ru' ? 'Сначала сохраните карту, чтобы включить комментарии' : 'Save this card first to enable comments and reviews'}
                 </div>
               )}
             </TabsContent>
           </Tabs>
         </ScrollArea>
 
-        {/* Forge Reveal Overlay - Shows magical forge animation */}
         <ForgeRevealOverlay
           isActive={forgingStage !== 'idle'}
           forgingStage={forgingStage}
@@ -504,7 +479,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           imageUrl={currentImageUrl}
           evaluation={currentEvaluation}
           cardTitle={definition.title}
-          cardType={definition.cardType === 'insight' ? 'Insight Card' : 'Template Card'}
+          cardType={definition.cardType === 'insight' ? t('cardEditor.insight') : t('cardEditor.template')}
           cardData={formData}
           slot={definition.slot}
           onDismiss={() => {

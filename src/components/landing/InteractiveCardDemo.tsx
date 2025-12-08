@@ -4,6 +4,7 @@ import { Sparkles, ArrowRight, Loader2, ImageIcon } from 'lucide-react';
 import { DEMO_CARDS, PHASE_COLORS, PHASE_GLOW, PHASE_BORDER_COLORS, PHASE_ACCENT, DemoCard } from '@/data/demoCardData';
 import { useDemoCardImages } from '@/hooks/useDemoCardImages';
 import { CardDetailModal } from './CardDetailModal';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const DemoCardComponent = ({ 
   card, 
@@ -19,6 +20,7 @@ const DemoCardComponent = ({
   onGenerateImage: () => void;
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const { t } = useTranslation();
 
   const getRarityColor = (score: number) => {
     if (score >= 90) return 'text-amber-400';
@@ -65,7 +67,7 @@ const DemoCardComponent = ({
               <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${PHASE_COLORS[card.phase]}`}>
                 <div className="text-center">
                   <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-2" />
-                  <span className="text-xs text-muted-foreground">Generating artwork...</span>
+                  <span className="text-xs text-muted-foreground">{t('interactiveDemo.generatingArtwork')}</span>
                 </div>
               </div>
             ) : imageUrl ? (
@@ -102,7 +104,7 @@ const DemoCardComponent = ({
               "{card.content.headline}"
             </p>
             <div className="mt-3 flex items-center gap-2 text-xs text-white/60">
-              <span>Hover to flip</span>
+              <span>{t('interactiveDemo.hoverToFlip')}</span>
               <ArrowRight className="w-3 h-3" />
             </div>
           </div>
@@ -131,14 +133,14 @@ const DemoCardComponent = ({
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold text-foreground">{card.evaluation.character}</p>
-              <p className="text-xs text-muted-foreground">AI Evaluator</p>
+              <p className="text-xs text-muted-foreground">{t('interactiveDemo.aiEvaluator')}</p>
             </div>
           </div>
           
           {/* Score Section */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Card Score</span>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">{t('interactiveDemo.cardScore')}</span>
               <span className={`text-3xl font-bold ${getRarityColor(card.evaluation.score)}`}>
                 {card.evaluation.score}
               </span>
@@ -176,7 +178,7 @@ const DemoCardComponent = ({
           {/* CTA */}
           <div className="mt-3 pt-3 border-t border-white/10">
             <span className="text-xs text-primary flex items-center gap-1">
-              Click for full details <ArrowRight className="w-3 h-3" />
+              {t('interactiveDemo.clickForDetails')} <ArrowRight className="w-3 h-3" />
             </span>
           </div>
         </div>
@@ -188,6 +190,7 @@ const DemoCardComponent = ({
 export const InteractiveCardDemo = () => {
   const [selectedCard, setSelectedCard] = useState<DemoCard | null>(null);
   const { images, generateImageForCard, isCardLoading } = useDemoCardImages();
+  const { t } = useTranslation();
 
   return (
     <section className="py-24 px-4 relative overflow-hidden">
@@ -203,11 +206,10 @@ export const InteractiveCardDemo = () => {
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            See a Deck in Action
+            {t('interactiveDemo.title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Each card features unique custom artwork. Hover to reveal evaluations. 
-            Click to explore. This is what founders use to validate before they build.
+            {t('interactiveDemo.subtitle')}
           </p>
         </motion.div>
 
@@ -237,7 +239,7 @@ export const InteractiveCardDemo = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          These cards are from a real founder deck. Your AI Squad will evaluate yours the same way.
+          {t('interactiveDemo.footer')}
         </motion.p>
       </div>
 

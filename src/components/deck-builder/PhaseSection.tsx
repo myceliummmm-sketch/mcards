@@ -15,6 +15,7 @@ import { GenerateWebsiteButton } from './GenerateWebsiteButton';
 import { GenerateWebsiteModal } from './GenerateWebsiteModal';
 import { PHASE_CONFIG, getCardsByPhase, type CardPhase } from '@/data/cardDefinitions';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -32,6 +33,7 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId, locked = false 
   const definitions = getCardsByPhase(phase);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [websiteModalOpen, setWebsiteModalOpen] = useState(false);
+  const { t } = useTranslation();
   
   const filledCount = definitions.filter(def => 
     cards.some(c => c.card_slot === def.slot && c.card_data && Object.keys(c.card_data).length > 0)
@@ -63,7 +65,7 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId, locked = false 
               <div className="text-left">
                 <div className="flex items-center gap-2">
                   <h2 className="text-2xl font-display font-bold text-foreground">
-                    {config.name}
+                    {t(`phases.${phase}`)}
                   </h2>
                   {locked && phase !== 'pivot' && (
                     <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 gap-1">
@@ -100,7 +102,7 @@ export const PhaseSection = ({ phase, cards, onEditCard, deckId, locked = false 
                         style={{ 
                           borderColor: hasData ? config.color : 'hsl(var(--muted-foreground) / 0.3)'
                         }}
-                        title={hasData ? `#${String(def.slot).padStart(2, '0')} - Crafted` : `#${String(def.slot).padStart(2, '0')} - Not crafted`}
+                        title={hasData ? `#${String(def.slot).padStart(2, '0')} - ${t('cardEditor.complete')}` : `#${String(def.slot).padStart(2, '0')} - ${t('cardEditor.empty')}`}
                       >
                         {imageUrl ? (
                           <img src={imageUrl} className="w-full h-full object-cover" alt="" />

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronRight, Lock, Unlock, AlertTriangle } from "lucide-react";
 import { PHASE_CONFIG } from "@/data/cardDefinitions";
+import { useTranslation } from "@/hooks/useTranslation";
 
 import visionIcon from "@/assets/icons/vision.png";
 import researchIcon from "@/assets/icons/research.png";
@@ -16,6 +17,7 @@ const PHASE_ICONS: Record<string, string> = {
 
 export const FogOfWarJourney = () => {
   const phases = Object.entries(PHASE_CONFIG);
+  const { t } = useTranslation();
 
   return (
     <section className="relative z-10 py-24 px-4 bg-gradient-to-b from-background via-muted/20 to-background overflow-hidden">
@@ -33,10 +35,10 @@ export const FogOfWarJourney = () => {
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-            Clear the Fog of War
+            {t('fogOfWar.title')}
           </h2>
           <p className="text-muted-foreground text-lg">
-            Each card you complete reveals more of the path forward
+            {t('fogOfWar.subtitle')}
           </p>
         </motion.div>
 
@@ -79,7 +81,7 @@ export const FogOfWarJourney = () => {
                         <div className="text-center">
                           <Lock className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
                           <span className="text-xs text-muted-foreground/50">
-                            Complete previous cards
+                            {t('fogOfWar.locked')}
                           </span>
                         </div>
                       </div>
@@ -101,7 +103,7 @@ export const FogOfWarJourney = () => {
                     {isCurrent && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                         <span className="px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">
-                          Current
+                          {t('fogOfWar.current')}
                         </span>
                       </div>
                     )}
@@ -120,7 +122,7 @@ export const FogOfWarJourney = () => {
                       }`}
                       style={{ color: isUnlocked ? phase.color : undefined }}
                     >
-                      {phase.name}
+                      {t(`phases.${key}`)}
                     </h3>
 
                     <p
@@ -136,7 +138,7 @@ export const FogOfWarJourney = () => {
                         isUnlocked ? "text-muted-foreground/70" : "text-muted-foreground/20"
                       }`}
                     >
-                      {phase.slots.length} cards
+                      {phase.slots.length} {t('fogOfWar.cards')}
                     </p>
                   </div>
 
@@ -169,13 +171,11 @@ export const FogOfWarJourney = () => {
               <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
               <div>
                 <h4 className="font-display font-semibold text-destructive mb-1">
-                  The Pivot Signal
+                  {t('fogOfWar.pivotSignal.title')}
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  90% of founders miss the signal to pivot.{" "}
-                  <span className="text-foreground font-medium">Your deck won't let you.</span> The
-                  Research phase cards are designed to surface critical insights before you invest
-                  months building the wrong thing.
+                  {t('fogOfWar.pivotSignal.description')}{" "}
+                  <span className="text-foreground font-medium">{t('fogOfWar.pivotSignal.highlight')}</span> {t('fogOfWar.pivotSignal.explanation')}
                 </p>
               </div>
             </div>

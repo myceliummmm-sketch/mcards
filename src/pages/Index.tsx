@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight } from "lucide-react";
+import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
 import { CardMosaic } from "@/components/landing/CardMosaic";
@@ -14,7 +14,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
 
   useEffect(() => {
     // Check existing session
@@ -105,6 +105,19 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Language Toggle - Fixed in top right */}
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setLanguage(language === 'en' ? 'ru' : 'en')}
+          className="gap-2 bg-background/80 backdrop-blur-sm border-border/50 hover:border-primary/50"
+        >
+          <Globe className="h-4 w-4" />
+          {language === 'en' ? '🇷🇺 RU' : '🇬🇧 EN'}
+        </Button>
+      </div>
+
       {/* Animated background particles */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {[...Array(50)].map((_, i) => (
