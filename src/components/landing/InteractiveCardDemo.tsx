@@ -331,7 +331,7 @@ export const InteractiveCardDemo = () => {
             See a Deck in Action
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Each card features unique AI-generated artwork. Hover to reveal evaluations. 
+            Each card features unique custom artwork. Hover to reveal evaluations. 
             Click to explore. This is what founders use to validate before they build.
           </p>
         </motion.div>
