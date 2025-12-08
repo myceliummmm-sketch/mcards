@@ -115,6 +115,29 @@ export const DEMO_CARDS: DemoCard[] = [
       avatar: techPriestAvatar
     },
     imageUrl: '/demo-cards/mvp.png'
+  },
+  {
+    id: 'demo-tech-stack',
+    type: 'tech_stack',
+    phase: 'build',
+    title: 'Tech Stack',
+    slot: 11,
+    templateKey: 'tools',
+    content: {
+      headline: 'Modern stack, minimal complexity',
+      details: [
+        'Frontend: React + TypeScript for type safety',
+        'Backend: Supabase for instant API & auth',
+        'Payments: Stripe for subscriptions & invoicing'
+      ]
+    },
+    evaluation: {
+      score: 84,
+      feedback: 'Solid choices. All battle-tested. Consider adding caching layer as you scale.',
+      character: 'Tech Priest',
+      avatar: techPriestAvatar
+    },
+    imageUrl: '/demo-cards/tech-stack.png'
   }
 ];
 

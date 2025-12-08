@@ -16,7 +16,8 @@ const DEMO_SLOT_MAPPING: Record<string, string> = {
   'Problem': 'demo-problem',
   'Audience': 'demo-audience',
   'Competitors': 'demo-market',  // Market Map in demo data
-  'MVP Features': 'demo-mvp'
+  'MVP Features': 'demo-mvp',
+  'Tech Stack': 'demo-tech-stack'
 };
 
 // Pain point quotes for locked cards - targeting job seekers, stressed workers, coders
