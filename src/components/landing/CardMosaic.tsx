@@ -38,8 +38,7 @@ const PAIN_POINTS: Record<string, string> = {
   'Growth Metrics': "I have 1000 signups! Active users? ...don't ask",
   'Retention': "Day 1: 100 users. Day 7: tumbleweeds",
   'Monetization': "I'll figure out money later. Narrator: He didn't",
-  'Pivot Signals': "Users want X. I'm building Y. They just don't get my vision",
-  'Exit Strategy': "My exit strategy is hope"
+  'Pivot Signals': "Users want X. I'm building Y. They just don't get my vision"
 };
 
 // 22 card types with their phase assignments
@@ -65,7 +64,6 @@ const CARD_MOSAIC = [
   { slot: 19, name: "Retention", phase: "grow" },
   { slot: 20, name: "Monetization", phase: "grow" },
   { slot: 21, name: "Pivot Signals", phase: "pivot" },
-  { slot: 22, name: "Exit Strategy", phase: "pivot" },
 ];
 
 const PHASE_CONFIG: Record<string, { 
@@ -439,22 +437,6 @@ export function CardMosaic() {
             />
           );
         })}
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-6 text-xs text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-4 h-4 rounded border-2 border-purple-500/40 bg-gradient-to-br from-purple-500/20 to-violet-600/20"
-          />
-          <span>AI-Evaluated Cards</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border border-border/30 bg-muted/30 flex items-center justify-center text-[8px] text-muted-foreground/60">
-            ?
-          </div>
-          <span>Tap to Reveal Your Blind Spots</span>
-        </div>
       </div>
 
       {/* Card Detail Modal */}

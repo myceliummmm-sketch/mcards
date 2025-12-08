@@ -186,7 +186,7 @@ export function DeckThumbnails({ cards }: DeckThumbnailsProps) {
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Total Collection</span>
             <span className="font-semibold text-foreground">
-              {cards.filter(c => c.card_data && Object.keys(c.card_data as object).length > 0).length} / 22 cards
+              {cards.filter(c => c.card_data && Object.keys(c.card_data as object).length > 0).length} / 21 cards
             </span>
           </div>
         </div>
