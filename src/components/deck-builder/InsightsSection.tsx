@@ -10,6 +10,7 @@ import { InsightCard } from './InsightCard';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useTranslation } from '@/hooks/useTranslation';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -42,6 +43,7 @@ interface InsightsSectionProps {
 }
 
 export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => {
+  const { t, language } = useTranslation();
   const [insights, setInsights] = useState<DeckCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPhase, setSelectedPhase] = useState<Phase>('all');
@@ -166,11 +168,11 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
           : i
       ));
       
-      toast.success(isCurrentlyArchived ? 'Insight restored' : 'Insight archived');
+      toast.success(isCurrentlyArchived ? t('insights.insightRestored') : t('insights.insightArchived'));
       setSelectedInsight(null);
     } catch (error) {
       console.error('Archive error:', error);
-      toast.error('Failed to update insight');
+      toast.error(t('insights.failedUpdate'));
     } finally {
       setIsArchiving(false);
     }
@@ -189,12 +191,12 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
       if (error) throw error;
 
       setInsights(prev => prev.filter(i => i.id !== insightToDelete.id));
-      toast.success('Insight deleted');
+      toast.success(t('insights.insightDeleted'));
       setInsightToDelete(null);
       setSelectedInsight(null);
     } catch (error) {
       console.error('Delete error:', error);
-      toast.error('Failed to delete insight');
+      toast.error(t('insights.failedDelete'));
     } finally {
       setIsDeleting(false);
     }
@@ -202,7 +204,7 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -214,9 +216,9 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
   if (loading) {
     return (
       <div className={cn('p-6 rounded-xl bg-muted/30 border border-border', className)}>
-        <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-4">
           <Gem className="w-5 h-5 text-secondary animate-pulse" />
-          <span className="text-muted-foreground">Loading insights...</span>
+          <span className="text-muted-foreground">{t('insights.loadingInsights')}</span>
         </div>
       </div>
     );
@@ -263,8 +265,8 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
               <Gem className="w-6 h-6 text-secondary blur-md" />
             </div>
           </div>
-          <h3 className="text-lg font-display font-bold text-foreground">
-            Crystallized Insights
+        <h3 className="text-lg font-display font-bold text-foreground">
+            {t('insights.title')}
           </h3>
           <span className="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-xs font-medium">
             {filteredInsights.length}
@@ -399,9 +401,9 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
               <Gem className="w-12 h-12 text-secondary/30 blur-lg" />
             </div>
           </div>
-          <h4 className="text-lg font-medium text-foreground mb-2">No crystallized insights yet</h4>
+          <h4 className="text-lg font-medium text-foreground mb-2">{t('insights.noInsights')}</h4>
           <p className="text-sm max-w-sm mx-auto">
-            Start a team chat and click ✨ <strong>Crystallize</strong> to capture your best ideas as permanent insight cards.
+            {t('insights.noInsightsDesc')}
           </p>
         </div>
       )}
@@ -411,7 +413,7 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
         <div className="text-center py-8 text-muted-foreground">
           <Gem className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p className="text-sm">
-            {showArchived ? 'No archived insights' : 'No insights match your filters'}
+            {showArchived ? t('insights.noArchivedInsights') : t('insights.noMatchingFilters')}
           </p>
         </div>
       )}
