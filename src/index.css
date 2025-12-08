@@ -151,6 +151,25 @@
       box-shadow: 0 0 20px hsl(190 100% 50% / 0.6);
     }
   }
+
+  /* CTA Pulse Animation */
+  .cta-pulse {
+    animation: cta-glow 2s ease-in-out infinite;
+    position: relative;
+  }
+
+  @keyframes cta-glow {
+    0%, 100% {
+      box-shadow: 
+        0 0 20px hsl(190 100% 50% / 0.4),
+        0 0 40px hsl(190 100% 50% / 0.2);
+    }
+    50% {
+      box-shadow: 
+        0 0 30px hsl(190 100% 50% / 0.6),
+        0 0 60px hsl(190 100% 50% / 0.3);
+    }
+  }
   
   .particle-float {
     animation: float 3s ease-in-out infinite;
