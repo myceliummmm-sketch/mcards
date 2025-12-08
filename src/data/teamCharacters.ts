@@ -32,7 +32,7 @@ export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
       "What's the bigger vision here?",
       "How does this change the game?"
     ],
-    tagline: "I don't build companies. I create movements.",
+    tagline: "Connects dots you didn't know existed.",
     color: 'hsl(140 70% 50%)',
     avatar: everAvatar
   },
@@ -48,7 +48,7 @@ export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
       "What does the user really need?",
       "Let's validate that assumption"
     ],
-    tagline: "Fall in love with the problem, not the solution.",
+    tagline: "Obsesses over what users actually need, not what you think they want.",
     color: 'hsl(200 70% 55%)',
     avatar: prismaAvatar
   },
@@ -64,7 +64,7 @@ export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
       "What could go wrong here?",
       "Let's think like an attacker"
     ],
-    tagline: "I'm not paranoid. I just know what people are capable of.",
+    tagline: "Finds the security holes you missed.",
     color: 'hsl(30 90% 55%)',
     avatar: toxicAvatar
   },
@@ -80,7 +80,7 @@ export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
       "How do we make this shareable?",
       "What's the emotional story here?"
     ],
-    tagline: "The best marketing doesn't look like marketing.",
+    tagline: "Asks 'Who pays for this?' until you have an answer.",
     color: 'hsl(15 90% 60%)',
     avatar: phoenixAvatar
   },
@@ -96,7 +96,7 @@ export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
       "Is this technically feasible?",
       "Let's build this smart, not just fast"
     ],
-    tagline: "The best technology is the one you don't notice.",
+    tagline: "Prevents you from choosing the wrong tech stack.",
     color: 'hsl(260 70% 60%)',
     avatar: techPriestAvatar
   },
@@ -112,7 +112,7 @@ export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
       "How does this feel?",
       "What's the emotional temperature here?"
     ],
-    tagline: "I don't shoot videos. I create visual mantras that change inner states.",
+    tagline: "Translates your vision into stories people feel.",
     color: 'hsl(320 70% 60%)',
     avatar: virgiliaAvatar
   },
@@ -128,7 +128,7 @@ export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
       "How are we really feeling?",
       "What do we need to thrive?"
     ],
-    tagline: "Happy people build great companies.",
+    tagline: "Reminds you that burnout is a blind spot too.",
     color: 'hsl(180 50% 60%)',
     avatar: zenAvatar
   }

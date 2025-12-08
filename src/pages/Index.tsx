@@ -1,30 +1,17 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, ChevronRight, Eye } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Eye } from "lucide-react";
+import { motion } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
-import { PHASE_CONFIG } from "@/data/cardDefinitions";
 import { CardMosaic } from "@/components/landing/CardMosaic";
 import { WhyCardsSection } from "@/components/landing/WhyCardsSection";
-
-// Import phase icons
-import visionIcon from "@/assets/icons/vision.png";
-import researchIcon from "@/assets/icons/research.png";
-import buildIcon from "@/assets/icons/build.png";
-import growIcon from "@/assets/icons/grow.png";
-
-const PHASE_ICONS: Record<string, string> = {
-  vision: visionIcon,
-  research: researchIcon,
-  build: buildIcon,
-  grow: growIcon,
-};
+import { FogOfWarJourney } from "@/components/landing/FogOfWarJourney";
+import { SocialProofSection } from "@/components/landing/SocialProofSection";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [tossedCards, setTossedCards] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     // Check existing session
@@ -46,23 +33,6 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleCardToss = useCallback((index: number) => {
-    if (tossedCards[index]) return;
-    
-    setTossedCards(prev => ({ ...prev, [index]: true }));
-    
-    setTimeout(() => {
-      setTossedCards(prev => ({ ...prev, [index]: false }));
-    }, 1200);
-  }, [tossedCards]);
-
-  const generateTossDirection = (index: number) => ({
-    x: (Math.random() - 0.5) * 600,
-    y: -200 - Math.random() * 150,
-    rotate: (Math.random() - 0.5) * 720,
-  });
-
-  const phases = Object.entries(PHASE_CONFIG);
   const characters = Object.values(TEAM_CHARACTERS);
 
   const features = [
@@ -213,62 +183,10 @@ const Index = () => {
       {/* Why Cards Section - NEW */}
       <WhyCardsSection />
 
-      {/* 4 Phases Journey */}
-      <section className="relative z-10 py-24 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
-        <div className="container mx-auto max-w-6xl">
-          <motion.div 
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Your Product Journey</h2>
-            <p className="text-muted-foreground text-lg">Four phases to transform your idea into reality</p>
-          </motion.div>
+      {/* Fog of War Journey - NEW */}
+      <FogOfWarJourney />
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            {phases.map(([key, phase], index) => (
-              <motion.div
-                key={key}
-                className="relative group"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div 
-                  className="p-6 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm card-shine hover:border-primary/50 transition-all duration-300 h-full"
-                  style={{ 
-                    boxShadow: `0 0 20px ${phase.color.replace('hsl', 'hsla').replace(')', ' / 0.2)')}` 
-                  }}
-                >
-                <div className="w-16 h-16 mb-4">
-                    <img 
-                      src={PHASE_ICONS[key]} 
-                      alt={phase.name} 
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <h3 className="text-lg md:text-xl font-display font-bold mb-2" style={{ color: phase.color }}>
-                    {phase.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-2">{phase.description}</p>
-                  <p className="text-xs text-muted-foreground/70">{phase.slots.length} cards</p>
-                </div>
-                
-                {/* Arrow connector */}
-                {index < phases.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-muted-foreground/30">
-                    <ChevronRight className="h-6 w-6" />
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* AI Team Showcase */}
+      {/* AI Team Showcase - UPDATED */}
       <section className="relative z-10 py-24 px-4">
         <div className="container mx-auto max-w-6xl">
           <motion.div 
@@ -277,8 +195,12 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Your Virtual Product Team</h2>
-            <p className="text-muted-foreground text-lg">7 AI advisors. 7 unique perspectives.</p>
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+              7 Perspectives. <span className="text-destructive">0 Yes-Men.</span>
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Each card you play summons expert AI feedback to cover your blind spots.
+            </p>
           </motion.div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
@@ -368,9 +290,9 @@ const Index = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { step: 1, title: "BUILD", description: "Create your deck and organize your product vision into 22 strategic cards", color: "primary" },
-              { step: 2, title: "CRAFT", description: "Fill each card with AI-powered guidance from your virtual team", color: "secondary" },
-              { step: 3, title: "TRADE", description: "Browse the marketplace for insights and trade cards with other builders", color: "accent" }
+              { step: 1, title: "BUILD", description: "Don't stare at a blank page. Draw the 'Vision' and 'Problem' cards to ground your idea in reality.", color: "primary" },
+              { step: 2, title: "CRAFT", description: "Forge each card with your AI Squad. They act as a filter, challenging your assumptions before you write a single line of code.", color: "secondary" },
+              { step: 3, title: "TRADE", description: "Don't build in a silo. Trade cards with other builders to find the missing pieces of your market strategy.", color: "accent" }
             ].map((item, index) => (
               <motion.div
                 key={item.step}
@@ -395,6 +317,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Social Proof - NEW */}
+      <SocialProofSection />
 
       {/* Stats */}
       <section className="relative z-10 py-16 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
