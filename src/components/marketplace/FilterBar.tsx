@@ -11,6 +11,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { INDUSTRY_CATEGORIES, SORT_OPTIONS, Rarity } from '@/data/rarityConfig';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface FilterBarProps {
   selectedPhases: string[];
@@ -45,6 +46,7 @@ export const FilterBar = ({
   onShowOwnedToggle,
   onClearFilters,
 }: FilterBarProps) => {
+  const { t } = useTranslation();
   const phases = ['vision', 'research', 'build', 'grow'];
   const rarities: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 
@@ -61,7 +63,7 @@ export const FilterBar = ({
       <div className="flex flex-wrap gap-3 items-center">
         <div className="flex items-center gap-2">
           <Filter size={18} className="text-muted-foreground" />
-          <span className="text-sm font-medium">Filters:</span>
+          <span className="text-sm font-medium">{t('marketplace.filters')}</span>
         </div>
 
         {/* Phase Filter */}
@@ -78,7 +80,7 @@ export const FilterBar = ({
               {phase === 'build' && '🔧'}
               {phase === 'grow' && '🚀'}
               {' '}
-              {phase}
+              {t(`phases.${phase}`)}
             </Badge>
           ))}
         </div>
@@ -104,10 +106,10 @@ export const FilterBar = ({
         {/* Industry Filter */}
         <Select value={selectedIndustries[0] || 'all'} onValueChange={onIndustryChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Industries" />
+            <SelectValue placeholder={t('marketplace.allIndustries')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Industries</SelectItem>
+            <SelectItem value="all">{t('marketplace.allIndustries')}</SelectItem>
             {INDUSTRY_CATEGORIES.map((industry) => (
               <SelectItem key={industry} value={industry}>
                 {industry}
@@ -125,7 +127,7 @@ export const FilterBar = ({
             </SelectTrigger>
             <SelectContent>
               {hasRecommendations && (
-                <SelectItem value="recommended">✨ Recommended</SelectItem>
+                <SelectItem value="recommended">✨ {t('marketplace.recommended')}</SelectItem>
               )}
               {SORT_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
@@ -138,7 +140,7 @@ export const FilterBar = ({
 
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={onClearFilters}>
-            Clear All
+            {t('marketplace.clearAll')}
           </Button>
         )}
       </div>
@@ -149,15 +151,15 @@ export const FilterBar = ({
           <Switch checked={gapFillerMode} onCheckedChange={onGapFillerToggle} id="gap-mode" />
           <Label htmlFor="gap-mode" className="cursor-pointer flex items-center gap-2">
             <span className="text-cyan-400">✨</span>
-            Gap Filler Mode
-            <span className="text-xs text-muted-foreground">(shows cards matching missing slots)</span>
+            {t('marketplace.gapFillerMode')}
+            <span className="text-xs text-muted-foreground">{t('marketplace.gapFillerDesc')}</span>
           </Label>
         </div>
 
         <div className="flex items-center gap-3">
           <Switch checked={showOwned} onCheckedChange={onShowOwnedToggle} id="show-owned" />
           <Label htmlFor="show-owned" className="cursor-pointer">
-            Show Owned Cards
+            {t('marketplace.showOwnedCards')}
           </Label>
         </div>
       </div>

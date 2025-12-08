@@ -12,6 +12,7 @@ import { MarketplaceCard } from '@/data/mockMarketplaceData';
 import { cn } from '@/lib/utils';
 import { RARITY_CONFIG } from '@/data/rarityConfig';
 import type { CardPhase } from '@/data/cardDefinitions';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CardQuickViewProps {
   card: MarketplaceCard | null;
@@ -38,6 +39,8 @@ export const CardQuickView = ({
   isFavorited,
   recommendation,
 }: CardQuickViewProps) => {
+  const { t } = useTranslation();
+  
   if (!card) return null;
 
   const rarityConfig = RARITY_CONFIG[card.rarity];
@@ -116,7 +119,7 @@ export const CardQuickView = ({
             <div className="flex flex-wrap gap-2">
               <Badge className={cn('text-sm border flex items-center gap-1', phaseColors[card.phase])}>
                 <PhaseIcon phase={card.phase as CardPhase} size="sm" />
-                {card.phase.toUpperCase()}
+                {t(`phases.${card.phase}`).toUpperCase()}
               </Badge>
               <Badge variant="outline" className="text-sm capitalize">
                 {card.cardType}
@@ -147,21 +150,21 @@ export const CardQuickView = ({
             <div className="text-center space-y-1">
               <div className="flex items-center justify-center gap-1 text-muted-foreground">
                 <Eye size={16} />
-                <span className="text-sm">Views</span>
+                <span className="text-sm">{t('marketplace.views')}</span>
               </div>
               <div className="text-2xl font-bold">{card.stats.views.toLocaleString()}</div>
             </div>
             <div className="text-center space-y-1">
               <div className="flex items-center justify-center gap-1 text-muted-foreground">
                 <ShoppingCart size={16} />
-                <span className="text-sm">Purchases</span>
+                <span className="text-sm">{t('marketplace.purchases')}</span>
               </div>
               <div className="text-2xl font-bold">{card.stats.purchases.toLocaleString()}</div>
             </div>
             <div className="text-center space-y-1">
               <div className="flex items-center justify-center gap-1 text-muted-foreground">
                 <Star size={16} />
-                <span className="text-sm">Rating</span>
+                <span className="text-sm">{t('marketplace.rating')}</span>
               </div>
               <div className="text-2xl font-bold">{card.stats.avgRating.toFixed(1)}</div>
             </div>
@@ -176,7 +179,7 @@ export const CardQuickView = ({
                 {card.seller.username[0]}
               </div>
               <div>
-                <div className="text-sm text-muted-foreground">Created by</div>
+                <div className="text-sm text-muted-foreground">{t('marketplace.createdBy')}</div>
                 <div className="font-medium">@{card.seller.username}</div>
               </div>
             </div>
@@ -186,7 +189,7 @@ export const CardQuickView = ({
           {/* Preview Data */}
           {card.previewData && (
             <div className="p-4 bg-muted/20 rounded-lg">
-              <h4 className="text-sm font-semibold mb-2 text-muted-foreground">What's Inside:</h4>
+              <h4 className="text-sm font-semibold mb-2 text-muted-foreground">{t('marketplace.whatsInside')}</h4>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(card.previewData).map(([key, value]) => (
                   <div key={key} className="flex items-center gap-2">
@@ -212,7 +215,7 @@ export const CardQuickView = ({
                 disabled={isInCollection}
               >
                 <ShoppingCart size={18} />
-                {isInCollection ? 'Already Owned' : 'Buy Now'}
+                {isInCollection ? t('marketplace.alreadyOwned') : t('marketplace.buyNow')}
               </Button>
             </div>
           </div>

@@ -1,9 +1,11 @@
 import { Coins } from 'lucide-react';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export function SporeWallet() {
   const { sporeBalance, isPro } = useSubscription();
+  const { t } = useTranslation();
 
   if (!isPro && sporeBalance === 0) {
     return null;
@@ -19,7 +21,7 @@ export function SporeWallet() {
         </div>
       </TooltipTrigger>
       <TooltipContent>
-        <p>Your SPORE balance for marketplace purchases</p>
+        <p>{t('paywall.sporeBalance')}</p>
       </TooltipContent>
     </Tooltip>
   );

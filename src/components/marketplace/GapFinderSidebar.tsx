@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface GapData {
   phase: string;
@@ -18,6 +19,7 @@ interface GapFinderSidebarProps {
 }
 
 export const GapFinderSidebar = ({ gaps, onPhaseClick, activePhase }: GapFinderSidebarProps) => {
+  const { t } = useTranslation();
   const totalFilled = gaps.reduce((acc, g) => acc + g.filled, 0);
   const totalSlots = gaps.reduce((acc, g) => acc + g.total, 0);
   const overallProgress = (totalFilled / totalSlots) * 100;
@@ -27,11 +29,11 @@ export const GapFinderSidebar = ({ gaps, onPhaseClick, activePhase }: GapFinderS
       <div className="space-y-2">
         <h3 className="font-bold text-lg flex items-center gap-2 text-cyan-400">
           <span className="text-2xl">✨</span>
-          Deck Completion
+          {t('marketplace.deckCompletion')}
         </h3>
         <div className="space-y-1">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Overall Progress</span>
+            <span className="text-muted-foreground">{t('marketplace.overallProgress')}</span>
             <span className="font-bold text-cyan-400">
               {totalFilled}/{totalSlots}
             </span>
@@ -42,7 +44,7 @@ export const GapFinderSidebar = ({ gaps, onPhaseClick, activePhase }: GapFinderS
 
       <div className="space-y-2">
         <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Missing Slots by Phase
+          {t('marketplace.missingSlots')}
         </h4>
 
         {gaps.map((gap) => {
@@ -64,7 +66,7 @@ export const GapFinderSidebar = ({ gaps, onPhaseClick, activePhase }: GapFinderS
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img src={gap.icon} alt={gap.phase} className="w-5 h-5 object-contain" />
-                    <span className="font-medium capitalize">{gap.phase}</span>
+                    <span className="font-medium capitalize">{t(`phases.${gap.phase}`)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {missing > 0 && (
@@ -91,10 +93,10 @@ export const GapFinderSidebar = ({ gaps, onPhaseClick, activePhase }: GapFinderS
 
       <div className="pt-4 border-t border-border space-y-2">
         <p className="text-xs text-muted-foreground">
-          💡 Gap Filler Mode highlights cards that match your missing slots
+          💡 {t('marketplace.gapFillerHint')}
         </p>
         <Button variant="outline" size="sm" className="w-full" onClick={() => onPhaseClick('')}>
-          View All Cards
+          {t('marketplace.viewAllCards')}
         </Button>
       </div>
     </Card>

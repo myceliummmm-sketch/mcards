@@ -6,46 +6,47 @@ import { Check, Sparkles, Zap, Users, Coins, Diamond, Crown, RotateCcw } from 'l
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { STRIPE_CONFIG } from '@/data/subscriptionConfig';
-import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface UpgradeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const FREE_FEATURES = [
-  'Vision & Research phases (11 cards)',
-  '1 project',
-  '3 AI Advisors (Ever, Prisma, Phoenix)',
-  'Browse Marketplace',
-];
-
-const PRO_FEATURES = [
-  'All 4 phases including Build & Grow',
-  '5 projects simultaneously',
-  'All 7 AI Advisors',
-  '200 SPORE monthly ($20 value)',
-  'Sell cards on Marketplace',
-];
-
-const ULTRA_FEATURES = [
-  'Everything in Pro',
-  'PIVOT phase (4 cards)',
-  '10 projects simultaneously',
-  '500 SPORE monthly ($50 value)',
-  'Pivot strategy tools',
-  'Priority AI responses',
-];
-
 export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
   const [loading, setLoading] = useState<'pro' | 'ultra' | null>(null);
+  const { t, language } = useTranslation();
+
+  const FREE_FEATURES = [
+    t('subscriptionFeatures.freeFeatures.0') || 'Vision & Research phases (11 cards)',
+    t('subscriptionFeatures.freeFeatures.1') || '1 project',
+    t('subscriptionFeatures.freeFeatures.2') || '3 AI Advisors (Ever, Prisma, Phoenix)',
+    t('subscriptionFeatures.freeFeatures.3') || 'Browse Marketplace',
+  ];
+
+  const PRO_FEATURES = [
+    t('subscriptionFeatures.proFeatures.0') || 'All 4 phases including Build & Grow',
+    t('subscriptionFeatures.proFeatures.1') || '5 projects simultaneously',
+    t('subscriptionFeatures.proFeatures.2') || 'All 7 AI Advisors',
+    t('subscriptionFeatures.proFeatures.3') || '200 SPORE monthly ($20 value)',
+    t('subscriptionFeatures.proFeatures.4') || 'Sell cards on Marketplace',
+  ];
+
+  const ULTRA_FEATURES = [
+    t('subscriptionFeatures.ultraFeatures.0') || 'Everything in Pro',
+    t('subscriptionFeatures.ultraFeatures.1') || 'PIVOT phase (4 cards)',
+    t('subscriptionFeatures.ultraFeatures.2') || '10 projects simultaneously',
+    t('subscriptionFeatures.ultraFeatures.3') || '500 SPORE monthly ($50 value)',
+    t('subscriptionFeatures.ultraFeatures.4') || 'Pivot strategy tools',
+    t('subscriptionFeatures.ultraFeatures.5') || 'Priority AI responses',
+  ];
 
   const handleUpgrade = async (tier: 'pro' | 'ultra') => {
     setLoading(tier);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error('Please log in to upgrade your subscription.');
+        toast.error(t('paywall.loginToUpgrade'));
         return;
       }
 
@@ -60,7 +61,7 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
       onOpenChange(false);
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error('Failed to start checkout. Please try again.');
+      toast.error(t('paywall.checkoutFailed'));
     } finally {
       setLoading(null);
     }
@@ -72,7 +73,7 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <Sparkles className="h-6 w-6 text-primary" />
-            Upgrade Your Plan
+            {t('paywall.upgradeYourPlan')}
           </DialogTitle>
         </DialogHeader>
 
@@ -83,12 +84,12 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
             <div className="rounded-xl border-2 border-primary bg-primary/5 p-5 relative">
               <div className="flex items-center gap-2 mb-3">
                 <Crown className="h-5 w-5 text-primary" />
-                <span className="font-bold text-lg">Pro</span>
+                <span className="font-bold text-lg">{t('paywall.pro')}</span>
               </div>
               
               <div className="flex items-baseline gap-2 mb-4">
                 <span className="text-3xl font-bold">${STRIPE_CONFIG.pro.price_usd}</span>
-                <span className="text-muted-foreground text-sm">/month</span>
+                <span className="text-muted-foreground text-sm">{t('paywall.month')}</span>
               </div>
 
               <div className="space-y-2 mb-5">
@@ -105,20 +106,20 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
                 disabled={loading !== null}
                 className="w-full bg-primary hover:bg-primary/90"
               >
-                {loading === 'pro' ? 'Opening...' : 'Get Pro'}
+                {loading === 'pro' ? t('paywall.opening') : t('paywall.getPro')}
               </Button>
             </div>
 
             {/* Ultra Plan */}
             <div className="rounded-xl border-2 border-violet-500 bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 p-5 relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white px-3 py-1 text-xs font-bold rounded-bl-lg">
-                BEST VALUE
+                {t('paywall.bestValue')}
               </div>
               
               <div className="flex items-center gap-2 mb-3">
                 <Diamond className="h-5 w-5 text-violet-400" />
                 <span className="font-bold text-lg bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                  Ultra
+                  {t('paywall.ultra')}
                 </span>
               </div>
               
@@ -126,7 +127,7 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
                 <span className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
                   ${STRIPE_CONFIG.ultra.price_usd}
                 </span>
-                <span className="text-muted-foreground text-sm">/month</span>
+                <span className="text-muted-foreground text-sm">{t('paywall.month')}</span>
               </div>
 
               <div className="space-y-2 mb-5">
@@ -143,7 +144,7 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
                 disabled={loading !== null}
                 className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white border-0"
               >
-                {loading === 'ultra' ? 'Opening...' : 'Get Ultra'}
+                {loading === 'ultra' ? t('paywall.opening') : t('paywall.getUltra')}
               </Button>
             </div>
           </div>
@@ -151,8 +152,8 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
           {/* Free Plan Reference */}
           <div className="rounded-lg border border-border p-4 opacity-60">
             <div className="flex items-center gap-2 mb-3">
-              <Badge variant="secondary">FREE</Badge>
-              <span className="text-sm font-medium">Current Plan</span>
+              <Badge variant="secondary">{t('paywall.free')}</Badge>
+              <span className="text-sm font-medium">{t('paywall.currentPlan')}</span>
             </div>
             <div className="flex flex-wrap gap-x-6 gap-y-1">
               {FREE_FEATURES.map((feature, i) => (
@@ -168,19 +169,19 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
           <div className="grid grid-cols-4 gap-2 text-center">
             <div className="p-2 rounded-lg bg-muted/50">
               <Zap className="h-4 w-4 mx-auto mb-1 text-primary" />
-              <div className="text-xs">Full Phases</div>
+              <div className="text-xs">{t('paywall.fullPhases')}</div>
             </div>
             <div className="p-2 rounded-lg bg-muted/50">
               <Users className="h-4 w-4 mx-auto mb-1 text-primary" />
-              <div className="text-xs">7 AI Experts</div>
+              <div className="text-xs">{t('paywall.aiExperts')}</div>
             </div>
             <div className="p-2 rounded-lg bg-muted/50">
               <Coins className="h-4 w-4 mx-auto mb-1 text-primary" />
-              <div className="text-xs">Monthly SPORE</div>
+              <div className="text-xs">{t('paywall.monthlySpore')}</div>
             </div>
             <div className="p-2 rounded-lg bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20">
               <RotateCcw className="h-4 w-4 mx-auto mb-1 text-violet-400" />
-              <div className="text-xs text-violet-400">Pivot Tools</div>
+              <div className="text-xs text-violet-400">{t('paywall.pivotTools')}</div>
             </div>
           </div>
         </div>
