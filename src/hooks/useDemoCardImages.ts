@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface DemoCardConfig {
   id: string;
@@ -46,10 +47,15 @@ const DEMO_CARD_CONFIGS: DemoCardConfig[] = [
   }
 ];
 
+// Debounce time between generation attempts (ms)
+const GENERATION_DEBOUNCE = 2000;
+
 export function useDemoCardImages() {
   const [images, setImages] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadingCards, setLoadingCards] = useState<Set<string>>(new Set());
+  const [rateLimited, setRateLimited] = useState(false);
+  const lastGenerationTime = useRef<number>(0);
 
   const generateImageForCard = async (cardId: string): Promise<string | null> => {
     const config = DEMO_CARD_CONFIGS.find(c => c.id === cardId);
@@ -58,8 +64,16 @@ export function useDemoCardImages() {
     // Check if already in cache
     if (images[cardId]) return images[cardId];
 
-    // Check if already loading
-    if (loadingCards.has(cardId)) return null;
+    // Check if already loading or rate limited
+    if (loadingCards.has(cardId) || rateLimited) return null;
+
+    // Debounce to prevent rapid requests
+    const now = Date.now();
+    const timeSinceLastGen = now - lastGenerationTime.current;
+    if (timeSinceLastGen < GENERATION_DEBOUNCE) {
+      await new Promise(resolve => setTimeout(resolve, GENERATION_DEBOUNCE - timeSinceLastGen));
+    }
+    lastGenerationTime.current = Date.now();
 
     setLoadingCards(prev => new Set(prev).add(cardId));
 
@@ -71,7 +85,29 @@ export function useDemoCardImages() {
         }
       });
 
-      if (error) throw error;
+      // Handle specific error codes
+      if (error) {
+        const errorMessage = error.message || '';
+        
+        if (errorMessage.includes('429') || errorMessage.includes('RATE_LIMITED')) {
+          setRateLimited(true);
+          toast.error('Rate limit reached', {
+            description: 'Please wait a moment before generating more images.'
+          });
+          // Reset rate limit after 30 seconds
+          setTimeout(() => setRateLimited(false), 30000);
+          return null;
+        }
+        
+        if (errorMessage.includes('402') || errorMessage.includes('PAYMENT_REQUIRED')) {
+          toast.error('AI credits exhausted', {
+            description: 'Add credits in Settings → Workspace → Usage to continue.'
+          });
+          return null;
+        }
+        
+        throw error;
+      }
 
       if (data?.imageUrl) {
         setImages(prev => ({ ...prev, [cardId]: data.imageUrl }));
