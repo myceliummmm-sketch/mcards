@@ -88,6 +88,15 @@ serve(async (req) => {
       .map((p: any) => `${p.name} (${p.role})`)
       .join(', ') || 'no one else';
 
+    // Detect if question needs detailed response
+    const lastUserMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
+    const needsDetail = /explain|elaborate|why|how does|what does|tell me more|can you expand|details|in depth|walk me through/i.test(lastUserMessage);
+    const isMultiPart = (lastUserMessage.match(/\?/g) || []).length > 1;
+
+    const responseLengthRule = needsDetail || isMultiPart
+      ? 'This is a detailed question - provide a thorough 3-5 sentence response with specifics.'
+      : 'Keep responses PUNCHY and CONCISE: 1-2 sentences max. No fluff. Get to the point fast.';
+
     const systemPrompt = `You are ${profile.name}, the ${profile.role} of this startup team.
 
 PERSONALITY: ${profile.personality}
@@ -104,9 +113,12 @@ This is a collaborative team meeting where each member brings their unique exper
 DECK CONTEXT (the startup idea being discussed):
 ${deckContext}
 
+RESPONSE LENGTH RULE:
+${responseLengthRule}
+
 RULES FOR THIS CONVERSATION:
 1. Stay in character as ${profile.name} at all times
-2. Keep responses concise (2-4 sentences usually)
+2. ${needsDetail ? 'Provide detailed, thorough responses (3-5 sentences)' : 'Keep responses VERY concise (1-2 sentences MAX)'}
 3. Bring your unique perspective based on your role
 4. You can agree, disagree, or build on what others said
 5. Ask questions that help move the discussion forward

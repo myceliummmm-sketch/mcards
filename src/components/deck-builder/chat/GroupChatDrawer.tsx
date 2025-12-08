@@ -1,13 +1,15 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { X, Plus, Users } from 'lucide-react';
+import { X, Plus, Users, Sparkles } from 'lucide-react';
 import { ChatInput } from './ChatInput';
 import { GroupChatMessage } from './GroupChatMessage';
 import { TEAM_CHARACTERS, getCharacterById } from '@/data/teamCharacters';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import type { GroupChatMessage as GroupChatMessageType } from '@/hooks/useGroupChat';
 
 interface GroupChatDrawerProps {
@@ -20,6 +22,10 @@ interface GroupChatDrawerProps {
   onSendMessage: (content: string) => void;
   onAddCharacter: (characterId: string) => void;
   onRemoveCharacter: (characterId: string) => void;
+  onCrystallize?: () => Promise<void>;
+  isCrystallizing?: boolean;
+  onExpandMessage?: (messageId: string, characterId: string, content: string) => void;
+  expandingMessageId?: string | null;
 }
 
 export const GroupChatDrawer = ({
@@ -32,6 +38,10 @@ export const GroupChatDrawer = ({
   onSendMessage,
   onAddCharacter,
   onRemoveCharacter,
+  onCrystallize,
+  isCrystallizing,
+  onExpandMessage,
+  expandingMessageId,
 }: GroupChatDrawerProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -59,6 +69,24 @@ export const GroupChatDrawer = ({
               <Users className="w-5 h-5 text-primary" />
               <SheetTitle>Team Meeting</SheetTitle>
             </div>
+            
+            {/* Crystallize button */}
+            {onCrystallize && messages.length >= 3 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onCrystallize}
+                disabled={isCrystallizing || isStreaming}
+                className={cn(
+                  'gap-2 text-secondary hover:text-secondary hover:bg-secondary/10',
+                  'transition-all duration-300',
+                  messages.length >= 3 && !isCrystallizing && 'animate-pulse'
+                )}
+              >
+                <Sparkles className="w-4 h-4" />
+                {isCrystallizing ? 'Crystallizing...' : 'Crystallize'}
+              </Button>
+            )}
           </div>
           
           {/* Selected characters avatars */}
@@ -141,6 +169,11 @@ export const GroupChatDrawer = ({
                 characterId={message.characterId}
                 isUser={message.role === 'user'}
                 isStreaming={isStreaming && message.characterId === currentResponder && !message.content}
+                onExpand={message.characterId && onExpandMessage 
+                  ? () => onExpandMessage(message.id, message.characterId!, message.content)
+                  : undefined
+                }
+                isExpanding={expandingMessageId === message.id}
               />
             ))}
             

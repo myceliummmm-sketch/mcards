@@ -13,6 +13,7 @@ import { CollaboratorManager } from '@/components/deck-builder/review/Collaborat
 import { DeckHealthDashboard } from '@/components/deck-builder/health/DeckHealthDashboard';
 import { TeamChatDrawer } from '@/components/deck-builder/chat/TeamChatDrawer';
 import { GroupChatDrawer } from '@/components/deck-builder/chat/GroupChatDrawer';
+import { InsightsSection } from '@/components/deck-builder/InsightsSection';
 
 import { SporeWallet } from '@/components/paywall/SporeWallet';
 import { SubscriptionBadge } from '@/components/paywall/SubscriptionBadge';
@@ -54,12 +55,14 @@ export default function DeckBuilder() {
     isStreaming: isGroupStreaming,
     currentResponder,
     isOpen: isGroupChatOpen,
+    isCrystallizing,
     toggleCharacter: toggleGroupCharacter,
     addCharacter: addGroupCharacter,
     removeCharacter: removeGroupCharacter,
     openGroupChat,
     closeGroupChat,
     sendMessage: sendGroupMessage,
+    crystallizeConversation,
   } = useGroupChat({ deckId: deckId || '', cards });
 
   useEffect(() => {
@@ -270,6 +273,11 @@ const filledCards = getFilledCardsCount();
                 locked={!canAccessPhase('pivot')}
               />
             </motion.div>
+            
+            {/* Crystallized Insights Section */}
+            <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
+              <InsightsSection deckId={deckId || ''} />
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -295,6 +303,8 @@ const filledCards = getFilledCardsCount();
         onSendMessage={sendGroupMessage}
         onAddCharacter={addGroupCharacter}
         onRemoveCharacter={removeGroupCharacter}
+        onCrystallize={crystallizeConversation}
+        isCrystallizing={isCrystallizing}
       />
 
       {/* Card Editor Modal */}
