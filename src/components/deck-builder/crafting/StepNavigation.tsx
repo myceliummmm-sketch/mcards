@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface StepNavigationProps {
   currentStep: number;
@@ -22,6 +23,7 @@ export const StepNavigation = ({
 }: StepNavigationProps) => {
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === totalSteps;
+  const { t } = useTranslation();
 
   return (
     <div className="flex items-center justify-between pt-6 border-t border-border">
@@ -32,7 +34,7 @@ export const StepNavigation = ({
         className="gap-2"
       >
         <ArrowLeft className="w-4 h-4" />
-        Previous
+        {t('wizard.previous')}
       </Button>
 
       <div className="flex items-center gap-3">
@@ -43,7 +45,7 @@ export const StepNavigation = ({
             className="gap-2 text-muted-foreground"
           >
             <SkipForward className="w-4 h-4" />
-            Skip
+            {t('wizard.skip')}
           </Button>
         )}
         
@@ -52,13 +54,13 @@ export const StepNavigation = ({
           disabled={!canGoNext && !isOptionalField}
           className="gap-2 min-w-[120px]"
         >
-          {isLastStep ? 'Review' : 'Next'}
+          {isLastStep ? t('wizard.review') : t('wizard.next')}
           <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
 
       <div className="text-xs text-muted-foreground">
-        Press <kbd className="px-2 py-1 bg-muted rounded">Enter</kbd> to continue
+        {t('wizard.pressEnter')}
       </div>
     </div>
   );

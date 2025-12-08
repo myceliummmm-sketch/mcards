@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import type { CardDefinition } from '@/data/cardDefinitions';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AISuggestionPanelProps {
   cardType: string;
@@ -24,6 +25,7 @@ export const AISuggestionPanel = ({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const { t } = useTranslation();
 
   const generateSuggestions = async () => {
     setIsLoading(true);
@@ -44,8 +46,8 @@ export const AISuggestionPanel = ({
       if (data?.suggestions && Array.isArray(data.suggestions)) {
         setSuggestions(data.suggestions);
         toast({
-          title: '✨ Suggestions generated!',
-          description: 'Click any suggestion to use it',
+          title: `✨ ${t('wizard.suggestionsGenerated')}`,
+          description: t('wizard.clickToUse'),
         });
       } else {
         throw new Error('Invalid response format');
@@ -53,7 +55,7 @@ export const AISuggestionPanel = ({
     } catch (error: any) {
       console.error('Error generating suggestions:', error);
       toast({
-        title: 'Failed to generate suggestions',
+        title: t('wizard.failedSuggestions'),
         description: error.message || 'Please try again',
         variant: 'destructive',
       });
@@ -66,8 +68,8 @@ export const AISuggestionPanel = ({
   const handleSelectSuggestion = (suggestion: string) => {
     onSelectSuggestion(suggestion);
     toast({
-      title: 'Suggestion applied!',
-      description: 'Feel free to edit it further',
+      title: `${t('wizard.suggestionApplied')}`,
+      description: t('wizard.editFurther'),
     });
   };
 
@@ -86,12 +88,12 @@ export const AISuggestionPanel = ({
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Generating...
+              {t('wizard.generating')}
             </>
           ) : (
             <>
               <Sparkles className="w-4 h-4" />
-              AI Suggest
+              {t('wizard.aiSuggest')}
             </>
           )}
         </Button>
@@ -110,7 +112,7 @@ export const AISuggestionPanel = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm font-semibold text-primary">
                 <Sparkles className="w-4 h-4" />
-                AI Suggestions
+                {t('wizard.aiSuggestions')}
               </div>
               <Button
                 type="button"
@@ -125,7 +127,7 @@ export const AISuggestionPanel = ({
                 ) : (
                   <>
                     <RefreshCw className="w-3 h-3" />
-                    Regenerate
+                    {t('wizard.regenerate')}
                   </>
                 )}
               </Button>

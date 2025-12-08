@@ -7,6 +7,7 @@ import { StepNavigation } from './StepNavigation';
 import { SummaryReview } from './SummaryReview';
 import { getFieldGuidance, getFieldAIHelper } from '@/data/fieldHints';
 import type { CardDefinition } from '@/data/cardDefinitions';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CardCraftingWizardProps {
   definition: CardDefinition;
@@ -27,6 +28,7 @@ export const CardCraftingWizard = ({
   const [formData, setFormData] = useState<Record<string, any>>(initialData);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [isReviewMode, setIsReviewMode] = useState(false);
+  const { t } = useTranslation();
 
   const totalSteps = definition.fields.length;
   const currentFieldIndex = currentStep - 1;
@@ -126,7 +128,7 @@ export const CardCraftingWizard = ({
             onClick={handlePrevious}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            ← Back to editing
+            {t('wizard.backToEditing')}
           </button>
         </div>
       </div>

@@ -3,6 +3,7 @@ import type { CardDefinition } from '@/data/cardDefinitions';
 import { RarityBadge } from '@/components/marketplace/RarityBadge';
 import { Rarity } from '@/data/rarityConfig';
 import { PhaseIcon } from './PhaseIcon';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CardFrontProps {
   definition: CardDefinition;
@@ -28,6 +29,8 @@ export const CardFront = ({
   imageUrl,
   evaluationScore
 }: CardFrontProps) => {
+  const { t } = useTranslation();
+
   const getPhaseGlowClass = () => {
     const phase = definition.phase?.toLowerCase();
     if (phase === 'vision') return 'phase-glow-vision';
@@ -69,7 +72,7 @@ export const CardFront = ({
                 <PhaseIcon phase={definition.phase} size="lg" className="opacity-60" />
               </div>
               <span className="text-[10px] text-white/40 font-mono tracking-[0.2em] uppercase">
-                AWAITING FORGE
+                {t('cardEditor.awaitingForge')}
               </span>
             </div>
             

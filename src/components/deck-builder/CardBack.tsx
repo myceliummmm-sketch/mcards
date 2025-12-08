@@ -3,6 +3,7 @@ import type { CardDefinition } from '@/data/cardDefinitions';
 import { Sparkles, Zap } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { TEAM_CHARACTERS } from '@/data/teamCharacters';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CardBackProps {
   definition: CardDefinition;
@@ -13,6 +14,8 @@ interface CardBackProps {
 }
 
 const TeamRatingsPreview = ({ evaluation }: { evaluation: any }) => {
+  const { t } = useTranslation();
+  
   // Map character IDs to the criteria they evaluate
   const characterToCriteria: Record<string, string | string[]> = {
     evergreen: 'impact',
@@ -51,7 +54,7 @@ const TeamRatingsPreview = ({ evaluation }: { evaluation: any }) => {
       {/* Overall Score */}
       <div className="text-center mb-4">
         <div className="text-3xl font-bold text-white">{evaluation.overall}/10</div>
-        <div className="text-sm text-white/70">Overall Score</div>
+        <div className="text-sm text-white/70">{t('cardEditor.overallScoreLabel')}</div>
       </div>
 
       {/* Character Avatars Grid */}
@@ -86,6 +89,8 @@ export const CardBack = ({
   isEmpty = false,
   onEdit
 }: CardBackProps) => {
+  const { t } = useTranslation();
+
   const getEmptyGradient = () => {
     const phase = definition.phase?.toLowerCase();
     if (phase === 'vision') return 'card-empty-vision';
@@ -130,12 +135,12 @@ export const CardBack = ({
           {isEmpty ? (
             <>
               <Zap className="w-5 h-5" />
-              Forge Card
+              {t('cardEditor.forgeCardBtn')}
             </>
           ) : (
             <>
               <Sparkles className="w-5 h-5" />
-              Open Card
+              {t('cardEditor.openCardBtn')}
             </>
           )}
         </Button>

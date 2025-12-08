@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Edit, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 import type { CardDefinition } from '@/data/cardDefinitions';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SummaryReviewProps {
   definition: CardDefinition;
@@ -13,6 +14,8 @@ interface SummaryReviewProps {
 }
 
 export const SummaryReview = ({ definition, formData, onEdit, onForge, isForging }: SummaryReviewProps) => {
+  const { t } = useTranslation();
+  
   const filledFields = definition.fields.filter(f => {
     const value = formData[f.name];
     return value !== undefined && value !== null && value !== '';
@@ -47,7 +50,7 @@ export const SummaryReview = ({ definition, formData, onEdit, onForge, isForging
           <Sparkles className="w-12 h-12 text-primary mx-auto mb-4" />
         </motion.div>
         <h2 className="text-3xl font-display font-bold text-foreground">
-          Review Your Card
+          {t('wizard.reviewCard')}
         </h2>
         <p className="text-muted-foreground">
           {definition.title} • Slot #{definition.slot}
@@ -66,9 +69,9 @@ export const SummaryReview = ({ definition, formData, onEdit, onForge, isForging
           <>
             <CheckCircle2 className="w-6 h-6 text-secondary shrink-0" />
             <div>
-              <div className="font-bold text-foreground">Ready to forge!</div>
+              <div className="font-bold text-foreground">{t('wizard.readyToForge')}</div>
               <div className="text-sm text-muted-foreground">
-                All {filledFields.length} fields completed
+                {filledFields.length} {t('wizard.fieldsCompleted')}
               </div>
             </div>
           </>
@@ -76,9 +79,9 @@ export const SummaryReview = ({ definition, formData, onEdit, onForge, isForging
           <>
             <AlertCircle className="w-6 h-6 text-destructive shrink-0" />
             <div>
-              <div className="font-bold text-foreground">Missing required fields</div>
+              <div className="font-bold text-foreground">{t('wizard.missingRequired')}</div>
               <div className="text-sm text-muted-foreground">
-                {missingRequired.length} required field(s) need attention
+                {missingRequired.length} {t('wizard.requiredNeedAttention')}
               </div>
             </div>
           </>
@@ -126,7 +129,7 @@ export const SummaryReview = ({ definition, formData, onEdit, onForge, isForging
                       </div>
                     ) : (
                       <div className="text-sm text-muted-foreground italic">
-                        {field.required ? 'Required - not filled' : 'Optional - empty'}
+                        {field.required ? t('wizard.required') : t('wizard.optional')}
                       </div>
                     )}
                   </div>
@@ -149,7 +152,7 @@ export const SummaryReview = ({ definition, formData, onEdit, onForge, isForging
       {!requiredFieldsFilled && (
         <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
           <div className="text-sm text-destructive font-medium mb-1">
-            Missing Required Fields:
+            {t('wizard.missingRequiredFields')}
           </div>
           <ul className="text-sm text-muted-foreground list-disc list-inside">
             {missingRequired.map(f => (
@@ -169,12 +172,12 @@ export const SummaryReview = ({ definition, formData, onEdit, onForge, isForging
         {isForging ? (
           <>
             <Sparkles className="w-5 h-5 animate-spin" />
-            Forging magic...
+            {t('wizard.forgingMagic')}
           </>
         ) : (
           <>
             <Sparkles className="w-5 h-5" />
-            Forge This Card
+            {t('wizard.forgeThisCard')}
           </>
         )}
       </Button>
