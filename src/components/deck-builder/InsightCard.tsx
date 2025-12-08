@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { Archive } from 'lucide-react';
 
 interface InsightCardData {
   title: string;
@@ -13,6 +14,7 @@ interface InsightCardProps {
   imageUrl?: string | null;
   className?: string;
   onClick?: () => void;
+  isArchived?: boolean;
 }
 
 const TOPIC_COLORS: Record<string, string> = {
@@ -37,7 +39,7 @@ const TOPIC_BADGE_COLORS: Record<string, string> = {
   customer: 'bg-yellow-500/30 text-yellow-200',
 };
 
-export const InsightCard = ({ data, imageUrl, className, onClick }: InsightCardProps) => {
+export const InsightCard = ({ data, imageUrl, className, onClick, isArchived }: InsightCardProps) => {
   const topicColor = TOPIC_COLORS[data.topic] || TOPIC_COLORS.strategy;
   const badgeColor = TOPIC_BADGE_COLORS[data.topic] || TOPIC_BADGE_COLORS.strategy;
 
@@ -84,13 +86,20 @@ export const InsightCard = ({ data, imageUrl, className, onClick }: InsightCardP
 
       {/* Content */}
       <div className="relative h-full flex flex-col justify-end p-3">
-        {/* Topic badge */}
-        <span className={cn(
-          'absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wide',
-          badgeColor
-        )}>
-          {data.topic}
-        </span>
+        {/* Badges row */}
+        <div className="absolute top-2 right-2 flex items-center gap-1">
+          {isArchived && (
+            <span className="p-1 rounded-full bg-muted/60 text-muted-foreground">
+              <Archive className="w-3 h-3" />
+            </span>
+          )}
+          <span className={cn(
+            'px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wide',
+            badgeColor
+          )}>
+            {data.topic}
+          </span>
+        </div>
 
         {/* Title */}
         <h4 className="text-sm font-display font-bold text-foreground mb-1 line-clamp-2 text-shadow">
