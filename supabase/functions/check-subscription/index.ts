@@ -14,6 +14,13 @@ const logStep = (step: string, details?: any) => {
 
 const PRO_PRODUCT_ID = "prod_TX0ugwhZbz8zLD";
 const ULTRA_PRODUCT_ID = "prod_TXlKvoG6KH1jD1";
+
+// SPORE credits for each tier
+const TIER_SPORE_CREDITS = {
+  pro: 200,
+  ultra: 500,
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -78,7 +85,7 @@ serve(async (req) => {
     });
 
     const hasActiveSub = subscriptions.data.length > 0;
-    let tier = 'free';
+    let tier: 'free' | 'pro' | 'ultra' = 'free';
     let subscriptionEnd = null;
     let stripeSubscriptionId = null;
 
@@ -103,13 +110,56 @@ serve(async (req) => {
       logStep("No active subscription found");
     }
 
-    // Update database with current subscription state
+    // Fetch existing subscription data to check for tier upgrade
     const { data: existingSub } = await supabaseClient
       .from('user_subscriptions')
-      .select('spore_balance')
+      .select('spore_balance, tier, stripe_subscription_id')
       .eq('user_id', user.id)
       .maybeSingle();
 
+    const existingTier = existingSub?.tier || 'free';
+    const existingStripeSubId = existingSub?.stripe_subscription_id;
+    let newSporeBalance = existingSub?.spore_balance || 0;
+
+    // SELF-HEALING: Detect tier upgrade and grant initial SPORE credits if missed
+    // This handles cases where webhook didn't fire or was missed
+    if (hasActiveSub && tier !== 'free') {
+      const isNewSubscription = existingTier === 'free' || 
+        (stripeSubscriptionId && stripeSubscriptionId !== existingStripeSubId);
+      
+      if (isNewSubscription) {
+        const sporeCredits = TIER_SPORE_CREDITS[tier] || 0;
+        
+        logStep("SELF-HEALING: Detected tier upgrade, granting initial SPORE credits", {
+          fromTier: existingTier,
+          toTier: tier,
+          credits: sporeCredits,
+          existingSubId: existingStripeSubId,
+          newSubId: stripeSubscriptionId
+        });
+
+        // Grant initial SPORE credits
+        newSporeBalance = (existingSub?.spore_balance || 0) + sporeCredits;
+
+        // Record the transaction
+        await supabaseClient
+          .from('spore_transactions')
+          .insert({
+            user_id: user.id,
+            amount: sporeCredits,
+            transaction_type: 'subscription_credit',
+            description: `Initial ${tier.toUpperCase()} subscription SPORE credit`,
+            reference_id: stripeSubscriptionId
+          });
+
+        logStep("SPORE credits granted successfully", { 
+          newBalance: newSporeBalance,
+          creditsAdded: sporeCredits
+        });
+      }
+    }
+
+    // Update database with current subscription state
     await supabaseClient
       .from('user_subscriptions')
       .upsert({
@@ -118,15 +168,22 @@ serve(async (req) => {
         stripe_customer_id: customerId,
         stripe_subscription_id: stripeSubscriptionId,
         expires_at: subscriptionEnd,
-        spore_balance: existingSub?.spore_balance || 0,
+        spore_balance: newSporeBalance,
+        started_at: hasActiveSub ? new Date().toISOString() : null,
       }, { onConflict: 'user_id' });
 
-    // Fetch updated subscription data
+    // Fetch final subscription data
     const { data: subData } = await supabaseClient
       .from('user_subscriptions')
       .select('spore_balance')
       .eq('user_id', user.id)
       .single();
+
+    logStep("Subscription check complete", { 
+      tier, 
+      subscribed: hasActiveSub,
+      sporeBalance: subData?.spore_balance || 0
+    });
 
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
