@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { TEAM_CHARACTERS, getCharacterById } from '@/data/teamCharacters';
+import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -23,6 +24,8 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [currentResponder, setCurrentResponder] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isCrystallizing, setIsCrystallizing] = useState(false);
+  const [expandingMessageId, setExpandingMessageId] = useState<string | null>(null);
 
   // Build deck context from cards
   const buildDeckContext = useCallback(() => {
@@ -298,12 +301,58 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
     setCurrentResponder(null);
   }, [selectedCharacters, messages, isStreaming, buildDeckContext]);
 
+  // Crystallize conversation into insight card
+  const crystallizeConversation = useCallback(async () => {
+    if (messages.length < 3 || isCrystallizing) return;
+
+    setIsCrystallizing(true);
+    try {
+      const formattedMessages = messages.map(m => ({
+        role: m.role,
+        content: m.content,
+        characterName: m.characterId ? getCharacterById(m.characterId)?.name : undefined
+      }));
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/crystallize-insight`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            messages: formattedMessages,
+            deckId,
+            phase: 'general'
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to crystallize insight');
+      }
+
+      const data = await response.json();
+      toast.success('✨ Insight crystallized!', {
+        description: data.title
+      });
+    } catch (error) {
+      console.error('Crystallize error:', error);
+      toast.error('Failed to crystallize insight');
+    } finally {
+      setIsCrystallizing(false);
+    }
+  }, [messages, deckId, isCrystallizing]);
+
   return {
     selectedCharacters,
     messages,
     isStreaming,
     currentResponder,
     isOpen,
+    isCrystallizing,
+    expandingMessageId,
     toggleCharacter,
     addCharacter,
     removeCharacter,
@@ -311,5 +360,6 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
     closeGroupChat,
     resetSelection,
     sendMessage,
+    crystallizeConversation,
   };
 };

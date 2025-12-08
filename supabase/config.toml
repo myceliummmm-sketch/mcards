@@ -1,5 +1,8 @@
 project_id = "nanzsuokgzzdeibyopkw"
 
+[functions.crystallize-insight]
+verify_jwt = false
+
 [functions.analyze-deck-health]
 verify_jwt = true
 
