@@ -1,13 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-
-const CACHE_KEY = 'demo_card_images';
-const CACHE_EXPIRY = 1000 * 60 * 60 * 24; // 24 hours
-
-interface CachedImages {
-  timestamp: number;
-  images: Record<string, string>;
-}
 
 interface DemoCardConfig {
   id: string;
@@ -56,38 +48,8 @@ const DEMO_CARD_CONFIGS: DemoCardConfig[] = [
 
 export function useDemoCardImages() {
   const [images, setImages] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [loadingCards, setLoadingCards] = useState<Set<string>>(new Set());
-
-  // Load cached images on mount
-  useEffect(() => {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (cached) {
-      try {
-        const parsed: CachedImages = JSON.parse(cached);
-        const now = Date.now();
-        if (now - parsed.timestamp < CACHE_EXPIRY && Object.keys(parsed.images).length > 0) {
-          setImages(parsed.images);
-          setIsLoading(false);
-          return;
-        }
-      } catch (e) {
-        console.error('Failed to parse cached images:', e);
-      }
-    }
-    setIsLoading(false);
-  }, []);
-
-  // Save images to cache whenever they change
-  useEffect(() => {
-    if (Object.keys(images).length > 0) {
-      const cacheData: CachedImages = {
-        timestamp: Date.now(),
-        images
-      };
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-    }
-  }, [images]);
 
   const generateImageForCard = async (cardId: string): Promise<string | null> => {
     const config = DEMO_CARD_CONFIGS.find(c => c.id === cardId);
@@ -142,7 +104,6 @@ export function useDemoCardImages() {
   };
 
   const clearCache = () => {
-    localStorage.removeItem(CACHE_KEY);
     setImages({});
   };
 
