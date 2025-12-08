@@ -45,7 +45,7 @@ export const DEMO_CARDS: DemoCard[] = [
       character: 'Phoenix',
       avatar: phoenixAvatar
     },
-    imageUrl: '/demo-cards/problem.png'
+    imageUrl: '/demo-cards/hero-sphere.png'
   },
   {
     id: 'demo-audience',
