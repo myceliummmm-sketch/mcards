@@ -144,12 +144,7 @@ const Index = () => {
           duration: 0.8,
           delay: 0.7
         }}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-sm">
-              <Eye className="w-4 h-4 text-primary" />
-              <span className="text-muted-foreground">
-                Hover over cards to reveal <span className="text-primary font-medium">hidden strategic insights</span>
-              </span>
-            </div>
+            
           </motion.div>
 
           {/* CTA */}
