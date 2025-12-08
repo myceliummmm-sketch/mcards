@@ -1,3 +1,8 @@
+import everAvatar from '@/assets/avatars/ever.png';
+import phoenixAvatar from '@/assets/avatars/phoenix.png';
+import prismaAvatar from '@/assets/avatars/prisma.png';
+import techPriestAvatar from '@/assets/avatars/techpriest.png';
+
 export interface DemoCard {
   id: string;
   type: string;
@@ -38,7 +43,7 @@ export const DEMO_CARDS: DemoCard[] = [
       score: 87,
       feedback: 'Strong problem with quantified pain. Consider adding emotional cost beyond financial.',
       character: 'Phoenix',
-      avatar: '/src/assets/avatars/phoenix.png'
+      avatar: phoenixAvatar
     }
   },
   {
@@ -60,7 +65,7 @@ export const DEMO_CARDS: DemoCard[] = [
       score: 72,
       feedback: 'Good demographic clarity. Missing: where do they hang out online? How do you reach them?',
       character: 'Prisma',
-      avatar: '/src/assets/avatars/prisma.png'
+      avatar: prismaAvatar
     }
   },
   {
@@ -82,7 +87,7 @@ export const DEMO_CARDS: DemoCard[] = [
       score: 91,
       feedback: 'Excellent market sizing. The gap you identified is defensible. Research validated.',
       character: 'Ever',
-      avatar: '/src/assets/avatars/ever.png'
+      avatar: everAvatar
     }
   },
   {
@@ -104,7 +109,7 @@ export const DEMO_CARDS: DemoCard[] = [
       score: 78,
       feedback: 'Scope is tight. Consider: which ONE feature proves the core value prop fastest?',
       character: 'Tech Priest',
-      avatar: '/src/assets/avatars/techpriest.png'
+      avatar: techPriestAvatar
     }
   }
 ];
