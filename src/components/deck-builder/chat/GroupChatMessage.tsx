@@ -22,11 +22,11 @@ export const GroupChatMessage = ({
   onExpand,
   isExpanding,
 }: GroupChatMessageProps) => {
-  const [showExpand, setShowExpand] = useState(false);
   const character = characterId ? getCharacterById(characterId) : null;
 
-  // Show expand button for short AI responses
-  const isShortResponse = !isUser && content && content.length < 200 && content.split('.').length <= 2;
+  // Show expand button on ALL AI messages (not already expanded)
+  const isAlreadyExpanded = content?.includes('---') || content?.length > 500;
+  const canExpand = !isUser && content && !isAlreadyExpanded;
 
   if (isUser) {
     return (
@@ -39,11 +39,7 @@ export const GroupChatMessage = ({
   }
 
   return (
-    <div 
-      className="flex gap-3 group"
-      onMouseEnter={() => setShowExpand(true)}
-      onMouseLeave={() => setShowExpand(false)}
-    >
+    <div className="flex gap-3 group">
       <Avatar 
         className="h-8 w-8 shrink-0" 
         style={{ 
@@ -81,8 +77,8 @@ export const GroupChatMessage = ({
             {content || (isStreaming ? '...' : '')}
           </p>
           
-          {/* Expand button */}
-          {isShortResponse && !isStreaming && onExpand && (
+          {/* Expand button - always visible on AI messages */}
+          {canExpand && !isStreaming && onExpand && (
             <Button
               variant="ghost"
               size="sm"
@@ -91,7 +87,7 @@ export const GroupChatMessage = ({
               className={cn(
                 'absolute -bottom-3 right-2 h-6 px-2 text-xs gap-1',
                 'bg-muted hover:bg-muted/80 border border-border shadow-sm',
-                'opacity-0 group-hover:opacity-100 transition-opacity'
+                'opacity-70 hover:opacity-100 transition-opacity'
               )}
             >
               {isExpanding ? (

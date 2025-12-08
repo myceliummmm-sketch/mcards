@@ -187,7 +187,7 @@ serve(async (req) => {
     
     const responseLengthRule = detectedMode === 'detailed'
       ? '3-5 sentences with specific details. Be thorough but focused.'
-      : '1-2 sentences MAX. Be punchy and direct—no fluff, no filler.';
+      : 'ULTRA CONCISE: 1-2 sentences MAXIMUM. Under 50 words. No preamble, no fluff. Get straight to the point. Think tweet, not essay.';
 
     // Build the system prompt
     const systemPrompt = `${speechProfile.systemPrompt}
