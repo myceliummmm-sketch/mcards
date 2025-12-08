@@ -91,7 +91,7 @@ export const DEMO_CARDS: DemoCard[] = [
       character: 'Ever',
       avatar: everAvatar
     },
-    imageUrl: '/demo-cards/market.png'
+    imageUrl: '/demo-cards/market-sphere.png'
   },
   {
     id: 'demo-mvp',
