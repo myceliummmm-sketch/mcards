@@ -71,7 +71,7 @@ export const CreateDeckDialog = ({ open, onOpenChange, onDeckCreated }: CreateDe
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">Create New Deck</DialogTitle>
           <DialogDescription>
-            Start building your product vision with a new deck of 22 cards
+            Start building your product vision with a new deck of 21 cards
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>

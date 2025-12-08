@@ -39,7 +39,7 @@ const Index = () => {
   const characters = Object.values(TEAM_CHARACTERS);
   const features = [{
     icon: Sparkles,
-    title: "22-Card System",
+    title: "21-Card System",
     description: "Structured framework covering all product phases from vision to growth",
     color: "text-primary"
   }, {
@@ -118,7 +118,7 @@ const Index = () => {
           delay: 0.3
         }}>
             Most projects fail because of <span className="text-destructive font-medium">blind spots</span>. 
-            Mycelium uses a <span className="text-primary font-medium">22-Card System</span> to build a complete strategic mosaic around your idea, revealing the risks  and opportunities you haven't seen.
+            Mycelium uses a <span className="text-primary font-medium">21-Card System</span> to build a complete strategic mosaic around your idea, revealing the risks  and opportunities you haven't seen.
           </motion.p>
 
           {/* Card Mosaic Visualization */}
@@ -336,7 +336,7 @@ const Index = () => {
         <div className="container mx-auto max-w-4xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[{
-            value: "22",
+            value: "21",
             label: "Cards"
           }, {
             value: "7",
