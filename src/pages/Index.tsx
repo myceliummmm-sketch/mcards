@@ -2,10 +2,12 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, ChevronRight } from "lucide-react";
+import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, ChevronRight, Eye } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
 import { PHASE_CONFIG } from "@/data/cardDefinitions";
+import { CardMosaic } from "@/components/landing/CardMosaic";
+import { WhyCardsSection } from "@/components/landing/WhyCardsSection";
 
 // Import phase icons
 import visionIcon from "@/assets/icons/vision.png";
@@ -128,117 +130,65 @@ const Index = () => {
         ))}
       </div>
 
-      {/* Hero Section */}
-      <section className="relative z-10 min-h-screen flex items-center justify-center px-4 py-20">
-        <div className="container mx-auto max-w-6xl text-center">
-          {/* Floating Cards Animation */}
-          <motion.div 
-            className="relative mb-8 h-32 flex justify-center items-center"
-            initial={{ opacity: 0, y: 20 }}
+      {/* Hero Section - Renovated */}
+      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-20">
+        <div className="container mx-auto max-w-6xl">
+          {/* Main Headline */}
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <AnimatePresence mode="popLayout">
-              {[-30, -15, 0, 15, 30].map((rotation, i) => {
-                const iconKeys = ['vision', 'research', 'build', 'grow', 'vision'];
-                const isTossed = tossedCards[i];
-                const tossDirection = generateTossDirection(i);
-                
-                return (
-                  <motion.div
-                    key={`card-${i}-${isTossed ? 'tossed' : 'idle'}`}
-                    className="absolute w-16 h-24 md:w-20 md:h-28 rounded-lg border border-primary/30 bg-card/80 backdrop-blur-sm cursor-pointer select-none"
-                    style={{ 
-                      zIndex: isTossed ? 10 : 5 - Math.abs(i - 2)
-                    }}
-                    initial={isTossed ? { rotate: rotation, y: 0, opacity: 1 } : { y: 50, opacity: 0, rotate: rotation }}
-                    animate={isTossed ? {
-                      x: tossDirection.x,
-                      y: tossDirection.y,
-                      rotate: tossDirection.rotate,
-                      opacity: 0,
-                      scale: 0.5,
-                    } : { 
-                      x: 0,
-                      y: 0, 
-                      rotate: rotation,
-                      opacity: 1,
-                      scale: 1,
-                      boxShadow: `0 0 ${20 + i * 5}px hsl(var(--primary) / 0.3)`
-                    }}
-                    exit={{
-                      x: tossDirection.x,
-                      y: tossDirection.y,
-                      rotate: tossDirection.rotate,
-                      opacity: 0,
-                      scale: 0.5,
-                    }}
-                    transition={isTossed ? { 
-                      duration: 0.6, 
-                      ease: [0.23, 1, 0.32, 1]
-                    } : { 
-                      delay: i * 0.1, 
-                      duration: 0.5,
-                      type: "spring",
-                      stiffness: 200,
-                      damping: 20
-                    }}
-                    whileHover={!isTossed ? { y: -10, scale: 1.08, boxShadow: `0 0 30px hsl(var(--primary) / 0.5)` } : {}}
-                    whileTap={!isTossed ? { scale: 0.95 } : {}}
-                    onClick={() => handleCardToss(i)}
-                  >
-                    <div className="w-full h-full flex items-center justify-center p-2">
-                      <img 
-                        src={PHASE_ICONS[iconKeys[i]]} 
-                        alt={iconKeys[i]} 
-                        className="w-10 h-10 md:w-12 md:h-12 object-contain pointer-events-none"
-                      />
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-4">
+              <span className="text-foreground">You Don't Know</span>
+              <br />
+              <span className="text-primary text-glow">What You Don't Know.</span>
+              <br />
+              <span className="text-secondary text-glow-purple">Yet.</span>
+            </h1>
           </motion.div>
 
-          {/* Main Title */}
-          <motion.h1 
-            className="text-5xl md:text-7xl lg:text-8xl font-display font-bold mb-6 text-glow"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            Mycelium Cards
-          </motion.h1>
-
-          {/* Tagline */}
-          <motion.div 
-            className="flex items-center justify-center gap-4 md:gap-6 mb-8"
+          {/* Subheadline */}
+          <motion.p
+            className="text-center text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            Most startups fail because of <span className="text-destructive font-medium">blind spots</span>. 
+            Mycelium uses a <span className="text-primary font-medium">22-Card System</span> to build a complete 
+            strategic mosaic around your idea, revealing the risks you haven't seen.
+          </motion.p>
+
+          {/* Card Mosaic Visualization */}
+          <motion.div
+            className="mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
-            <span className="text-2xl md:text-4xl font-display text-primary text-glow">BUILD</span>
-            <span className="text-xl md:text-2xl text-muted-foreground">•</span>
-            <span className="text-2xl md:text-4xl font-display text-secondary text-glow-purple">CRAFT</span>
-            <span className="text-xl md:text-2xl text-muted-foreground">•</span>
-            <span className="text-2xl md:text-4xl font-display text-accent" style={{ textShadow: '0 0 10px hsl(320 100% 55% / 0.5)' }}>TRADE</span>
+            <CardMosaic />
           </motion.div>
 
-          {/* Subtitle */}
-          <motion.p 
-            className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto"
+          {/* Insight callout */}
+          <motion.div
+            className="text-center mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.7 }}
           >
-            Transform product chaos into strategic clarity.
-            <br className="hidden md:block" />
-            <span className="text-foreground font-medium">22 cards. 7 AI advisors. One complete vision.</span>
-          </motion.p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-sm">
+              <Eye className="w-4 h-4 text-primary" />
+              <span className="text-muted-foreground">
+                Hover over cards to reveal <span className="text-primary font-medium">hidden strategic insights</span>
+              </span>
+            </div>
+          </motion.div>
 
-          {/* CTAs */}
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-8"
+          {/* CTA */}
+          <motion.div
+            className="text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
@@ -246,32 +196,22 @@ const Index = () => {
             <Button
               size="lg"
               onClick={() => navigate("/auth")}
-              className="text-lg gap-2 hover:scale-105 transition-transform card-glow px-8"
+              className="text-lg gap-2 px-10 py-6 cta-pulse"
             >
               <Zap className="h-5 w-5" />
-              Start Building Your Deck
+              Start Building Your Deck (Free)
               <ArrowRight className="h-5 w-5" />
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => navigate("/auth")}
-              className="text-lg border-border/50 hover:border-primary/50"
-            >
-              Sign In
-            </Button>
+            
+            <p className="mt-4 text-sm text-muted-foreground">
+              No credit card required • Join 1,000+ founders
+            </p>
           </motion.div>
-
-          <motion.p 
-            className="text-sm text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.1 }}
-          >
-            Free to start • No credit card required
-          </motion.p>
         </div>
       </section>
+
+      {/* Why Cards Section - NEW */}
+      <WhyCardsSection />
 
       {/* 4 Phases Journey */}
       <section className="relative z-10 py-24 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
