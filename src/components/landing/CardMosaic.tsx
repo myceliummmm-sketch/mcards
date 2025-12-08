@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Sparkles, Loader2, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { DEMO_CARDS, DemoCard, PHASE_COLORS as DEMO_PHASE_COLORS, PHASE_GLOW, PHASE_BORDER_COLORS, PHASE_ACCENT } from "@/data/demoCardData";
-import { useDemoCardImages } from "@/hooks/useDemoCardImages";
 import { CardDetailModal } from "./CardDetailModal";
 
 // Import phase icons
@@ -117,32 +116,19 @@ const getDemoCard = (name: string): DemoCard | undefined => {
   return DEMO_CARDS.find(c => c.id === demoId);
 };
 
-// Flippable Demo Card Component
+// Flippable Demo Card Component - uses static imageUrl from demoCardData
 const FlippableDemoCard = ({
   card,
   demoCard,
-  imageUrl,
-  isLoadingImage,
-  onGenerateImage,
   onCardClick,
   index
 }: {
   card: typeof CARD_MOSAIC[0];
   demoCard: DemoCard;
-  imageUrl?: string;
-  isLoadingImage: boolean;
-  onGenerateImage: () => void;
   onCardClick: (demoCard: DemoCard) => void;
   index: number;
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
-
-  // Generate image when component mounts if not available
-  useEffect(() => {
-    if (!imageUrl && !isLoadingImage) {
-      onGenerateImage();
-    }
-  }, [imageUrl, isLoadingImage, onGenerateImage]);
 
   const getRarityColor = (score: number) => {
     if (score >= 90) return 'text-amber-400';
@@ -176,13 +162,9 @@ const FlippableDemoCard = ({
           className={`absolute inset-0 rounded-lg border-2 ${PHASE_BORDER_COLORS[demoCard.phase]} overflow-hidden shadow-2xl ${PHASE_GLOW[demoCard.phase]}`}
           style={{ backfaceVisibility: 'hidden' }}
         >
-          {isLoadingImage ? (
-            <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${DEMO_PHASE_COLORS[demoCard.phase]}`}>
-              <Loader2 className="w-6 h-6 animate-spin text-primary" />
-            </div>
-          ) : imageUrl ? (
+          {demoCard.imageUrl ? (
             <img 
-              src={imageUrl} 
+              src={demoCard.imageUrl} 
               alt={demoCard.title}
               className="w-full h-full object-cover"
             />
@@ -395,7 +377,6 @@ const PainPointCard = ({
 
 export function CardMosaic() {
   const [selectedCard, setSelectedCard] = useState<DemoCard | null>(null);
-  const { images, generateImageForCard, isCardLoading } = useDemoCardImages();
 
   const handleCardClick = useCallback((demoCard: DemoCard) => {
     setSelectedCard(demoCard);
@@ -412,7 +393,6 @@ export function CardMosaic() {
       <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-3 md:gap-4 p-4 md:p-6">
         {CARD_MOSAIC.map((card, index) => {
           const demoCard = getDemoCard(card.name);
-          const demoId = DEMO_SLOT_MAPPING[card.name];
 
           if (demoCard) {
             return (
@@ -420,9 +400,6 @@ export function CardMosaic() {
                 key={card.slot}
                 card={card}
                 demoCard={demoCard}
-                imageUrl={images[demoId]}
-                isLoadingImage={isCardLoading(demoId)}
-                onGenerateImage={() => generateImageForCard(demoId)}
                 onCardClick={handleCardClick}
                 index={index}
               />
@@ -444,7 +421,7 @@ export function CardMosaic() {
         {selectedCard && (
           <CardDetailModal
             card={selectedCard}
-            imageUrl={images[selectedCard.id]}
+            imageUrl={selectedCard.imageUrl}
             isOpen={!!selectedCard}
             onClose={() => setSelectedCard(null)}
           />
