@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { CHARACTER_SPEECH_PROFILES } from '@/data/characterPrompts';
+import { toast } from 'sonner';
+import { getCharacterById } from '@/data/teamCharacters';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -22,6 +24,8 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isCrystallizing, setIsCrystallizing] = useState(false);
+  const [expandingMessageId, setExpandingMessageId] = useState<string | null>(null);
 
   // Build deck context from cards
   const buildDeckContext = useCallback(() => {
@@ -84,7 +88,7 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
   }, []);
 
   // Send a message
-  const sendMessage = useCallback(async (content: string) => {
+  const sendMessage = useCallback(async (content: string, responseMode?: 'concise' | 'detailed') => {
     if (!activeCharacter || !content.trim() || isStreaming) return;
 
     const userMessage: ChatMessage = {
@@ -118,6 +122,7 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
             characterId: activeCharacter,
             messages: apiMessages,
             deckContext,
+            responseMode,
           }),
         }
       );
@@ -227,13 +232,142 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
     }
   }, [activeCharacter, messages, isStreaming, buildDeckContext]);
 
+  // Expand a message with more detail
+  const expandMessage = useCallback(async (messageId: string, characterId: string, originalContent: string) => {
+    if (isStreaming || expandingMessageId) return;
+    
+    setExpandingMessageId(messageId);
+    
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/team-chat`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            characterId,
+            messages: [
+              { role: 'assistant', content: originalContent },
+              { role: 'user', content: 'Can you expand on that with more detail?' }
+            ],
+            deckContext: buildDeckContext(),
+            responseMode: 'detailed',
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to expand');
+      if (!response.body) throw new Error('No response body');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let expandedContent = originalContent + '\n\n---\n\n';
+      let buffer = '';
+
+      // Update the message as we stream
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const delta = parsed.choices?.[0]?.delta?.content;
+            if (delta) {
+              expandedContent += delta;
+              setMessages(prev => 
+                prev.map(m => 
+                  m.id === messageId 
+                    ? { ...m, content: expandedContent }
+                    : m
+                )
+              );
+            }
+          } catch {
+            buffer = line + '\n' + buffer;
+            break;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Expand error:', error);
+      toast.error('Failed to expand message');
+    } finally {
+      setExpandingMessageId(null);
+    }
+  }, [isStreaming, expandingMessageId, buildDeckContext]);
+
+  // Crystallize conversation into insight
+  const crystallizeConversation = useCallback(async () => {
+    if (messages.length < 3 || isCrystallizing || !activeCharacter) return;
+
+    setIsCrystallizing(true);
+    try {
+      const formattedMessages = messages.map(m => ({
+        role: m.role,
+        content: m.content,
+        characterName: m.characterId ? getCharacterById(m.characterId)?.name : undefined
+      }));
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/crystallize-insight`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            messages: formattedMessages,
+            deckId,
+            phase: 'general'
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to crystallize insight');
+      }
+
+      const data = await response.json();
+      toast.success('✨ Insight crystallized!', {
+        description: data.title
+      });
+    } catch (error) {
+      console.error('Crystallize error:', error);
+      toast.error('Failed to crystallize insight');
+    } finally {
+      setIsCrystallizing(false);
+    }
+  }, [messages, deckId, isCrystallizing, activeCharacter]);
+
   return {
     activeCharacter,
     messages,
     isStreaming,
     isOpen,
+    isCrystallizing,
+    expandingMessageId,
     openChat,
     closeChat,
     sendMessage,
+    expandMessage,
+    crystallizeConversation,
   };
 };

@@ -59,7 +59,6 @@ const SPEECH_PROFILES: Record<string, { speechRules: string[]; systemPrompt: str
       "Ask provocative strategic questions that challenge assumptions",
       "Use em-dashes for emphasis—like this—to create rhythm",
       "Minimal emoji usage: only 🌟, 🚀, ✨ sparingly",
-      "Medium-long responses with clear structure",
       "End with forward-looking vision or challenge"
     ],
     systemPrompt: `You are Ever Green, CEO and Visionary. You transform visions into reality and maintain ethical boundaries. Help founders see the bigger picture—toward movements and lasting impact.`
@@ -71,7 +70,6 @@ const SPEECH_PROFILES: Record<string, { speechRules: string[]; systemPrompt: str
       "Ask 'why' often—dig into root causes",
       "Reference user research, data, and validation",
       "Moderate emoji usage: 💡, 🎯, 👤, 💎, ✨",
-      "Medium-length responses, well-organized",
       "Always bring it back to user needs and problems"
     ],
     systemPrompt: `You are Prisma, Product Manager. Voice of the user. Push for user validation and empathy-driven design. Help founders fall in love with problems, not solutions.`
@@ -84,8 +82,7 @@ const SPEECH_PROFILES: Record<string, { speechRules: string[]; systemPrompt: str
       "Use 'What if someone...' attack scenarios",
       "Occasional WARNING in caps",
       "Use ellipses... for dramatic pause",
-      "Rare emoji: ⚠️, 🔓, 💀 only",
-      "Short responses—get to the point"
+      "Rare emoji: ⚠️, 🔓, 💀 only"
     ],
     systemPrompt: `You are Toxic, Red Team Lead. Adversarial thinker. Find what's gonna break. Challenge assumptions. Expose blind spots. White hat mindset—you're on their side.`
   },
@@ -108,7 +105,6 @@ const SPEECH_PROFILES: Record<string, { speechRules: string[]; systemPrompt: str
       "Use analogies and metaphors extensively",
       "Use \`code formatting\` for technical terms",
       "Moderate emoji: ⚙️, 🔧, 💻, 📊, 🏗️",
-      "Longer responses when explaining concepts",
       "Teach principles, not just solutions"
     ],
     systemPrompt: `You are Tech Priest, CTO. Builder of digital worlds. Guide technical decisions with wisdom. Help non-technical founders understand architecture through analogies.`
@@ -133,12 +129,37 @@ const SPEECH_PROFILES: Record<string, { speechRules: string[]; systemPrompt: str
       "Ask about feelings and wellbeing",
       "Peaceful emoji: 🧘, 💚, 🌱, ☀️, 🕊️",
       "Use *actions* like *takes a breath*",
-      "Short-medium responses—don't overwhelm",
       "Remind them they're human first"
     ],
     systemPrompt: `You are Zen, HR and Wellbeing. Culture keeper. Check in on the founder's wellbeing. Remind them that sustainable success requires taking care of themselves.`
   }
 };
+
+// Detect if the question needs a detailed response
+function detectResponseLength(lastUserMessage: string): 'concise' | 'detailed' {
+  const detailedKeywords = [
+    'explain', 'elaborate', 'why', 'how does', 'how do', 'tell me more',
+    'in detail', 'walk me through', 'break down', 'describe', 'what are the',
+    'can you explain', 'help me understand', 'go deeper', 'expand on'
+  ];
+  
+  const lowerMessage = lastUserMessage.toLowerCase();
+  
+  // Check for detailed keywords
+  for (const keyword of detailedKeywords) {
+    if (lowerMessage.includes(keyword)) {
+      return 'detailed';
+    }
+  }
+  
+  // Check for multiple questions
+  const questionMarks = (lastUserMessage.match(/\?/g) || []).length;
+  if (questionMarks >= 2) {
+    return 'detailed';
+  }
+  
+  return 'concise';
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -146,7 +167,7 @@ serve(async (req) => {
   }
 
   try {
-    const { characterId, messages, deckContext } = await req.json();
+    const { characterId, messages, deckContext, responseMode } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -160,10 +181,21 @@ serve(async (req) => {
       throw new Error(`Unknown character: ${characterId}`);
     }
 
+    // Determine response length
+    const lastUserMessage = messages[messages.length - 1]?.content || '';
+    const detectedMode = responseMode || detectResponseLength(lastUserMessage);
+    
+    const responseLengthRule = detectedMode === 'detailed'
+      ? '3-5 sentences with specific details. Be thorough but focused.'
+      : '1-2 sentences MAX. Be punchy and direct—no fluff, no filler.';
+
     // Build the system prompt
     const systemPrompt = `${speechProfile.systemPrompt}
 
 PERSONALITY: ${character.personality}
+
+=== RESPONSE LENGTH (CRITICAL) ===
+${responseLengthRule}
 
 === SPEECH STYLE RULES (FOLLOW STRICTLY) ===
 ${speechProfile.speechRules.map(r => `• ${r}`).join('\n')}
@@ -181,9 +213,10 @@ ${deckContext || 'No cards filled yet. Help them get started!'}
 - Reference their specific cards when relevant
 - Be genuinely helpful while maintaining your unique voice
 - Ask follow-up questions that fit your specialty (${character.role})
-- Keep responses focused and conversational`;
+- Keep responses focused and conversational
+- RESPECT THE RESPONSE LENGTH RULE ABOVE`;
 
-    console.log(`Chat with ${character.name}, messages: ${messages.length}`);
+    console.log(`Chat with ${character.name}, messages: ${messages.length}, mode: ${detectedMode}`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

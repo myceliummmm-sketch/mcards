@@ -43,9 +43,13 @@ export default function DeckBuilder() {
     messages: chatMessages,
     isStreaming: isChatStreaming,
     isOpen: isChatOpen,
+    isCrystallizing: isChatCrystallizing,
+    expandingMessageId: chatExpandingMessageId,
     openChat,
     closeChat,
     sendMessage: sendChatMessage,
+    expandMessage: expandChatMessage,
+    crystallizeConversation: crystallizeChatConversation,
   } = useTeamChat({ deckId: deckId || '', cards });
 
   // Group chat hook (multiple characters)
@@ -55,14 +59,16 @@ export default function DeckBuilder() {
     isStreaming: isGroupStreaming,
     currentResponder,
     isOpen: isGroupChatOpen,
-    isCrystallizing,
+    isCrystallizing: isGroupCrystallizing,
+    expandingMessageId: groupExpandingMessageId,
     toggleCharacter: toggleGroupCharacter,
     addCharacter: addGroupCharacter,
     removeCharacter: removeGroupCharacter,
     openGroupChat,
     closeGroupChat,
     sendMessage: sendGroupMessage,
-    crystallizeConversation,
+    crystallizeConversation: crystallizeGroupConversation,
+    expandMessage: expandGroupMessage,
   } = useGroupChat({ deckId: deckId || '', cards });
 
   useEffect(() => {
@@ -290,6 +296,10 @@ const filledCards = getFilledCardsCount();
         messages={chatMessages}
         isStreaming={isChatStreaming}
         onSendMessage={sendChatMessage}
+        onCrystallize={crystallizeChatConversation}
+        isCrystallizing={isChatCrystallizing}
+        onExpandMessage={expandChatMessage}
+        expandingMessageId={chatExpandingMessageId}
       />
 
       {/* Group Chat Drawer */}
@@ -303,8 +313,10 @@ const filledCards = getFilledCardsCount();
         onSendMessage={sendGroupMessage}
         onAddCharacter={addGroupCharacter}
         onRemoveCharacter={removeGroupCharacter}
-        onCrystallize={crystallizeConversation}
-        isCrystallizing={isCrystallizing}
+        onCrystallize={crystallizeGroupConversation}
+        isCrystallizing={isGroupCrystallizing}
+        onExpandMessage={expandGroupMessage}
+        expandingMessageId={groupExpandingMessageId}
       />
 
       {/* Card Editor Modal */}
