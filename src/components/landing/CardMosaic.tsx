@@ -20,6 +20,28 @@ const DEMO_SLOT_MAPPING: Record<string, string> = {
   'MVP Features': 'demo-mvp'
 };
 
+// Pain point quotes for locked cards - targeting job seekers, stressed workers, coders
+const PAIN_POINTS: Record<string, string> = {
+  'Vision': "I have 100 ideas but zero conviction which one to pursue",
+  'Unique Value': "Everyone says 'be unique' but my idea already exists on ProductHunt",
+  'Market Size': "I built it for everyone... so no one cares",
+  'Customer Interviews': "I asked my mom, she said it's genius. Launch failed anyway",
+  'Pricing Model': "Free users love me. Paying users? What paying users?",
+  'Risk Analysis': "I ignored the red flags. Now I'm 6 months deep with nothing",
+  'Tech Stack': "I spent 3 months choosing the perfect stack. Still no MVP",
+  'Architecture': "My architecture is beautiful. My user count is zero",
+  'Timeline': "It'll take 2 weeks... said me 8 months ago",
+  'Budget': "I quit my job for this. Runway: 3 months. Progress: 10%",
+  'Team Roles': "I'm CEO, CTO, CFO, and also the intern doing everything",
+  'Launch Plan': "I'll just post on Twitter when it's ready...",
+  'Marketing': "If you build it, they will come... right? RIGHT?!",
+  'Growth Metrics': "I have 1000 signups! Active users? ...don't ask",
+  'Retention': "Day 1: 100 users. Day 7: tumbleweeds",
+  'Monetization': "I'll figure out money later. Narrator: He didn't",
+  'Pivot Signals': "Users want X. I'm building Y. They just don't get my vision",
+  'Exit Strategy': "My exit strategy is hope"
+};
+
 // 22 card types with their phase assignments
 const CARD_MOSAIC = [
   { slot: 1, name: "Problem", phase: "vision" },
@@ -245,20 +267,21 @@ const FlippableDemoCard = ({
   );
 };
 
-// Locked Card Component
-const LockedCard = ({
+// Pain Point Card Component - flips to reveal relatable struggles
+const PainPointCard = ({
   card,
   index
 }: {
   card: typeof CARD_MOSAIC[0];
   index: number;
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
   const phaseConfig = PHASE_CONFIG[card.phase];
+  const painPoint = PAIN_POINTS[card.name] || "Building in the dark without a map";
 
   return (
     <motion.div
-      className="relative aspect-[2.5/3.5] cursor-pointer group"
+      className="relative aspect-[2.5/3.5] cursor-pointer group perspective-1000"
       initial={{ opacity: 0, scale: 0.8, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ 
@@ -266,32 +289,107 @@ const LockedCard = ({
         duration: 0.5,
         ease: "easeOut"
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ scale: 1.05, y: -5 }}
+      onClick={() => setIsFlipped(!isFlipped)}
+      onMouseLeave={() => setIsFlipped(false)}
+      whileHover={{ scale: 1.05, y: -5, zIndex: 5 }}
     >
       <motion.div
-        className="absolute inset-0 rounded-lg overflow-hidden"
-        style={{
-          background: 'hsl(var(--muted) / 0.3)',
-          border: `1px solid hsl(var(--border) / 0.3)`,
-        }}
+        className="absolute inset-0 transition-transform duration-500"
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        style={{ transformStyle: 'preserve-3d' }}
       >
-        {/* Scanlines effect */}
-        <div className="absolute inset-0 opacity-30 pointer-events-none bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,hsl(var(--muted-foreground)/0.1)_2px,hsl(var(--muted-foreground)/0.1)_4px)]" />
-        
-        {/* Lock icon */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <Lock className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground/40" />
-          {isHovered && (
-            <motion.span 
-              className="text-[8px] md:text-[9px] text-muted-foreground/60 text-center px-1 mt-1"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+        {/* Front - Mysterious shrouded card */}
+        <div 
+          className="absolute inset-0 rounded-lg overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, hsl(var(--muted) / 0.4), hsl(var(--muted) / 0.2))`,
+            border: `1px solid ${phaseConfig.color}20`,
+            boxShadow: `inset 0 0 30px hsl(var(--background) / 0.5)`,
+            backfaceVisibility: 'hidden'
+          }}
+        >
+          {/* Smoke/mystery effect */}
+          <div 
+            className="absolute inset-0 opacity-20"
+            style={{
+              background: `radial-gradient(ellipse at center, ${phaseConfig.color}30, transparent 70%)`
+            }}
+          />
+          
+          {/* Scanlines */}
+          <div className="absolute inset-0 opacity-20 pointer-events-none bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,hsl(var(--muted-foreground)/0.1)_2px,hsl(var(--muted-foreground)/0.1)_4px)]" />
+          
+          {/* Question mark hint */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <motion.div
+              animate={{ 
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.05, 1]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="text-2xl md:text-3xl font-light"
+              style={{ color: `${phaseConfig.color}60` }}
+            >
+              ?
+            </motion.div>
+            <span 
+              className="text-[8px] md:text-[9px] text-center px-2 mt-2 font-medium"
+              style={{ color: `${phaseConfig.color}80` }}
             >
               {card.name}
-            </motion.span>
-          )}
+            </span>
+          </div>
+          
+          {/* Tap hint */}
+          <div className="absolute bottom-1.5 left-0 right-0 text-center">
+            <span className="text-[6px] md:text-[7px] text-muted-foreground/40">tap to reveal</span>
+          </div>
+        </div>
+
+        {/* Back - Pain point quote */}
+        <div 
+          className="absolute inset-0 rounded-lg overflow-hidden p-2 md:p-3 flex flex-col justify-center"
+          style={{
+            background: `linear-gradient(145deg, hsl(var(--card)), hsl(var(--card) / 0.95))`,
+            border: `1px solid ${phaseConfig.color}40`,
+            boxShadow: phaseConfig.glow,
+            backfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)'
+          }}
+        >
+          {/* Decorative quote marks */}
+          <div 
+            className="absolute top-1 left-1.5 text-xl md:text-2xl opacity-20 font-serif"
+            style={{ color: phaseConfig.color }}
+          >
+            "
+          </div>
+          
+          {/* Pain point text */}
+          <p 
+            className="text-[8px] md:text-[10px] leading-tight text-center italic text-foreground/90 px-1"
+            style={{ fontFamily: 'Georgia, serif' }}
+          >
+            {painPoint}
+          </p>
+          
+          {/* Decorative closing quote */}
+          <div 
+            className="absolute bottom-1 right-1.5 text-xl md:text-2xl opacity-20 font-serif"
+            style={{ color: phaseConfig.color }}
+          >
+            "
+          </div>
+          
+          {/* Card type label */}
+          <div className="absolute bottom-1.5 left-0 right-0 text-center">
+            <span 
+              className="text-[6px] md:text-[7px] font-bold uppercase tracking-wider"
+              style={{ color: phaseConfig.color }}
+            >
+              {card.name}
+            </span>
+          </div>
         </div>
       </motion.div>
     </motion.div>
@@ -335,7 +433,7 @@ export function CardMosaic() {
           }
 
           return (
-            <LockedCard
+            <PainPointCard
               key={card.slot}
               card={card}
               index={index}
@@ -350,13 +448,13 @@ export function CardMosaic() {
           <div 
             className="w-4 h-4 rounded border-2 border-purple-500/40 bg-gradient-to-br from-purple-500/20 to-violet-600/20"
           />
-          <span>Interactive Cards</span>
+          <span>AI-Evaluated Cards</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border border-border/30 bg-muted/30 flex items-center justify-center">
-            <Lock className="w-2 h-2 text-muted-foreground/40" />
+          <div className="w-4 h-4 rounded border border-border/30 bg-muted/30 flex items-center justify-center text-[8px] text-muted-foreground/60">
+            ?
           </div>
-          <span>Your Blind Spots</span>
+          <span>Tap to Reveal Your Blind Spots</span>
         </div>
       </div>
 
