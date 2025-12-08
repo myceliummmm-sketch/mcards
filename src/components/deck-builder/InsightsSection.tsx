@@ -222,9 +222,8 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
     );
   }
 
-  if (insights.length === 0) {
-    return null;
-  }
+  // Show empty state instead of hiding the entire section
+  const showEmptyState = !loading && insights.length === 0;
 
   const selectedData = selectedInsight?.card_data as unknown as InsightCardData;
   const isSelectedArchived = !!selectedData?.archivedAt;
@@ -391,8 +390,24 @@ export const InsightsSection = ({ deckId, className }: InsightsSectionProps) => 
         )}
       </div>
 
-      {/* Empty state */}
-      {filteredInsights.length === 0 && (
+      {/* Empty state - no insights at all */}
+      {showEmptyState && (
+        <div className="text-center py-12 text-muted-foreground">
+          <div className="relative inline-block mb-4">
+            <Gem className="w-12 h-12 text-secondary/50" />
+            <div className="absolute inset-0 animate-pulse">
+              <Gem className="w-12 h-12 text-secondary/30 blur-lg" />
+            </div>
+          </div>
+          <h4 className="text-lg font-medium text-foreground mb-2">No crystallized insights yet</h4>
+          <p className="text-sm max-w-sm mx-auto">
+            Start a team chat and click ✨ <strong>Crystallize</strong> to capture your best ideas as permanent insight cards.
+          </p>
+        </div>
+      )}
+
+      {/* Empty filtered state - has insights but none match filters */}
+      {!showEmptyState && filteredInsights.length === 0 && (
         <div className="text-center py-8 text-muted-foreground">
           <Gem className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p className="text-sm">

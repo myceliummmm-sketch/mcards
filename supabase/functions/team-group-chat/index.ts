@@ -95,7 +95,7 @@ serve(async (req) => {
 
     const responseLengthRule = needsDetail || isMultiPart
       ? 'This is a detailed question - provide a thorough 3-5 sentence response with specifics.'
-      : 'Keep responses PUNCHY and CONCISE: 1-2 sentences max. No fluff. Get to the point fast.';
+      : 'ULTRA CONCISE: 1-2 sentences MAXIMUM. Under 50 words total. No preamble, no fluff. Think tweet-length. Get straight to the point.';
 
     const systemPrompt = `You are ${profile.name}, the ${profile.role} of this startup team.
 
