@@ -7,6 +7,7 @@ import { Lightbulb, CheckCircle2 } from 'lucide-react';
 import type { FormFieldConfig, CardDefinition } from '@/data/cardDefinitions';
 import type { FieldGuidance } from '@/data/fieldHints';
 import { AISuggestionPanel } from './AISuggestionPanel';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface WizardStepProps {
   field: FormFieldConfig;
@@ -30,6 +31,7 @@ export const WizardStep = ({
   previousAnswers 
 }: WizardStepProps) => {
   const isFilled = value !== undefined && value !== null && value !== '';
+  const { t } = useTranslation();
 
   return (
     <motion.div
@@ -52,7 +54,7 @@ export const WizardStep = ({
               className="flex items-center gap-2 text-secondary"
             >
               <CheckCircle2 className="w-5 h-5" />
-              <span className="text-sm font-medium">Complete</span>
+              <span className="text-sm font-medium">{t('wizard.complete')}</span>
             </motion.div>
           )}
         </div>
@@ -82,7 +84,7 @@ export const WizardStep = ({
         {field.type === 'select' && field.options && (
           <Select value={value || ''} onValueChange={onChange}>
             <SelectTrigger className="h-12 text-lg">
-              <SelectValue placeholder="Select an option..." />
+              <SelectValue placeholder={t('wizard.selectOption')} />
             </SelectTrigger>
             <SelectContent>
               {field.options.map(option => (
@@ -115,7 +117,7 @@ export const WizardStep = ({
       >
         <div className="flex items-center gap-2 text-primary">
           <Lightbulb className="w-5 h-5" />
-          <span className="font-semibold text-sm">HINTS</span>
+          <span className="font-semibold text-sm">{t('wizard.hints')}</span>
         </div>
         <ul className="space-y-2 text-sm text-muted-foreground">
           {guidance.hints.map((hint, i) => (
@@ -134,7 +136,7 @@ export const WizardStep = ({
         transition={{ delay: 0.3 }}
         className="p-4 bg-secondary/10 border border-secondary/20 rounded-lg"
       >
-        <div className="text-xs font-bold text-secondary mb-2">EXAMPLE</div>
+        <div className="text-xs font-bold text-secondary mb-2">{t('wizard.example')}</div>
         <div className="text-sm text-foreground italic">"{guidance.example}"</div>
       </motion.div>
 
@@ -145,7 +147,7 @@ export const WizardStep = ({
           animate={{ opacity: 1, scale: 1 }}
           className="p-3 bg-accent/10 border border-accent/20 rounded-lg"
         >
-          <div className="text-xs font-bold text-accent mb-1">✨ WHAT MAKES A GOOD ANSWER</div>
+          <div className="text-xs font-bold text-accent mb-1">✨ {t('wizard.goodAnswer')}</div>
           <div className="text-sm text-muted-foreground">{guidance.validationTip}</div>
         </motion.div>
       )}
