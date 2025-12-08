@@ -1,23 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ArrowRight, Loader2, ImageIcon } from 'lucide-react';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import { DEMO_CARDS, PHASE_COLORS, PHASE_GLOW, PHASE_BORDER_COLORS, PHASE_ACCENT, DemoCard } from '@/data/demoCardData';
-import { useDemoCardImages } from '@/hooks/useDemoCardImages';
 import { CardDetailModal } from './CardDetailModal';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const DemoCardComponent = ({ 
   card, 
-  imageUrl,
-  isLoadingImage,
-  onSelect,
-  onGenerateImage
+  onSelect
 }: { 
   card: DemoCard; 
-  imageUrl?: string;
-  isLoadingImage: boolean;
   onSelect: (card: DemoCard) => void;
-  onGenerateImage: () => void;
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const { t } = useTranslation();
@@ -36,13 +29,6 @@ const DemoCardComponent = ({
     return 'shadow-emerald-500/50';
   };
 
-  // Generate image on first render if not available
-  useEffect(() => {
-    if (!imageUrl && !isLoadingImage) {
-      onGenerateImage();
-    }
-  }, [imageUrl, isLoadingImage, onGenerateImage]);
-
   return (
     <motion.div
       className="relative w-56 h-80 cursor-pointer perspective-1000"
@@ -56,30 +42,21 @@ const DemoCardComponent = ({
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         style={{ transformStyle: 'preserve-3d' }}
       >
-        {/* Front - AI Generated Image */}
+        {/* Front - Static Image */}
         <div 
           className={`absolute inset-0 rounded-xl border-2 ${PHASE_BORDER_COLORS[card.phase]} overflow-hidden shadow-2xl ${PHASE_GLOW[card.phase]}`}
           style={{ backfaceVisibility: 'hidden' }}
         >
           {/* Card Image */}
           <div className="absolute inset-0">
-            {isLoadingImage ? (
-              <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${PHASE_COLORS[card.phase]}`}>
-                <div className="text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-2" />
-                  <span className="text-xs text-muted-foreground">{t('interactiveDemo.generatingArtwork')}</span>
-                </div>
-              </div>
-            ) : imageUrl ? (
+            {card.imageUrl ? (
               <img 
-                src={imageUrl} 
+                src={card.imageUrl} 
                 alt={card.title}
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${PHASE_COLORS[card.phase]}`}>
-                <ImageIcon className="w-12 h-12 text-muted-foreground/50" />
-              </div>
+              <div className={`w-full h-full bg-gradient-to-br ${PHASE_COLORS[card.phase]}`} />
             )}
           </div>
 
@@ -189,7 +166,6 @@ const DemoCardComponent = ({
 
 export const InteractiveCardDemo = () => {
   const [selectedCard, setSelectedCard] = useState<DemoCard | null>(null);
-  const { images, generateImageForCard, isCardLoading } = useDemoCardImages();
   const { t } = useTranslation();
 
   return (
@@ -224,10 +200,7 @@ export const InteractiveCardDemo = () => {
             >
               <DemoCardComponent 
                 card={card} 
-                imageUrl={images[card.id]}
-                isLoadingImage={isCardLoading(card.id)}
                 onSelect={setSelectedCard}
-                onGenerateImage={() => generateImageForCard(card.id)}
               />
             </motion.div>
           ))}
@@ -247,7 +220,7 @@ export const InteractiveCardDemo = () => {
         {selectedCard && (
           <CardDetailModal 
             card={selectedCard}
-            imageUrl={images[selectedCard.id]}
+            imageUrl={selectedCard.imageUrl}
             isOpen={!!selectedCard} 
             onClose={() => setSelectedCard(null)} 
           />
