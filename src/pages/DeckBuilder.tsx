@@ -21,6 +21,7 @@ import { useDeckCards } from '@/hooks/useDeckCards';
 import { useTeamChat } from '@/hooks/useTeamChat';
 import { useGroupChat } from '@/hooks/useGroupChat';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useTranslation } from '@/hooks/useTranslation';
 import { getCardBySlot, CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
@@ -30,6 +31,7 @@ type Deck = Database['public']['Tables']['decks']['Row'];
 export default function DeckBuilder() {
   const { deckId } = useParams<{ deckId: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [loading, setLoading] = useState(true);
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
@@ -125,7 +127,7 @@ export default function DeckBuilder() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading deck...</p>
+          <p className="text-muted-foreground">{t('deckBuilder.loadingDeck')}</p>
         </div>
       </div>
     );
@@ -165,7 +167,7 @@ const filledCards = getFilledCardsCount();
                   onClick={() => navigate('/dashboard')}
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Dashboard
+                  {t('deckBuilder.backToDashboard')}
                 </Button>
                 <div>
                   <h1 className="text-3xl font-display font-bold text-foreground">
@@ -198,19 +200,19 @@ const filledCards = getFilledCardsCount();
                   onClick={() => setHealthDashboardOpen(true)}
                 >
                   <Activity className="w-4 h-4" />
-                  Deck Health
+                  {t('deckBuilder.deckHealth')}
                 </Button>
 
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="lg" className="gap-2">
                       <Share2 className="w-4 h-4" />
-                      Share
+                      {t('common.share')}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                      <DialogTitle>Share Deck</DialogTitle>
+                      <DialogTitle>{t('deckBuilder.shareDeck')}</DialogTitle>
                     </DialogHeader>
                     {deckId && <CollaboratorManager deckId={deckId} />}
                   </DialogContent>
@@ -223,7 +225,7 @@ const filledCards = getFilledCardsCount();
                   className="gap-2"
                 >
                   <span>⚡</span>
-                  Generate Prompt
+                  {t('deckBuilder.generatePrompt')}
                 </Button>
               </div>
             </div>

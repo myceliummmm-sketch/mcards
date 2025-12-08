@@ -7,6 +7,7 @@ import { Sparkles } from 'lucide-react';
 import { TEAM_CHARACTERS } from '@/data/teamCharacters';
 import { GroupChatMessage } from './GroupChatMessage';
 import { ChatInput } from './ChatInput';
+import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
 import type { ChatMessage as ChatMessageType } from '@/hooks/useTeamChat';
 
@@ -36,6 +37,7 @@ export const TeamChatDrawer = ({
   expandingMessageId,
 }: TeamChatDrawerProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   const character = characterId ? TEAM_CHARACTERS[characterId] : null;
 
   // Auto-scroll to bottom on new messages
@@ -91,7 +93,7 @@ export const TeamChatDrawer = ({
                 )}
               >
                 <Sparkles className="w-4 h-4" />
-                {isCrystallizing ? 'Crystallizing...' : 'Crystallize'}
+                {isCrystallizing ? t('deckBuilder.crystallizing') : t('deckBuilder.crystallize')}
               </Button>
             )}
           </div>
@@ -122,7 +124,7 @@ export const TeamChatDrawer = ({
                   <AvatarImage src={character.avatar} alt={character.name} />
                   <AvatarFallback className="text-xs">{character.emoji}</AvatarFallback>
                 </Avatar>
-                <span className="animate-pulse">{character.name} is typing...</span>
+                <span className="animate-pulse">{character.name} {t('deckBuilder.isTyping')}</span>
               </div>
             )}
           </div>
@@ -133,7 +135,7 @@ export const TeamChatDrawer = ({
           <ChatInput
             onSend={onSendMessage}
             disabled={isStreaming}
-            placeholder={`Message ${character.name}...`}
+            placeholder={`${t('deckBuilder.messageCharacter')} ${character.name}...`}
             characterColor={character.color}
           />
         </div>

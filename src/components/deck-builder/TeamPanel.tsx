@@ -5,6 +5,7 @@ import { CharacterSelector } from './chat/CharacterSelector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageCircle, Users } from 'lucide-react';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useTranslation } from '@/hooks/useTranslation';
 import { UpgradeModal } from '@/components/paywall/UpgradeModal';
 import aiTeamIcon from '@/assets/icons/ai-team.png';
 
@@ -27,6 +28,7 @@ export const TeamPanel = ({
   const [mode, setMode] = useState<'single' | 'group'>('single');
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const { canUseAdvisor } = useSubscription();
+  const { t } = useTranslation();
   const characters = Object.values(TEAM_CHARACTERS);
 
   const handleCharacterClick = (characterId: string) => {
@@ -51,7 +53,7 @@ export const TeamPanel = ({
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <img src={aiTeamIcon} alt="AI Team" className="w-8 h-8 object-contain" />
-            <h2 className="text-xl font-bold text-foreground">AI Team</h2>
+            <h2 className="text-xl font-bold text-foreground">{t('deckBuilder.aiTeam')}</h2>
           </div>
         </div>
 
@@ -59,17 +61,17 @@ export const TeamPanel = ({
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="single" className="gap-1.5 text-xs">
               <MessageCircle className="w-3.5 h-3.5" />
-              Single Chat
+              {t('deckBuilder.singleChat')}
             </TabsTrigger>
             <TabsTrigger value="group" className="gap-1.5 text-xs">
               <Users className="w-3.5 h-3.5" />
-              Team Meeting
+              {t('deckBuilder.teamMeeting')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="single" className="mt-0">
             <p className="text-sm text-muted-foreground mb-4">
-              Click a team member to chat
+              {t('deckBuilder.clickToChat')}
             </p>
             <div className="space-y-3">
               {characters.map((character) => (
@@ -96,9 +98,9 @@ export const TeamPanel = ({
         
         <div className="mt-6 p-4 bg-muted/50 rounded-lg border border-border">
           <div className="text-xs text-muted-foreground">
-            <strong>💡 Pro Tip:</strong> {mode === 'single' 
-              ? 'Each team member has unique expertise!' 
-              : 'Team meetings get diverse perspectives!'}
+            <strong>💡 {t('deckBuilder.proTip')}</strong> {mode === 'single' 
+              ? t('deckBuilder.proTipSingle')
+              : t('deckBuilder.proTipGroup')}
           </div>
         </div>
       </div>

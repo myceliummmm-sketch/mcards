@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -8,7 +8,7 @@ import { X, Plus, Users, Sparkles } from 'lucide-react';
 import { ChatInput } from './ChatInput';
 import { GroupChatMessage } from './GroupChatMessage';
 import { TEAM_CHARACTERS, getCharacterById } from '@/data/teamCharacters';
-import { toast } from 'sonner';
+import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
 import type { GroupChatMessage as GroupChatMessageType } from '@/hooks/useGroupChat';
 
@@ -44,6 +44,7 @@ export const GroupChatDrawer = ({
   expandingMessageId,
 }: GroupChatDrawerProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -67,7 +68,7 @@ export const GroupChatDrawer = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
-              <SheetTitle>Team Meeting</SheetTitle>
+              <SheetTitle>{t('deckBuilder.teamMeeting')}</SheetTitle>
             </div>
             
             {/* Crystallize button */}
@@ -84,7 +85,7 @@ export const GroupChatDrawer = ({
                 )}
               >
                 <Sparkles className="w-4 h-4" />
-                {isCrystallizing ? 'Crystallizing...' : 'Crystallize'}
+                {isCrystallizing ? t('deckBuilder.crystallizing') : t('deckBuilder.crystallize')}
               </Button>
             )}
           </div>
@@ -131,7 +132,7 @@ export const GroupChatDrawer = ({
                 </PopoverTrigger>
                 <PopoverContent className="w-64 p-2" align="start">
                   <div className="text-xs text-muted-foreground mb-2 px-2">
-                    Add to meeting
+                    {t('deckBuilder.addToMeeting')}
                   </div>
                   {availableToAdd.map((character) => (
                     <button
@@ -186,7 +187,7 @@ export const GroupChatDrawer = ({
                     {currentResponderCharacter.emoji}
                   </AvatarFallback>
                 </Avatar>
-                <span>{currentResponderCharacter.name} is typing...</span>
+                <span>{currentResponderCharacter.name} {t('deckBuilder.isTyping')}</span>
               </div>
             )}
           </div>
@@ -197,7 +198,7 @@ export const GroupChatDrawer = ({
           <ChatInput
             onSend={onSendMessage}
             disabled={isStreaming}
-            placeholder="Ask the team something..."
+            placeholder={t('deckBuilder.askTeam')}
           />
         </div>
       </SheetContent>
