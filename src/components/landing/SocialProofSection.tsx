@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Star, TrendingUp, Lightbulb } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const EXAMPLE_CARDS = [
   {
@@ -32,6 +33,8 @@ const EXAMPLE_CARDS = [
 ];
 
 export const SocialProofSection = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative z-10 py-24 px-4">
       <div className="container mx-auto max-w-6xl">
@@ -42,10 +45,10 @@ export const SocialProofSection = () => {
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-            Decks Built by the Community
+            {t('socialProof.title')}
           </h2>
           <p className="text-muted-foreground text-lg">
-            See how other founders structured their path to revenue.
+            {t('socialProof.subtitle')}
           </p>
         </motion.div>
 
@@ -114,7 +117,7 @@ export const SocialProofSection = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
         >
-          <span className="text-primary font-medium">1,000+</span> decks created and counting
+          <span className="text-primary font-medium">1,000+</span> {t('socialProof.decksCreated')}
         </motion.p>
       </div>
     </section>

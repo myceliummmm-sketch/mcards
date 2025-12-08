@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
 import { FileText, LayoutGrid, Brain, Layers, CheckCircle, XCircle } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function WhyCardsSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative z-10 py-24 px-4 overflow-hidden">
       <div className="container mx-auto max-w-6xl">
@@ -13,10 +16,10 @@ export function WhyCardsSection() {
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-            Why a Card System?
+            {t('whyCards.title')}
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Docs are boring. Lists are overwhelming. Cards are focused.
+            {t('whyCards.subtitle')}
           </p>
         </motion.div>
 
@@ -92,15 +95,15 @@ export function WhyCardsSection() {
               <div className="text-center mt-6">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 border border-destructive/30">
                   <XCircle className="w-4 h-4 text-destructive" />
-                  <span className="text-sm font-medium text-destructive">Mental Chaos</span>
+                  <span className="text-sm font-medium text-destructive">{t('whyCards.oldWay.label')}</span>
                 </div>
               </div>
 
               {/* Problems list */}
               <div className="mt-6 space-y-2 text-sm text-muted-foreground">
-                <p>→ Scattered notes across 10 apps</p>
-                <p>→ 47 browser tabs of "research"</p>
-                <p>→ That Google Doc you forgot about</p>
+                <p>→ {t('whyCards.oldWay.problem1')}</p>
+                <p>→ {t('whyCards.oldWay.problem2')}</p>
+                <p>→ {t('whyCards.oldWay.problem3')}</p>
               </div>
             </div>
           </motion.div>
@@ -162,15 +165,15 @@ export function WhyCardsSection() {
               <div className="text-center mt-6">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Strategic Focus</span>
+                  <span className="text-sm font-medium text-primary">{t('whyCards.newWay.label')}</span>
                 </div>
               </div>
 
               {/* Benefits list */}
               <div className="mt-6 space-y-2 text-sm text-muted-foreground">
-                <p className="text-foreground">→ One card = one strategic module</p>
-                <p className="text-foreground">→ Shuffle, stack, and connect</p>
-                <p className="text-foreground">→ See the big picture without anxiety</p>
+                <p className="text-foreground">→ {t('whyCards.newWay.benefit1')}</p>
+                <p className="text-foreground">→ {t('whyCards.newWay.benefit2')}</p>
+                <p className="text-foreground">→ {t('whyCards.newWay.benefit3')}</p>
               </div>
             </div>
           </motion.div>
@@ -184,8 +187,8 @@ export function WhyCardsSection() {
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
         >
-          Tackle your startup <span className="text-primary font-medium">one module at a time</span>. 
-          Each card is a focused piece of your strategy puzzle.
+          {t('whyCards.tagline')} <span className="text-primary font-medium">{t('whyCards.taglineHighlight')}</span>
+          {t('whyCards.taglineEnd')}
         </motion.p>
       </div>
     </section>
