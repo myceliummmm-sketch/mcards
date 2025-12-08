@@ -4,6 +4,7 @@ export interface DemoCard {
   phase: 'vision' | 'research' | 'build' | 'grow';
   title: string;
   slot: number;
+  templateKey: string;
   content: {
     headline: string;
     details: string[];
@@ -14,6 +15,7 @@ export interface DemoCard {
     character: string;
     avatar: string;
   };
+  imageUrl?: string;
 }
 
 export const DEMO_CARDS: DemoCard[] = [
@@ -23,6 +25,7 @@ export const DEMO_CARDS: DemoCard[] = [
     phase: 'vision',
     title: 'Problem',
     slot: 2,
+    templateKey: 'pain_point',
     content: {
       headline: 'Freelancers lose 30% of income to late payments',
       details: [
@@ -44,6 +47,7 @@ export const DEMO_CARDS: DemoCard[] = [
     phase: 'vision',
     title: 'Audience',
     slot: 3,
+    templateKey: 'true_user',
     content: {
       headline: 'Solo designers & developers, 28-42',
       details: [
@@ -64,7 +68,8 @@ export const DEMO_CARDS: DemoCard[] = [
     type: 'market_map',
     phase: 'research',
     title: 'Market Map',
-    slot: 5,
+    slot: 6,
+    templateKey: 'territory',
     content: {
       headline: 'Invoice financing is a $3.1B market',
       details: [
@@ -85,7 +90,8 @@ export const DEMO_CARDS: DemoCard[] = [
     type: 'mvp_features',
     phase: 'build',
     title: 'MVP Features',
-    slot: 8,
+    slot: 12,
+    templateKey: 'first_fruit',
     content: {
       headline: '3 features, 6-week build',
       details: [
@@ -110,9 +116,23 @@ export const PHASE_COLORS: Record<string, string> = {
   grow: 'from-emerald-500/20 to-green-600/20'
 };
 
+export const PHASE_BORDER_COLORS: Record<string, string> = {
+  vision: 'border-purple-500/40',
+  research: 'border-blue-500/40',
+  build: 'border-amber-500/40',
+  grow: 'border-emerald-500/40'
+};
+
 export const PHASE_GLOW: Record<string, string> = {
   vision: 'shadow-purple-500/30',
   research: 'shadow-blue-500/30',
   build: 'shadow-amber-500/30',
   grow: 'shadow-emerald-500/30'
+};
+
+export const PHASE_ACCENT: Record<string, string> = {
+  vision: 'text-purple-400',
+  research: 'text-blue-400',
+  build: 'text-amber-400',
+  grow: 'text-emerald-400'
 };
