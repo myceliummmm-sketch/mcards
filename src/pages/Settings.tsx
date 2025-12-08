@@ -13,13 +13,15 @@ import {
   Coins,
   Calendar,
   Sparkles,
-  Loader2
+  Loader2,
+  Globe
 } from 'lucide-react';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { UpgradeModal } from '@/components/paywall/UpgradeModal';
 import { STRIPE_CONFIG } from '@/data/subscriptionConfig';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -28,6 +30,7 @@ export default function Settings() {
   const [user, setUser] = useState<any>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
+  const { t, language, setLanguage } = useTranslation();
 
   useEffect(() => {
     const getUser = async () => {
@@ -79,7 +82,7 @@ export default function Settings() {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -94,7 +97,7 @@ export default function Settings() {
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('settings.title')}</h1>
         </div>
 
         {/* Account Section */}
@@ -102,22 +105,51 @@ export default function Settings() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5" />
-              Account
+              {t('settings.account.title')}
             </CardTitle>
-            <CardDescription>Manage your account settings</CardDescription>
+            <CardDescription>{t('settings.account.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-muted-foreground">Email</div>
+                <div className="text-sm text-muted-foreground">{t('settings.account.email')}</div>
                 <div className="font-medium">{user?.email || 'Loading...'}</div>
               </div>
             </div>
             <Separator />
             <Button variant="outline" onClick={handleSignOut} className="gap-2">
               <LogOut className="h-4 w-4" />
-              Sign Out
+              {t('settings.account.signOut')}
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Language Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              {t('settings.language.title')}
+            </CardTitle>
+            <CardDescription>{t('settings.language.subtitle')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-3">
+              <Button
+                variant={language === 'en' ? 'default' : 'outline'}
+                onClick={() => setLanguage('en')}
+                className="flex-1 gap-2"
+              >
+                🇬🇧 {t('settings.language.english')}
+              </Button>
+              <Button
+                variant={language === 'ru' ? 'default' : 'outline'}
+                onClick={() => setLanguage('ru')}
+                className="flex-1 gap-2"
+              >
+                🇷🇺 {t('settings.language.russian')}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -126,9 +158,9 @@ export default function Settings() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               {isPro ? <Crown className="h-5 w-5 text-primary" /> : <Sparkles className="h-5 w-5" />}
-              Subscription
+              {t('settings.subscription.title')}
             </CardTitle>
-            <CardDescription>Manage your subscription plan</CardDescription>
+            <CardDescription>{t('settings.subscription.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {loading ? (
@@ -140,15 +172,15 @@ export default function Settings() {
                 {/* Current Plan */}
                 <div className="p-4 rounded-lg bg-muted/50 border border-border space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-muted-foreground">Current Plan</div>
+                    <div className="text-sm text-muted-foreground">{t('settings.subscription.currentPlan')}</div>
                     <Badge className={isPro 
                       ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground' 
                       : 'bg-secondary text-secondary-foreground'
                     }>
                       {isPro ? (
-                        <><Crown className="h-3 w-3 mr-1" /> PRO</>
+                        <><Crown className="h-3 w-3 mr-1" /> {t('settings.subscription.pro')}</>
                       ) : (
-                        <><User className="h-3 w-3 mr-1" /> FREE</>
+                        <><User className="h-3 w-3 mr-1" /> {t('settings.subscription.free')}</>
                       )}
                     </Badge>
                   </div>
@@ -158,13 +190,13 @@ export default function Settings() {
                       <Separator />
                       <div className="flex items-center gap-2 text-sm">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">Renews:</span>
+                        <span className="text-muted-foreground">{t('settings.subscription.renews')}:</span>
                         <span className="font-medium">{formatDate(subscription?.expiresAt)}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">Price:</span>
-                        <span className="font-medium">${STRIPE_CONFIG.pro.price_usd}/month</span>
+                        <span className="text-muted-foreground">{t('settings.subscription.price')}:</span>
+                        <span className="font-medium">${STRIPE_CONFIG.pro.price_usd}/{t('settings.subscription.month')}</span>
                       </div>
                     </>
                   )}
@@ -175,12 +207,12 @@ export default function Settings() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Coins className="h-5 w-5 text-primary" />
-                      <span className="font-medium">SPORE Balance</span>
+                      <span className="font-medium">{t('settings.subscription.sporeBalance')}</span>
                     </div>
                     <div className="text-xl font-bold text-foreground">{sporeBalance}</div>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Use SPORE to purchase cards on the marketplace
+                    {t('settings.subscription.sporeDescription')}
                   </p>
                 </div>
 
@@ -197,7 +229,7 @@ export default function Settings() {
                       ) : (
                         <CreditCard className="h-4 w-4" />
                       )}
-                      Manage Billing
+                      {t('settings.subscription.manageBilling')}
                     </Button>
                   ) : (
                     <Button 
@@ -205,7 +237,7 @@ export default function Settings() {
                       className="w-full gap-2"
                     >
                       <Crown className="h-4 w-4" />
-                      Upgrade to Pro - ${STRIPE_CONFIG.pro.price_usd}/month
+                      {t('settings.subscription.upgradeTo')} - ${STRIPE_CONFIG.pro.price_usd}/{t('settings.subscription.month')}
                     </Button>
                   )}
                 </div>
@@ -213,13 +245,13 @@ export default function Settings() {
                 {/* Pro Features List */}
                 {!isPro && (
                   <div className="p-4 rounded-lg border border-primary/30 bg-primary/5">
-                    <h4 className="font-medium text-sm mb-2">Pro includes:</h4>
+                    <h4 className="font-medium text-sm mb-2">{t('settings.subscription.proIncludes')}</h4>
                     <ul className="text-xs text-muted-foreground space-y-1">
-                      <li>✓ All 4 business phases (Vision, Research, Build, Grow)</li>
-                      <li>✓ All 7 AI team advisors</li>
-                      <li>✓ Up to 5 projects</li>
-                      <li>✓ Marketplace access</li>
-                      <li>✓ 200 SPORE monthly</li>
+                      <li>✓ {t('settings.subscription.proFeature1')}</li>
+                      <li>✓ {t('settings.subscription.proFeature2')}</li>
+                      <li>✓ {t('settings.subscription.proFeature3')}</li>
+                      <li>✓ {t('settings.subscription.proFeature4')}</li>
+                      <li>✓ {t('settings.subscription.proFeature5')}</li>
                     </ul>
                   </div>
                 )}
