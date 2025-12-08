@@ -61,7 +61,7 @@ export const GroupChatDrawer = ({
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent 
         side="left" 
-        className="w-full sm:w-[480px] p-0 flex flex-col"
+        className="w-full sm:w-[600px] p-0 flex flex-col"
       >
         <SheetHeader className="p-4 border-b border-border">
           <div className="flex items-center justify-between">

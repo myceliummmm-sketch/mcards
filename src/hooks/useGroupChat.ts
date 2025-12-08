@@ -345,6 +345,87 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
     }
   }, [messages, deckId, isCrystallizing]);
 
+  // Expand a message with more detail
+  const expandMessage = useCallback(async (messageId: string, characterId: string, originalContent: string) => {
+    if (isStreaming || expandingMessageId) return;
+    
+    setExpandingMessageId(messageId);
+    
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/team-group-chat`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            characterId,
+            otherCharacterIds: [],
+            messages: [
+              { role: 'assistant', content: originalContent },
+              { role: 'user', content: 'Can you expand on that with more detail?' }
+            ],
+            deckContext: buildDeckContext(),
+            responseMode: 'detailed',
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to expand');
+      if (!response.body) throw new Error('No response body');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let expandedContent = originalContent + '\n\n---\n\n';
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const delta = parsed.choices?.[0]?.delta?.content;
+            if (delta) {
+              expandedContent += delta;
+              setMessages(prev => 
+                prev.map(m => 
+                  m.id === messageId 
+                    ? { ...m, content: expandedContent }
+                    : m
+                )
+              );
+            }
+          } catch {
+            buffer = line + '\n' + buffer;
+            break;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Expand error:', error);
+      toast.error('Failed to expand message');
+    } finally {
+      setExpandingMessageId(null);
+    }
+  }, [isStreaming, expandingMessageId, buildDeckContext]);
+
   return {
     selectedCharacters,
     messages,
@@ -361,5 +442,6 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
     resetSelection,
     sendMessage,
     crystallizeConversation,
+    expandMessage,
   };
 };
