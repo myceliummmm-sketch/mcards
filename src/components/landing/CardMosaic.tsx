@@ -289,9 +289,8 @@ const PainPointCard = ({
         duration: 0.5,
         ease: "easeOut"
       }}
-      onClick={() => setIsFlipped(!isFlipped)}
-      onMouseLeave={() => setIsFlipped(false)}
-      whileHover={{ scale: 1.05, y: -5, zIndex: 5 }}
+          onClick={() => setIsFlipped(!isFlipped)}
+          whileHover={{ scale: 1.05, y: -5, zIndex: 5 }}
     >
       <motion.div
         className="absolute inset-0 transition-transform duration-500"
