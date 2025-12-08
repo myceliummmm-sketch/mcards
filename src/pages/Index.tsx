@@ -9,6 +9,7 @@ import { CardMosaic } from "@/components/landing/CardMosaic";
 import { WhyCardsSection } from "@/components/landing/WhyCardsSection";
 import { FogOfWarJourney } from "@/components/landing/FogOfWarJourney";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
+import { InteractiveCardDemo } from "@/components/landing/InteractiveCardDemo";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -182,6 +183,9 @@ const Index = () => {
 
       {/* Why Cards Section - NEW */}
       <WhyCardsSection />
+
+      {/* Interactive Card Demo - NEW */}
+      <InteractiveCardDemo />
 
       {/* Fog of War Journey - NEW */}
       <FogOfWarJourney />
