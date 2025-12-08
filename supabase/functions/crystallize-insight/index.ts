@@ -108,7 +108,40 @@ Be punchy and direct. The insight should be memorable and actionable.`
 
     const { title, insight, topic } = JSON.parse(toolCall.function.arguments);
 
-    // Step 2: Generate mineral/crystalline image
+    // Step 2: Generate brief source summary
+    console.log("Generating source summary for insight:", title);
+    
+    const summaryResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "system",
+            content: "Summarize the key points of this conversation in 2-3 sentences. Focus on what was discussed and what led to the insight. Be concise and factual."
+          },
+          {
+            role: "user",
+            content: conversationText
+          }
+        ],
+      }),
+    });
+
+    let sourceSummary = "";
+    if (summaryResponse.ok) {
+      const summaryData = await summaryResponse.json();
+      sourceSummary = summaryData.choices?.[0]?.message?.content || "";
+      console.log("Source summary generated:", sourceSummary.length > 0);
+    } else {
+      console.error("Summary generation failed:", summaryResponse.status);
+    }
+
+    // Step 3: Generate mineral/crystalline image
     console.log("Generating mineral image for insight:", title);
     
     const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -167,7 +200,8 @@ Ultra high resolution, 1:1 aspect ratio, dark moody background with soft ambient
       topic,
       phase: phase || 'general',
       crystallizedAt: new Date().toISOString(),
-      messageCount: messages.length
+      messageCount: messages.length,
+      sourceSummary
     };
 
     const { data: savedCard, error: saveError } = await supabase
