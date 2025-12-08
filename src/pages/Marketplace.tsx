@@ -10,6 +10,7 @@ import { MOCK_MARKETPLACE_CARDS, MarketplaceCard } from '@/data/mockMarketplaceD
 import { Rarity } from '@/data/rarityConfig';
 import { useToast } from '@/hooks/use-toast';
 import { useUserDecks } from '@/hooks/useUserDecks';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import visionIcon from '@/assets/icons/vision.png';
 import researchIcon from '@/assets/icons/research.png';
@@ -18,6 +19,7 @@ import growIcon from '@/assets/icons/grow.png';
 
 export default function Marketplace() {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeView, setActiveView] = useState('browse');
   const [selectedPhases, setSelectedPhases] = useState<string[]>([]);
@@ -170,8 +172,8 @@ export default function Marketplace() {
 
     setOwnedCardIds((prev) => [...prev, cardId]);
     toast({
-      title: '🎉 Purchase successful!',
-      description: `You now own "${card.title}"`,
+      title: `🎉 ${t('marketplace.purchaseSuccess')}`,
+      description: `${t('marketplace.youNowOwn')} "${card.title}"`,
     });
     setQuickViewCard(null);
   };

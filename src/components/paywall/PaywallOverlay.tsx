@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Lock, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UpgradeModal } from './UpgradeModal';
+import { useTranslation } from '@/hooks/useTranslation';
+import { STRIPE_CONFIG } from '@/data/subscriptionConfig';
 
 interface PaywallOverlayProps {
   phase: string;
@@ -10,11 +12,7 @@ interface PaywallOverlayProps {
 
 export function PaywallOverlay({ phase, children }: PaywallOverlayProps) {
   const [showUpgrade, setShowUpgrade] = useState(false);
-
-  const phaseLabels: Record<string, string> = {
-    build: 'Build',
-    grow: 'Grow',
-  };
+  const { t } = useTranslation();
 
   return (
     <>
@@ -32,16 +30,16 @@ export function PaywallOverlay({ phase, children }: PaywallOverlayProps) {
             </div>
             
             <h3 className="text-xl font-semibold mb-2">
-              {phaseLabels[phase] || phase} Phase Locked
+              {t(`phases.${phase}`)} {t('paywall.phaseLocked')}
             </h3>
             
             <p className="text-muted-foreground text-sm mb-6">
-              Upgrade to Pro to unlock the {phaseLabels[phase]?.toLowerCase() || phase} phase and take your ideas to the next level.
+              {t('paywall.unlockPhase')} {t(`phases.${phase}`)?.toLowerCase()} {t('paywall.phaseAndTakeNext')}
             </p>
             
             <Button onClick={() => setShowUpgrade(true)} className="gap-2">
               <Sparkles className="h-4 w-4" />
-              Unlock for $29/mo
+              {t('paywall.unlockFor')} ${STRIPE_CONFIG.pro.price_usd}{t('paywall.perMonth')}
             </Button>
           </div>
         </div>

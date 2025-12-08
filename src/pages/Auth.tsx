@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -34,6 +35,7 @@ const GoogleIcon = () => (
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [email, setEmail] = useState("");
@@ -68,7 +70,7 @@ const Auth = () => {
       if (error) throw error;
     } catch (error: any) {
       toast({
-        title: "Google sign in failed",
+        title: t('auth.googleSignInFailed'),
         description: error.message,
         variant: "destructive",
       });
@@ -95,12 +97,12 @@ const Auth = () => {
       if (error) throw error;
 
       toast({
-        title: "Welcome aboard!",
-        description: "Your account has been created. Let's build something amazing!",
+        title: t('auth.welcomeAboard'),
+        description: t('auth.accountCreated'),
       });
     } catch (error: any) {
       toast({
-        title: "Sign up failed",
+        title: t('auth.signUpFailed'),
         description: error.message,
         variant: "destructive",
       });
@@ -122,12 +124,12 @@ const Auth = () => {
       if (error) throw error;
 
       toast({
-        title: "Welcome back!",
-        description: "Successfully signed in.",
+        title: t('auth.welcomeBack'),
+        description: t('auth.signedIn'),
       });
     } catch (error: any) {
       toast({
-        title: "Sign in failed",
+        title: t('auth.signInFailed'),
         description: error.message,
         variant: "destructive",
       });
@@ -162,9 +164,9 @@ const Auth = () => {
               <div className="absolute inset-0 w-12 h-12 bg-primary blur-xl opacity-50 animate-pulse" />
             </div>
           </div>
-          <CardTitle className="text-3xl font-display text-glow">Mycelium Cards</CardTitle>
+          <CardTitle className="text-3xl font-display text-glow">{t('auth.title')}</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Build your deck, craft your vision
+            {t('auth.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -180,7 +182,7 @@ const Auth = () => {
             ) : (
               <GoogleIcon />
             )}
-            Continue with Google
+            {t('auth.continueWithGoogle')}
           </Button>
 
           {/* Divider */}
@@ -189,7 +191,7 @@ const Auth = () => {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">or</span>
+              <span className="bg-card px-2 text-muted-foreground">{t('auth.or')}</span>
             </div>
           </div>
 
@@ -199,7 +201,7 @@ const Auth = () => {
             className="w-full text-muted-foreground hover:text-foreground"
             onClick={() => setShowEmailForm(!showEmailForm)}
           >
-            Use other email
+            {t('auth.useOtherEmail')}
             {showEmailForm ? (
               <ChevronUp className="ml-2 h-4 w-4" />
             ) : (
@@ -219,14 +221,14 @@ const Auth = () => {
               >
                 <Tabs defaultValue="signin" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 mb-6">
-                    <TabsTrigger value="signin">Sign In</TabsTrigger>
-                    <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                    <TabsTrigger value="signin">{t('auth.signIn')}</TabsTrigger>
+                    <TabsTrigger value="signup">{t('auth.signUp')}</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="signin">
                     <form onSubmit={handleSignIn} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="signin-email">Email</Label>
+                        <Label htmlFor="signin-email">{t('auth.email')}</Label>
                         <Input
                           id="signin-email"
                           type="email"
@@ -238,7 +240,7 @@ const Auth = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="signin-password">Password</Label>
+                        <Label htmlFor="signin-password">{t('auth.password')}</Label>
                         <Input
                           id="signin-password"
                           type="password"
@@ -251,7 +253,7 @@ const Auth = () => {
                       </div>
                       <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Sign In
+                        {t('auth.signIn')}
                       </Button>
                     </form>
                   </TabsContent>
@@ -259,7 +261,7 @@ const Auth = () => {
                   <TabsContent value="signup">
                     <form onSubmit={handleSignUp} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="signup-username">Username (optional)</Label>
+                        <Label htmlFor="signup-username">{t('auth.username')}</Label>
                         <Input
                           id="signup-username"
                           type="text"
@@ -270,7 +272,7 @@ const Auth = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="signup-email">Email</Label>
+                        <Label htmlFor="signup-email">{t('auth.email')}</Label>
                         <Input
                           id="signup-email"
                           type="email"
@@ -282,7 +284,7 @@ const Auth = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="signup-password">Password</Label>
+                        <Label htmlFor="signup-password">{t('auth.password')}</Label>
                         <Input
                           id="signup-password"
                           type="password"
@@ -296,7 +298,7 @@ const Auth = () => {
                       </div>
                       <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Sign Up
+                        {t('auth.signUp')}
                       </Button>
                     </form>
                   </TabsContent>

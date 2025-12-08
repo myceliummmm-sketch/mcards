@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ArrowLeft, ShoppingBag, Heart, TrendingUp, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface MarketplaceHeaderProps {
   searchQuery: string;
@@ -26,6 +26,7 @@ export const MarketplaceHeader = ({
   sellingCount,
 }: MarketplaceHeaderProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-4">
@@ -36,16 +37,16 @@ export const MarketplaceHeader = ({
             <ArrowLeft size={20} />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-glow">Insight Marketplace</h1>
+            <h1 className="text-3xl font-bold text-glow">{t('marketplace.title')}</h1>
             <p className="text-muted-foreground">
-              Discover and trade powerful cards from the community
+              {t('marketplace.subtitle')}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <Badge variant="outline" className="text-sm">
-            💰 2,450 credits
+            💰 2,450 {t('marketplace.credits')}
           </Badge>
         </div>
       </div>
@@ -57,7 +58,7 @@ export const MarketplaceHeader = ({
           className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
         />
         <Input
-          placeholder="Search cards by title, industry, or creator..."
+          placeholder={t('marketplace.searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10 h-12 text-base"
@@ -69,11 +70,11 @@ export const MarketplaceHeader = ({
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="browse" className="flex items-center gap-2">
             <ShoppingBag size={16} />
-            Browse
+            {t('marketplace.browse')}
           </TabsTrigger>
           <TabsTrigger value="collection" className="flex items-center gap-2">
             <Package size={16} />
-            My Collection
+            {t('marketplace.collection')}
             {ownedCount > 0 && (
               <Badge variant="secondary" className="ml-1">
                 {ownedCount}
@@ -82,7 +83,7 @@ export const MarketplaceHeader = ({
           </TabsTrigger>
           <TabsTrigger value="selling" className="flex items-center gap-2">
             <TrendingUp size={16} />
-            Selling
+            {t('marketplace.selling')}
             {sellingCount > 0 && (
               <Badge variant="secondary" className="ml-1">
                 {sellingCount}
@@ -91,7 +92,7 @@ export const MarketplaceHeader = ({
           </TabsTrigger>
           <TabsTrigger value="favorites" className="flex items-center gap-2">
             <Heart size={16} />
-            Favorites
+            {t('marketplace.favorites')}
             {favoritesCount > 0 && (
               <Badge variant="secondary" className="ml-1">
                 {favoritesCount}
