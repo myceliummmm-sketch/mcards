@@ -29,7 +29,7 @@ export const translations = {
         cardSystem: "Find your idea → Validate demand → Land first clients",
         toReveal: "All before writing a single line of code.",
         cta: "Start Free → Find Your First Client",
-        noCreditCard: "No credit card • 15 minutes to first insight",
+        noCreditCard: "No credit card • 5 minutes to first insight",
       },
       aiTeam: {
         title: "7 Perspectives.",
