@@ -93,7 +93,7 @@ export const translations = {
         title: "Your idea deserves a fair trial.",
         subtitle: "Stop wondering. Start validating. In 7 days you'll know if it's worth building.",
         cta: "Start Free — No Credit Card",
-        free: "⏱️ 15 min to first card • 🎯 7 days to validation • 💰 21 days to first client",
+        free: "⏱️ 5 min to first card • 🎯 7 days to validation • 💰 21 days to first client",
         hasAccount: "Already have an account?",
         signIn: "Sign In",
       },
@@ -108,7 +108,7 @@ export const translations = {
       corporate: {
         label: "Corporate Escapee",
         pain: "I'm burned out, but quitting feels too risky. No time for a side project...",
-        solution: "Build your escape plan during lunch breaks. 15 min/day is enough.",
+        solution: "Build your escape plan during lunch breaks. 5 min/day is enough.",
       },
       noCode: {
         label: "No-Code Builder",
@@ -554,7 +554,7 @@ export const translations = {
         title: "Твоя идея заслуживает честного суда.",
         subtitle: "Хватит гадать. Начни проверять. Через 7 дней узнаешь, стоит ли строить.",
         cta: "Начни бесплатно — Без карты",
-        free: "⏱️ 15 мин до первой карты • 🎯 7 дней до валидации • 💰 21 день до первого клиента",
+        free: "⏱️ 5 мин до первой карты • 🎯 7 дней до валидации • 💰 21 день до первого клиента",
         hasAccount: "Уже есть аккаунт?",
         signIn: "Войти",
       },
@@ -569,7 +569,7 @@ export const translations = {
       corporate: {
         label: "Корпоративный беглец",
         pain: "Выгорел на работе, но менять страшно. Нет времени на side-project...",
-        solution: "Построй план побега за обедом. 15 минут в день достаточно.",
+        solution: "Построй план побега за обедом. 5 минут в день достаточно.",
       },
       noCode: {
         label: "No-Code билдер",
