@@ -158,9 +158,27 @@ export const FogOfWarJourney = () => {
           </div>
         </div>
 
+        {/* Milestones */}
+        <motion.div
+          className="mt-8 flex flex-wrap justify-center gap-4"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-sm">
+            <span className="text-primary font-medium">✓</span>{" "}
+            <span className="text-muted-foreground">{t('fogOfWar.milestone1')}</span>
+          </div>
+          <div className="px-4 py-2 rounded-full bg-accent/10 border border-accent/30 text-sm">
+            <span className="text-accent font-medium">✓</span>{" "}
+            <span className="text-muted-foreground">{t('fogOfWar.milestone2')}</span>
+          </div>
+        </motion.div>
+
         {/* Pivot Phase Callout */}
         <motion.div
-          className="mt-12 mx-auto max-w-2xl"
+          className="mt-8 mx-auto max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

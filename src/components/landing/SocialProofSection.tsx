@@ -1,39 +1,45 @@
 import { motion } from "framer-motion";
-import { Star, TrendingUp, Lightbulb } from "lucide-react";
+import { Star, Clock, XCircle, DollarSign, CheckCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
-const EXAMPLE_CARDS = [
+const TESTIMONIALS = [
   {
-    title: "SaaS Pricing Model",
-    phase: "Research",
-    phaseColor: "hsl(280 70% 60%)",
-    insight: "Discovered that usage-based pricing converts 3x better than flat-rate for our target segment.",
-    author: "Sarah K.",
-    rating: 4.8,
-    icon: TrendingUp
+    quote: {
+      en: "Saved 3 months by killing a bad idea in Week 1",
+      ru: "Сэкономил 3 месяца, убив плохую идею на первой неделе"
+    },
+    author: "Alex K.",
+    role: { en: "Solo Founder", ru: "Соло-фаундер" },
+    outcome: { en: "Avoided $15K loss", ru: "Избежал потери $15K" },
+    icon: Clock,
+    color: "hsl(190 100% 50%)"
   },
   {
-    title: "MVP Feature List",
-    phase: "Build",
-    phaseColor: "hsl(200 70% 50%)",
-    insight: "Cut 12 'must-have' features down to 3 core ones. Launched 2 months early.",
-    author: "Marcus T.",
-    rating: 4.9,
-    icon: Lightbulb
+    quote: {
+      en: "Found my first paying customer before writing code",
+      ru: "Нашёл первого платящего клиента до написания кода"
+    },
+    author: "Maria S.",
+    role: { en: "No-Code Builder", ru: "No-Code билдер" },
+    outcome: { en: "$500 pre-sale", ru: "Предпродажа $500" },
+    icon: DollarSign,
+    color: "hsl(140 70% 50%)"
   },
   {
-    title: "Growth Flywheel",
-    phase: "Grow",
-    phaseColor: "hsl(140 70% 50%)",
-    insight: "Mapped the viral loop that drove 40% of our sign-ups from user referrals.",
-    author: "Elena R.",
-    rating: 5.0,
-    icon: Star
+    quote: {
+      en: "Used my deck to raise $50K pre-seed from angels",
+      ru: "Использовал колоду для привлечения $50K pre-seed"
+    },
+    author: "David T.",
+    role: { en: "Student → Founder", ru: "Студент → Фаундер" },
+    outcome: { en: "$50K raised", ru: "Привлёк $50K" },
+    icon: Star,
+    color: "hsl(280 70% 60%)"
   }
 ];
 
 export const SocialProofSection = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (
     <section className="relative z-10 py-24 px-4">
@@ -52,10 +58,44 @@ export const SocialProofSection = () => {
           </p>
         </motion.div>
 
+        {/* Stats Bar */}
+        <motion.div
+          className="grid grid-cols-3 gap-4 mb-12 p-6 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="text-center">
+            <p className="text-2xl md:text-3xl font-display font-bold text-primary">
+              {t('socialProof.stats.validated')}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {t('socialProof.stats.validatedLabel')}
+            </p>
+          </div>
+          <div className="text-center border-x border-border/50">
+            <p className="text-2xl md:text-3xl font-display font-bold text-destructive">
+              {t('socialProof.stats.saved')}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {t('socialProof.stats.savedLabel')}
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl md:text-3xl font-display font-bold text-accent">
+              {t('socialProof.stats.customers')}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {t('socialProof.stats.customersLabel')}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Testimonials */}
         <div className="grid md:grid-cols-3 gap-6">
-          {EXAMPLE_CARDS.map((card, index) => (
+          {TESTIMONIALS.map((testimonial, index) => (
             <motion.div
-              key={card.title}
+              key={testimonial.author}
               className="relative group"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -63,39 +103,37 @@ export const SocialProofSection = () => {
               transition={{ delay: index * 0.1 }}
             >
               <div className="h-full p-6 rounded-xl bg-card/80 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300">
-                {/* Phase badge */}
+                {/* Outcome badge */}
                 <div 
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium mb-4"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium mb-4"
                   style={{ 
-                    backgroundColor: `${card.phaseColor.replace(')', ' / 0.2)')}`,
-                    color: card.phaseColor 
+                    backgroundColor: `${testimonial.color.replace(')', ' / 0.15)')}`,
+                    color: testimonial.color 
                   }}
                 >
-                  <card.icon className="w-3 h-3" />
-                  {card.phase}
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  {testimonial.outcome[language]}
                 </div>
 
-                {/* Card title */}
-                <h3 className="text-xl font-display font-semibold mb-3 text-foreground">
-                  {card.title}
-                </h3>
-
-                {/* Insight quote */}
-                <div className="relative mb-4">
-                  <div className="absolute -left-2 top-0 text-4xl text-primary/20 font-serif">"</div>
-                  <p className="text-muted-foreground text-sm italic pl-4">
-                    {card.insight}
+                {/* Quote */}
+                <div className="relative mb-6">
+                  <div className="absolute -left-2 -top-2 text-4xl text-primary/20 font-serif">"</div>
+                  <p className="text-lg font-medium text-foreground pl-4">
+                    {testimonial.quote[language]}
                   </p>
                 </div>
 
-                {/* Author & Rating */}
-                <div className="flex items-center justify-between pt-4 border-t border-border/30">
-                  <span className="text-sm text-muted-foreground">
-                    — {card.author}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm font-medium text-foreground">{card.rating}</span>
+                {/* Author & Role */}
+                <div className="flex items-center gap-3 pt-4 border-t border-border/30">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${testimonial.color.replace(')', ' / 0.2)')}` }}
+                  >
+                    <testimonial.icon className="w-5 h-5" style={{ color: testimonial.color }} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">{testimonial.author}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.role[language]}</p>
                   </div>
                 </div>
               </div>
@@ -103,22 +141,11 @@ export const SocialProofSection = () => {
               {/* Glow effect on hover */}
               <div 
                 className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-xl"
-                style={{ backgroundColor: `${card.phaseColor.replace(')', ' / 0.1)')}` }}
+                style={{ backgroundColor: `${testimonial.color.replace(')', ' / 0.1)')}` }}
               />
             </motion.div>
           ))}
         </div>
-
-        {/* Bottom CTA */}
-        <motion.p
-          className="text-center mt-12 text-muted-foreground"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-        >
-          <span className="text-primary font-medium">1,000+</span> {t('socialProof.decksCreated')}
-        </motion.p>
       </div>
     </section>
   );
