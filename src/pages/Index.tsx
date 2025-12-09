@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Globe } from "lucide-react";
+import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Globe, Target, Search, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
 import { CardMosaic } from "@/components/landing/CardMosaic";
@@ -10,6 +10,7 @@ import { WhyCardsSection } from "@/components/landing/WhyCardsSection";
 import { FogOfWarJourney } from "@/components/landing/FogOfWarJourney";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { InteractiveCardDemo } from "@/components/landing/InteractiveCardDemo";
+import { PainPointsCarousel } from "@/components/landing/PainPointsCarousel";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const Index = () => {
@@ -87,19 +88,25 @@ const Index = () => {
       step: 1,
       titleKey: "landing.howItWorks.step1.title",
       descriptionKey: "landing.howItWorks.step1.description",
-      color: "primary"
+      weekKey: "landing.howItWorks.step1.week",
+      color: "primary",
+      icon: Target
     },
     {
       step: 2,
       titleKey: "landing.howItWorks.step2.title",
       descriptionKey: "landing.howItWorks.step2.description",
-      color: "secondary"
+      weekKey: "landing.howItWorks.step2.week",
+      color: "secondary",
+      icon: Search
     },
     {
       step: 3,
       titleKey: "landing.howItWorks.step3.title",
       descriptionKey: "landing.howItWorks.step3.description",
-      color: "accent"
+      weekKey: "landing.howItWorks.step3.week",
+      color: "accent",
+      icon: DollarSign
     }
   ];
 
@@ -156,21 +163,29 @@ const Index = () => {
               <span className="text-foreground">{t('landing.hero.headline1')}</span>
               <br />
               <span className="text-primary text-glow">{t('landing.hero.headline2')}</span>
-              <br />
-              <span className="text-secondary text-glow-purple">{t('landing.hero.headline3')}</span>
             </h1>
           </motion.div>
 
-          {/* Subheadline */}
-          <motion.p
-            className="text-center text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto"
+          {/* Subheadline - Pain + Solution */}
+          <motion.div
+            className="text-center mb-12 max-w-3xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            {t('landing.hero.subheadline')} <span className="text-destructive font-medium">{t('landing.hero.blindSpots')}</span>. 
-            {t('landing.hero.uses')} <span className="text-primary font-medium">{t('landing.hero.cardSystem')}</span> {t('landing.hero.toReveal')}
-          </motion.p>
+            <p className="text-lg md:text-xl text-muted-foreground mb-2">
+              {t('landing.hero.subheadline')}
+            </p>
+            <p className="text-lg md:text-xl text-destructive font-medium mb-4">
+              {t('landing.hero.blindSpots')}
+            </p>
+            <p className="text-xl md:text-2xl text-primary font-semibold">
+              {t('landing.hero.cardSystem')}
+            </p>
+            <p className="text-muted-foreground mt-2">
+              {t('landing.hero.toReveal')}
+            </p>
+          </motion.div>
 
           {/* Card Mosaic Visualization */}
           <motion.div
@@ -201,6 +216,9 @@ const Index = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Pain Points Carousel - NEW */}
+      <PainPointsCarousel />
 
       {/* Why Cards Section */}
       <WhyCardsSection />
@@ -320,8 +338,11 @@ const Index = () => {
                 transition={{ delay: index * 0.15 }}
               >
                 <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-${item.color}/20 border-2 border-${item.color} flex items-center justify-center`}>
-                  <span className={`text-2xl font-display font-bold text-${item.color}`}>{item.step}</span>
+                  <item.icon className={`w-8 h-8 text-${item.color}`} />
                 </div>
+                <span className="inline-block px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground mb-2">
+                  {t(item.weekKey)}
+                </span>
                 <h3 className={`text-xl font-display font-bold mb-2 text-${item.color}`}>{t(item.titleKey)}</h3>
                 <p className="text-muted-foreground text-sm">{t(item.descriptionKey)}</p>
 
