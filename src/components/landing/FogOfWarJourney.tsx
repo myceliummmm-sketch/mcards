@@ -7,12 +7,14 @@ import visionIcon from "@/assets/icons/vision.png";
 import researchIcon from "@/assets/icons/research.png";
 import buildIcon from "@/assets/icons/build.png";
 import growIcon from "@/assets/icons/grow.png";
+import pivotIcon from "@/assets/icons/pivot.png";
 
 const PHASE_ICONS: Record<string, string> = {
   vision: visionIcon,
   research: researchIcon,
   build: buildIcon,
   grow: growIcon,
+  pivot: pivotIcon,
 };
 
 export const FogOfWarJourney = () => {
@@ -51,8 +53,8 @@ export const FogOfWarJourney = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 relative z-10">
             {phases.map(([key, phase], index) => {
-              const isUnlocked = index < 2; // First two phases "unlocked" for demo
-              const isCurrent = index === 1;
+              const isUnlocked = true; // All phases unlocked for landing page demo
+              const isCurrent = false; // No current indicator on landing page
 
               return (
                 <motion.div
