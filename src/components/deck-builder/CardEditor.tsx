@@ -27,7 +27,7 @@ interface CardEditorProps {
   cardImageUrl?: string;
   evaluation?: any;
   cardId?: string;
-  onSave: (data: any, imageUrl?: string, evaluation?: any) => Promise<void>;
+  onSave: (data: any, imageUrl?: string, evaluation?: any, silent?: boolean) => Promise<void>;
 }
 
 export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImageUrl, evaluation, cardId, onSave }: CardEditorProps) => {
@@ -176,7 +176,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
         }, 1200);
       }
 
-      await onSave(dataToUse, finalImageUrl, finalEvaluation);
+      // Always pass silent=true since CardEditor handles its own toasts
+      await onSave(dataToUse, finalImageUrl, finalEvaluation, true);
       
       if (!silent && !autoMagic) {
         toast({

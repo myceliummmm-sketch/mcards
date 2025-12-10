@@ -104,14 +104,15 @@ export default function DeckBuilder() {
     setEditingSlot(null);
   };
 
-  const handleSaveCard = async (data: any, imageUrl?: string, evaluation?: any) => {
+  const handleSaveCard = async (data: any, imageUrl?: string, evaluation?: any, silent?: boolean) => {
     if (!editingSlot) return;
     
     const cardDefinition = getCardBySlot(editingSlot);
     if (!cardDefinition) return;
 
     // Save card data to dedicated columns (not nested in card_data)
-    await saveCard(editingSlot, cardDefinition.cardType, data, imageUrl, evaluation);
+    // Pass silent flag to prevent duplicate toasts when CardEditor handles its own
+    await saveCard(editingSlot, cardDefinition.cardType, data, imageUrl, evaluation, silent);
   };
 
   const handleGeneratePrompt = () => {
