@@ -35,6 +35,28 @@ const Dashboard = () => {
   useEffect(() => {
     let mounted = true;
 
+    const checkProfileAndRedirect = async (session: any) => {
+      if (!mounted) return;
+      
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username, onboarding_completed")
+        .eq("id", session.user.id)
+        .single();
+
+      if (!mounted) return;
+
+      // Redirect to onboarding if not completed
+      if (profile?.onboarding_completed === false) {
+        navigate("/onboarding");
+        return;
+      }
+
+      setUsername(profile?.username || session.user.email?.split("@")[0] || "User");
+      fetchDecks();
+      setIsLoading(false);
+    };
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -46,21 +68,10 @@ const Dashboard = () => {
         }
 
         if (session) {
-          // Fetch profile using setTimeout to avoid deadlock
-          setTimeout(async () => {
-            if (!mounted) return;
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("username")
-              .eq("id", session.user.id)
-              .single();
-
-            if (profile && mounted) {
-              setUsername(profile.username || session.user.email?.split("@")[0] || "User");
-            }
+          // Use setTimeout to avoid deadlock
+          setTimeout(() => {
+            checkProfileAndRedirect(session);
           }, 0);
-
-          fetchDecks();
         }
       }
     );
@@ -71,21 +82,10 @@ const Dashboard = () => {
 
       if (!session) {
         navigate("/auth");
+        setIsLoading(false);
       } else {
-        fetchDecks();
-        // Fetch username
-        supabase
-          .from("profiles")
-          .select("username")
-          .eq("id", session.user.id)
-          .single()
-          .then(({ data: profile }) => {
-            if (profile && mounted) {
-              setUsername(profile.username || session.user.email?.split("@")[0] || "User");
-            }
-          });
+        checkProfileAndRedirect(session);
       }
-      setIsLoading(false);
     });
 
     return () => {

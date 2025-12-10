@@ -43,15 +43,32 @@ const Auth = () => {
   const [username, setUsername] = useState("");
 
   useEffect(() => {
+    const checkOnboardingAndRedirect = async (userId: string) => {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", userId)
+        .single();
+
+      if (profile?.onboarding_completed === false) {
+        navigate("/onboarding");
+      } else {
+        navigate("/dashboard");
+      }
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/dashboard");
+        checkOnboardingAndRedirect(session.user.id);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/dashboard");
+        // Use setTimeout to avoid Supabase auth deadlock
+        setTimeout(() => {
+          checkOnboardingAndRedirect(session.user.id);
+        }, 0);
       }
     });
 
