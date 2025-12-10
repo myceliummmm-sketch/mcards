@@ -50,7 +50,8 @@ const Auth = () => {
         .eq("id", userId)
         .single();
 
-      if (profile?.onboarding_completed === false) {
+      // If no profile exists OR onboarding not completed, go to onboarding
+      if (!profile || profile.onboarding_completed === false) {
         navigate("/onboarding");
       } else {
         navigate("/dashboard");
