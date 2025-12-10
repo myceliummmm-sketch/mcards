@@ -9,8 +9,10 @@ import { CreateDeckDialog } from "@/components/CreateDeckDialog";
 import { SporeWallet } from "@/components/paywall/SporeWallet";
 import { SubscriptionBadge } from "@/components/paywall/SubscriptionBadge";
 import { UpgradeModal } from "@/components/paywall/UpgradeModal";
+import { WelcomeBackOverlay } from "@/components/dashboard/WelcomeBackOverlay";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useTranslation } from "@/hooks/useTranslation";
+import { formatDistanceToNow } from "date-fns";
 
 interface Deck {
   id: string;
@@ -18,6 +20,7 @@ interface Deck {
   description: string | null;
   theme: string | null;
   created_at: string;
+  updated_at?: string;
   card_count: number;
 }
 
@@ -30,6 +33,8 @@ const Dashboard = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [username, setUsername] = useState("");
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+  const [lastDeckInfo, setLastDeckInfo] = useState<{ name: string; activity: string } | null>(null);
   const { projectLimit, isPro } = useSubscription();
 
   useEffect(() => {
@@ -47,13 +52,27 @@ const Dashboard = () => {
       if (!mounted) return;
 
       // Redirect to onboarding if not completed
-      if (profile?.onboarding_completed === false) {
+      if (!profile || profile?.onboarding_completed === false) {
         navigate("/onboarding");
         return;
       }
 
       setUsername(profile?.username || session.user.email?.split("@")[0] || "User");
-      fetchDecks();
+      
+      // Check if returning user (has visited before)
+      const lastVisit = localStorage.getItem("lastDashboardVisit");
+      const now = Date.now();
+      const isReturningUser = lastVisit && (now - parseInt(lastVisit)) > 60000; // More than 1 minute ago
+      
+      await fetchDecks();
+      
+      if (isReturningUser) {
+        setShowWelcomeBack(true);
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => setShowWelcomeBack(false), 3000);
+      }
+      
+      localStorage.setItem("lastDashboardVisit", now.toString());
       setIsLoading(false);
     };
 
@@ -109,10 +128,11 @@ const Dashboard = () => {
           description,
           theme,
           created_at,
+          updated_at,
           deck_cards(count)
         `)
         .eq("user_id", session.user.id)
-        .order("created_at", { ascending: false });
+        .order("updated_at", { ascending: false });
 
       if (error) throw error;
 
@@ -122,6 +142,15 @@ const Dashboard = () => {
       }));
 
       setDecks(formattedDecks);
+      
+      // Set last deck info for welcome back
+      if (formattedDecks.length > 0) {
+        const lastDeck = formattedDecks[0];
+        setLastDeckInfo({
+          name: lastDeck.title,
+          activity: formatDistanceToNow(new Date(lastDeck.updated_at || lastDeck.created_at), { addSuffix: true })
+        });
+      }
     } catch (error: any) {
       toast({
         title: t('dashboard.errorLoading'),
@@ -260,6 +289,15 @@ const Dashboard = () => {
       <UpgradeModal
         open={isUpgradeModalOpen}
         onOpenChange={setIsUpgradeModalOpen}
+      />
+
+      <WelcomeBackOverlay
+        username={username}
+        deckCount={decks.length}
+        lastDeckName={lastDeckInfo?.name}
+        lastActivity={lastDeckInfo?.activity}
+        isVisible={showWelcomeBack}
+        onDismiss={() => setShowWelcomeBack(false)}
       />
     </div>
   );
