@@ -63,7 +63,8 @@ export const useDeckCards = (deckId: string) => {
     cardType: string, 
     cardData: any,
     imageUrl?: string,
-    evaluation?: any
+    evaluation?: any,
+    silent?: boolean
   ) => {
     try {
       // Use UPSERT to handle race conditions gracefully
@@ -86,10 +87,12 @@ export const useDeckCards = (deckId: string) => {
       // Immediately refresh cards to ensure UI updates
       await fetchCards();
 
-      toast({
-        title: 'Card saved',
-        description: 'Your card has been updated successfully'
-      });
+      if (!silent) {
+        toast({
+          title: 'Card saved',
+          description: 'Your card has been updated successfully'
+        });
+      }
     } catch (error) {
       console.error('Error saving card:', error);
       toast({
