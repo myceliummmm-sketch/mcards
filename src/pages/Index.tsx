@@ -12,6 +12,7 @@ import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { InteractiveCardDemo } from "@/components/landing/InteractiveCardDemo";
 import { PainPointsCarousel } from "@/components/landing/PainPointsCarousel";
 import { EverChatWidget } from "@/components/landing/EverChatWidget";
+import { QuizTeaser } from "@/components/landing/QuizTeaser";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const Index = () => {
@@ -220,6 +221,9 @@ const Index = () => {
 
       {/* Pain Points Carousel - NEW */}
       <PainPointsCarousel />
+
+      {/* Quiz Teaser */}
+      <QuizTeaser />
 
       {/* Why Cards Section */}
       <WhyCardsSection />

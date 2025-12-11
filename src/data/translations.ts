@@ -97,6 +97,10 @@ export const translations = {
         hasAccount: "Already have an account?",
         signIn: "Sign In",
       },
+      quizTeaser: {
+        title: "Discover your startup speed",
+        cta: "Take 30-sec Quiz →",
+      },
     },
     painPoints: {
       title: "Does This Sound Familiar?",
@@ -621,6 +625,10 @@ export const translations = {
         free: "⏱️ 5 мин до первой карты • 🎯 7 дней до валидации • 💰 21 день до первого клиента",
         hasAccount: "Уже есть аккаунт?",
         signIn: "Войти",
+      },
+      quizTeaser: {
+        title: "Узнай свою скорость запуска",
+        cta: "Пройти тест за 30 сек →",
       },
     },
     painPoints: {
