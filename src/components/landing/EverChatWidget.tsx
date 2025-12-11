@@ -27,8 +27,8 @@ const CONVERSATION_STARTERS = {
 export const EverChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const { messages, isStreaming, hasReachedLimit, messageCount, maxMessages, sendMessage } = useLandingChat();
   const { t, language } = useTranslation();
+  const { messages, isStreaming, hasReachedLimit, messageCount, maxMessages, sendMessage } = useLandingChat(language as 'en' | 'ru');
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);

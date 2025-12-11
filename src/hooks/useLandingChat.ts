@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export interface ChatMessage {
   id: string;
@@ -7,21 +7,31 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
-const GREETING = "Hey! I'm Ever Green, the visionary behind Mycelium. Got a startup idea brewing? I'm here to help you think bigger. What's on your mind?";
+const GREETINGS = {
+  en: "Hey! I'm Ever Green, the visionary behind Mycelium. Got a startup idea brewing? I'm here to help you think bigger. What's on your mind?",
+  ru: "Привет! Я Ever Green, визионер Mycelium. Есть идея стартапа? Я помогу мыслить масштабнее. Что у тебя на уме?"
+};
 
 const MAX_FREE_MESSAGES = 5;
 
-export const useLandingChat = () => {
+export const useLandingChat = (language: 'en' | 'ru' = 'en') => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'greeting',
       role: 'assistant',
-      content: GREETING,
+      content: GREETINGS[language],
       timestamp: new Date(),
     }
   ]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
+
+  // Update greeting when language changes
+  useEffect(() => {
+    setMessages(prev => prev.map(m => 
+      m.id === 'greeting' ? { ...m, content: GREETINGS[language] } : m
+    ));
+  }, [language]);
 
   const hasReachedLimit = messageCount >= MAX_FREE_MESSAGES;
 
@@ -138,11 +148,11 @@ export const useLandingChat = () => {
     setMessages([{
       id: 'greeting',
       role: 'assistant',
-      content: GREETING,
+      content: GREETINGS[language],
       timestamp: new Date(),
     }]);
     setMessageCount(0);
-  }, []);
+  }, [language]);
 
   return {
     messages,
