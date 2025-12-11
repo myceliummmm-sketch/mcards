@@ -16,6 +16,7 @@ const Quiz = () => {
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
   const [results, setResults] = useState<QuizResults | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   useEffect(() => {
     // Initialize Telegram Web App
@@ -58,33 +59,41 @@ const Quiz = () => {
     navigate("/auth");
   };
 
-  const handleShare = () => {
-    if (!results) return;
+  const handleShare = async () => {
+    if (!results || isSharing) return;
+    
+    setIsSharing(true);
 
     const shareText = t("quiz.shareText")
       .replace("{score}", String(results.totalScore))
       .replace("{days}", String(results.daysToFirst100));
     const quizUrl = window.location.origin + "/quiz";
 
-    // Try Telegram first
-    if (window.Telegram?.WebApp) {
-      const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(quizUrl)}&text=${encodeURIComponent(shareText)}`;
-      window.Telegram.WebApp.openTelegramLink(telegramShareUrl);
-    }
-    // Try Web Share API (modern browsers)
-    else if (navigator.share) {
-      navigator.share({
-        title: "Idea Launchpad Quiz",
-        text: shareText,
-        url: quizUrl,
-      }).catch(() => {
-        // Fallback to copy to clipboard
+    try {
+      // Try Telegram first
+      if (window.Telegram?.WebApp) {
+        const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(quizUrl)}&text=${encodeURIComponent(shareText)}`;
+        window.Telegram.WebApp.openTelegramLink(telegramShareUrl);
+      }
+      // Try Web Share API (modern browsers)
+      else if (navigator.share) {
+        await navigator.share({
+          title: "Idea Launchpad Quiz",
+          text: shareText,
+          url: quizUrl,
+        });
+      }
+      // Final fallback: copy to clipboard
+      else {
         copyToClipboard(shareText + "\n" + quizUrl);
-      });
-    }
-    // Final fallback: copy to clipboard
-    else {
-      copyToClipboard(shareText + "\n" + quizUrl);
+      }
+    } catch (error) {
+      // User cancelled share or error occurred - fallback to clipboard
+      if ((error as Error).name !== 'AbortError') {
+        copyToClipboard(shareText + "\n" + quizUrl);
+      }
+    } finally {
+      setTimeout(() => setIsSharing(false), 1000);
     }
   };
 
