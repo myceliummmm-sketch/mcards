@@ -11,6 +11,7 @@ import { FogOfWarJourney } from "@/components/landing/FogOfWarJourney";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { InteractiveCardDemo } from "@/components/landing/InteractiveCardDemo";
 import { PainPointsCarousel } from "@/components/landing/PainPointsCarousel";
+import { EverChatWidget } from "@/components/landing/EverChatWidget";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const Index = () => {
@@ -419,6 +420,9 @@ const Index = () => {
 
       {/* Footer gradient */}
       <div className="h-32 bg-gradient-to-t from-muted/30 to-transparent" />
+
+      {/* Ever Chat Widget */}
+      <EverChatWidget />
     </div>
   );
 };
