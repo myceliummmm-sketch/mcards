@@ -6,9 +6,12 @@ import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { QuizResult } from "@/components/quiz/QuizResult";
 import { QUIZ_QUESTIONS, calculateResults, type QuizResults } from "@/data/quizData";
 import { Sparkles } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
 
 const Quiz = () => {
   const navigate = useNavigate();
+  const { language, setLanguage, t } = useLanguage();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
@@ -41,6 +44,7 @@ const Quiz = () => {
   };
 
   const handleStartVision = () => {
+    // Send data to Telegram if in Mini App context
     if (window.Telegram?.WebApp && results) {
       window.Telegram.WebApp.sendData(
         JSON.stringify({
@@ -49,25 +53,47 @@ const Quiz = () => {
           answers,
         })
       );
-    } else {
-      // Fallback: navigate to auth
-      navigate("/auth");
     }
+    // Always navigate to auth for registration
+    navigate("/auth");
   };
 
   const handleShare = () => {
     if (!results) return;
 
-    const shareText = `🚀 Мой Launchpad Score: ${results.totalScore}/100!\nДо первых $100 — ${results.daysToFirst100} дней.\n\nПроверь свой результат:`;
-    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(
-      window.location.href
-    )}&text=${encodeURIComponent(shareText)}`;
+    const shareText = t("quiz.shareText")
+      .replace("{score}", String(results.totalScore))
+      .replace("{days}", String(results.daysToFirst100));
+    const quizUrl = window.location.origin + "/quiz";
 
+    // Try Telegram first
     if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.openTelegramLink(shareUrl);
-    } else {
-      window.open(shareUrl, "_blank");
+      const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(quizUrl)}&text=${encodeURIComponent(shareText)}`;
+      window.Telegram.WebApp.openTelegramLink(telegramShareUrl);
     }
+    // Try Web Share API (modern browsers)
+    else if (navigator.share) {
+      navigator.share({
+        title: "Idea Launchpad Quiz",
+        text: shareText,
+        url: quizUrl,
+      }).catch(() => {
+        // Fallback to copy to clipboard
+        copyToClipboard(shareText + "\n" + quizUrl);
+      });
+    }
+    // Final fallback: copy to clipboard
+    else {
+      copyToClipboard(shareText + "\n" + quizUrl);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast.success(t("quiz.copiedToClipboard"));
+    }).catch(() => {
+      toast.error("Failed to copy");
+    });
   };
 
   const handleRestart = () => {
@@ -75,6 +101,10 @@ const Quiz = () => {
     setAnswers([]);
     setShowResult(false);
     setResults(null);
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === "en" ? "ru" : "en");
   };
 
   return (
@@ -85,9 +115,18 @@ const Quiz = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="max-w-md mx-auto flex items-center justify-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary" />
-          <h1 className="font-display text-lg text-foreground">Idea Launchpad</h1>
+        <div className="max-w-md mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <h1 className="font-display text-lg text-foreground">{t("quiz.title")}</h1>
+          </div>
+          <button
+            onClick={toggleLanguage}
+            className="px-3 py-1 text-sm font-body text-muted-foreground hover:text-foreground 
+                       border border-border rounded-lg hover:border-primary transition-colors"
+          >
+            {language === "en" ? "🇷🇺 RU" : "🇬🇧 EN"}
+          </button>
         </div>
       </motion.header>
 
@@ -141,7 +180,7 @@ const Quiz = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1.5 }}
                 >
-                  Пройти заново
+                  {t("quiz.restartQuiz")}
                 </motion.button>
               </motion.div>
             ) : null}
@@ -149,7 +188,7 @@ const Quiz = () => {
         </div>
       </main>
 
-      {/* Telegram branding hint */}
+      {/* Footer */}
       <motion.footer
         className="p-4 text-center"
         initial={{ opacity: 0 }}
@@ -157,7 +196,7 @@ const Quiz = () => {
         transition={{ delay: 0.5 }}
       >
         <p className="text-xs text-muted-foreground font-body">
-          Powered by Mycelium
+          {t("quiz.poweredBy")}
         </p>
       </motion.footer>
     </div>
