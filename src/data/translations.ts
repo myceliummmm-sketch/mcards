@@ -98,8 +98,13 @@ export const translations = {
         signIn: "Sign In",
       },
       quizTeaser: {
-        title: "Discover your startup speed",
-        cta: "Take 30-sec Quiz →",
+        badge: "Quick Test",
+        title: "Discover Your Startup Speed",
+        cta: "Take the Quiz →",
+        scoreLabel: "Your Score",
+        daysLabel: "Days to $100",
+        blockerLabel: "Hidden Blocker",
+        timeInfo: "⏱️ 30 sec • 4 questions",
       },
     },
     painPoints: {
@@ -627,8 +632,13 @@ export const translations = {
         signIn: "Войти",
       },
       quizTeaser: {
+        badge: "Быстрый тест",
         title: "Узнай свою скорость запуска",
-        cta: "Пройти тест за 30 сек →",
+        cta: "Пройти тест →",
+        scoreLabel: "Твой Score",
+        daysLabel: "Дней до $100",
+        blockerLabel: "Скрытый блокер",
+        timeInfo: "⏱️ 30 сек • 4 вопроса",
       },
     },
     painPoints: {
