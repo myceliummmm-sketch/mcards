@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import type { QuizQuestion as QuizQuestionType } from "@/data/quizData";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface QuizQuestionProps {
   question: QuizQuestionType;
@@ -8,6 +9,8 @@ interface QuizQuestionProps {
 }
 
 export const QuizQuestion = ({ question, questionIndex, onAnswer }: QuizQuestionProps) => {
+  const { t } = useLanguage();
+
   return (
     <motion.div
       key={questionIndex}
@@ -23,7 +26,7 @@ export const QuizQuestion = ({ question, questionIndex, onAnswer }: QuizQuestion
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        {question.question}
+        {t(question.questionKey)}
       </motion.h2>
 
       <div className="space-y-3">
@@ -44,7 +47,7 @@ export const QuizQuestion = ({ question, questionIndex, onAnswer }: QuizQuestion
             <div className="relative flex items-center gap-4">
               <span className="text-3xl">{option.icon}</span>
               <div className="flex-1 text-left">
-                <span className="text-foreground font-body text-lg">{option.label}</span>
+                <span className="text-foreground font-body text-lg">{t(option.labelKey)}</span>
               </div>
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center 
                               group-hover:bg-primary/20 transition-colors">

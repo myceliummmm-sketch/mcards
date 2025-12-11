@@ -490,6 +490,8 @@ export const translations = {
       result: {
         yourScore: "Your Launchpad Score",
         timeToFirst100: "Time to First $100",
+        day: "day",
+        days2to4: "days",
         days: "days",
         yourRoadmap: "Your Roadmap",
         visionPhase: "Vision Phase",
@@ -1013,6 +1015,8 @@ export const translations = {
       result: {
         yourScore: "Твой Launchpad Score",
         timeToFirst100: "До первых $100",
+        day: "день",
+        days2to4: "дня",
         days: "дней",
         yourRoadmap: "Твой Roadmap",
         visionPhase: "Vision Phase",

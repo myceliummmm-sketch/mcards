@@ -1,66 +1,66 @@
 export interface QuizOption {
   icon: string;
-  label: string;
+  labelKey: string;
   points: number;
   blocker?: string | null;
 }
 
 export interface QuizQuestion {
-  question: string;
+  questionKey: string;
   options: QuizOption[];
 }
 
 export const QUIZ_QUESTIONS: QuizQuestion[] = [
   {
-    question: "Есть ли у тебя идея для проекта?",
+    questionKey: "quiz.questions.q1",
     options: [
-      { icon: "💡", label: "Да, чёткая", points: 30, blocker: null },
-      { icon: "🤔", label: "Да, но размытая", points: 20, blocker: null },
-      { icon: "🔍", label: "Ищу идею", points: 10, blocker: "fear_of_choice" },
+      { icon: "💡", labelKey: "quiz.options.q1_o1", points: 30, blocker: null },
+      { icon: "🤔", labelKey: "quiz.options.q1_o2", points: 20, blocker: null },
+      { icon: "🔍", labelKey: "quiz.options.q1_o3", points: 10, blocker: "fear_of_choice" },
     ],
   },
   {
-    question: "Сколько времени готов уделять в неделю?",
+    questionKey: "quiz.questions.q2",
     options: [
-      { icon: "⏰", label: "2-5 часов", points: 15, blocker: null },
-      { icon: "📅", label: "5-10 часов", points: 25, blocker: null },
-      { icon: "🚀", label: "10+ часов", points: 30, blocker: null },
+      { icon: "⏰", labelKey: "quiz.options.q2_o1", points: 15, blocker: null },
+      { icon: "📅", labelKey: "quiz.options.q2_o2", points: 25, blocker: null },
+      { icon: "🚀", labelKey: "quiz.options.q2_o3", points: 30, blocker: null },
     ],
   },
   {
-    question: "Твой опыт с созданием продуктов?",
+    questionKey: "quiz.questions.q3",
     options: [
-      { icon: "🌱", label: "Новичок", points: 10, blocker: null },
-      { icon: "🔄", label: "Пробовал, но не довёл до конца", points: 20, blocker: "fear_of_repeat" },
-      { icon: "⭐", label: "Запускал продукты раньше", points: 30, blocker: null },
+      { icon: "🌱", labelKey: "quiz.options.q3_o1", points: 10, blocker: null },
+      { icon: "🔄", labelKey: "quiz.options.q3_o2", points: 20, blocker: "fear_of_repeat" },
+      { icon: "⭐", labelKey: "quiz.options.q3_o3", points: 30, blocker: null },
     ],
   },
   {
-    question: "Что важнее — скорость или совершенство?",
+    questionKey: "quiz.questions.q4",
     options: [
-      { icon: "⚡", label: "Быстрый запуск", points: 25, blocker: null },
-      { icon: "⚖️", label: "Баланс", points: 15, blocker: null },
-      { icon: "💎", label: "Идеальный продукт", points: 10, blocker: "perfectionism" },
+      { icon: "⚡", labelKey: "quiz.options.q4_o1", points: 25, blocker: null },
+      { icon: "⚖️", labelKey: "quiz.options.q4_o2", points: 15, blocker: null },
+      { icon: "💎", labelKey: "quiz.options.q4_o3", points: 10, blocker: "perfectionism" },
     ],
   },
 ];
 
-export const BLOCKER_MESSAGES: Record<string, { title: string; description: string }> = {
+export const BLOCKER_KEYS: Record<string, { titleKey: string; descriptionKey: string }> = {
   fear_of_choice: {
-    title: "Страх выбора",
-    description: "Слишком много вариантов парализует. Mycelium поможет найти идею, которая резонирует.",
+    titleKey: "quiz.blockers.fear_of_choice.title",
+    descriptionKey: "quiz.blockers.fear_of_choice.description",
   },
   fear_of_repeat: {
-    title: "Страх повторить провал",
-    description: "Прошлый опыт тормозит. С нашей методикой каждый шаг будет продуманным.",
+    titleKey: "quiz.blockers.fear_of_repeat.title",
+    descriptionKey: "quiz.blockers.fear_of_repeat.description",
   },
   perfectionism: {
-    title: "Паралич перфекционизма",
-    description: "Идеальное — враг готового. Мы научим запускать быстро и итерировать.",
+    titleKey: "quiz.blockers.perfectionism.title",
+    descriptionKey: "quiz.blockers.perfectionism.description",
   },
   start_paralysis: {
-    title: "Паралич старта",
-    description: "Сложно сделать первый шаг. Наш процесс разбивает путь на простые действия.",
+    titleKey: "quiz.blockers.start_paralysis.title",
+    descriptionKey: "quiz.blockers.start_paralysis.description",
   },
 };
 

@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Share2, Rocket, Sparkles, Clock, Target, Zap } from "lucide-react";
-import { BLOCKER_MESSAGES, type QuizResults } from "@/data/quizData";
+import { BLOCKER_KEYS, type QuizResults } from "@/data/quizData";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface QuizResultProps {
   results: QuizResults;
@@ -12,8 +13,9 @@ interface QuizResultProps {
 }
 
 export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizResultProps) => {
+  const { t } = useLanguage();
   const [displayScore, setDisplayScore] = useState(0);
-  const blocker = BLOCKER_MESSAGES[results.blocker];
+  const blocker = BLOCKER_KEYS[results.blocker];
 
   useEffect(() => {
     const duration = 1500;
@@ -36,34 +38,40 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
 
   const roadmapPhases = [
     { 
-      name: "Vision Phase", 
+      nameKey: "quiz.result.visionPhase", 
       days: results.visionDays, 
       badge: "FREE", 
       icon: Target,
       color: "text-secondary" 
     },
     { 
-      name: "Research Phase", 
+      nameKey: "quiz.result.researchPhase", 
       days: results.researchDays, 
       badge: "FREE", 
       icon: Sparkles,
       color: "text-primary" 
     },
     { 
-      name: "Build Phase", 
+      nameKey: "quiz.result.buildPhase", 
       days: results.buildDays, 
       badge: null, 
       icon: Zap,
       color: "text-accent" 
     },
     { 
-      name: "First Customer", 
+      nameKey: "quiz.result.firstCustomer", 
       days: null, 
       badge: "🎉", 
       icon: Rocket,
       color: "text-status-complete" 
     },
   ];
+
+  const getDaysText = (days: number) => {
+    if (days === 1) return t("quiz.result.day");
+    if (days < 5) return t("quiz.result.days2to4");
+    return t("quiz.result.days");
+  };
 
   return (
     <motion.div
@@ -79,7 +87,7 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
         animate={{ y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <p className="text-muted-foreground font-body text-sm mb-2">Твой Launchpad Score</p>
+        <p className="text-muted-foreground font-body text-sm mb-2">{t("quiz.result.yourScore")}</p>
         <motion.div
           className="text-6xl font-display text-glow"
           style={{ color: "hsl(var(--primary))" }}
@@ -98,9 +106,9 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
       >
         <Clock className="w-6 h-6 text-primary" />
         <div>
-          <p className="text-sm text-muted-foreground font-body">Time to First $100</p>
+          <p className="text-sm text-muted-foreground font-body">{t("quiz.result.timeToFirst100")}</p>
           <p className="text-2xl font-display text-foreground">
-            {results.daysToFirst100} дней
+            {results.daysToFirst100} {getDaysText(results.daysToFirst100)}
           </p>
         </div>
       </motion.div>
@@ -112,12 +120,12 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
       >
-        <h3 className="text-lg font-display text-foreground">Твой Roadmap</h3>
+        <h3 className="text-lg font-display text-foreground">{t("quiz.result.yourRoadmap")}</h3>
         <div className="relative">
           <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-secondary via-primary to-accent" />
           {roadmapPhases.map((phase, idx) => (
             <motion.div
-              key={phase.name}
+              key={phase.nameKey}
               className="relative flex items-center gap-4 py-3 pl-10"
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -128,7 +136,7 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-body text-foreground">{phase.name}</span>
+                  <span className="font-body text-foreground">{t(phase.nameKey)}</span>
                   {phase.badge && (
                     <span className="px-2 py-0.5 text-xs rounded-full bg-status-complete/20 text-status-complete font-body">
                       {phase.badge}
@@ -137,7 +145,7 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
                 </div>
                 {phase.days && (
                   <span className="text-sm text-muted-foreground font-body">
-                    {phase.days} {phase.days === 1 ? "день" : phase.days < 5 ? "дня" : "дней"}
+                    {phase.days} {getDaysText(phase.days)}
                   </span>
                 )}
               </div>
@@ -153,8 +161,8 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
         animate={{ opacity: 1 }}
         transition={{ delay: 0.9 }}
       >
-        <h4 className="font-display text-destructive mb-1">{blocker.title}</h4>
-        <p className="text-sm text-muted-foreground font-body">{blocker.description}</p>
+        <h4 className="font-display text-destructive mb-1">{t(blocker.titleKey)}</h4>
+        <p className="text-sm text-muted-foreground font-body">{t(blocker.descriptionKey)}</p>
       </motion.div>
 
       {/* CTA Button */}
@@ -168,7 +176,7 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
           className="w-full py-6 text-lg font-display cta-pulse bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
         >
           <Rocket className="w-5 h-5 mr-2" />
-          Начать Vision Phase бесплатно →
+          {t("quiz.result.startVisionFree")}
         </Button>
       </motion.div>
 
@@ -180,7 +188,7 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
         transition={{ delay: 1.3 }}
       >
         <p className="text-sm text-muted-foreground font-body mb-3">
-          🎁 Поделись с другом → получи бонусную карточку
+          {t("quiz.result.shareBonus")}
         </p>
         <Button
           variant="outline"
@@ -188,7 +196,7 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
           className="gap-2"
         >
           <Share2 className="w-4 h-4" />
-          Поделиться результатом
+          {t("quiz.result.shareResult")}
         </Button>
       </motion.div>
     </motion.div>
