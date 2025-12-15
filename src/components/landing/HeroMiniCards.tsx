@@ -55,18 +55,22 @@ export const HeroMiniCards = () => {
   const displayCards = DEMO_CARDS.slice(0, 4); // Problem, Audience, Market, MVP
 
   return (
-    <div className="flex gap-3 mt-8">
+    <div className="flex gap-4 mt-8">
       {/* 4 Demo Cards */}
       {displayCards.map((card, index) => (
         <motion.div
           key={card.id}
-          className={`relative w-20 h-28 rounded-xl overflow-hidden cursor-pointer group
+          className={`relative w-28 h-40 rounded-xl overflow-hidden cursor-pointer group
             bg-gradient-to-br ${PHASE_COLORS[card.phase]} 
             border ${PHASE_BORDER_COLORS[card.phase]}
-            hover:scale-105 transition-transform duration-300`}
+            hover:scale-110 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/30
+            transition-all duration-300 ease-out`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
+          whileHover={{ 
+            boxShadow: "0 20px 40px -10px hsl(var(--primary) / 0.4)"
+          }}
         >
           {/* Card Image */}
           {card.imageUrl && (
@@ -74,43 +78,47 @@ export const HeroMiniCards = () => {
               <img 
                 src={card.imageUrl} 
                 alt={card.title}
-                className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
+                className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-300"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent" />
             </div>
           )}
           
           {/* Card Content */}
-          <div className="absolute inset-0 p-2 flex flex-col justify-end">
-            <p className="text-[10px] font-semibold text-foreground truncate">
+          <div className="absolute inset-0 p-3 flex flex-col justify-end">
+            <p className="text-xs font-semibold text-foreground">
               {card.title}
             </p>
-            <div className="flex items-center gap-1 mt-1">
-              <div className="w-6 h-6 rounded-full overflow-hidden border border-border/50">
+            <div className="flex items-center gap-1.5 mt-2">
+              <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-primary/50 group-hover:border-primary transition-colors">
                 <img src={card.evaluation.avatar} alt="" className="w-full h-full object-cover" />
               </div>
-              <span className="text-[9px] text-primary font-bold">{card.evaluation.score}</span>
+              <span className="text-sm text-primary font-bold">{card.evaluation.score}</span>
             </div>
           </div>
 
           {/* Hover glow */}
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            <div className="absolute inset-0 bg-primary/10 animate-pulse" />
+            <div className="absolute inset-0 bg-primary/10" />
           </div>
         </motion.div>
       ))}
 
       {/* Mystery Card */}
       <motion.div
-        className={`relative w-20 h-28 rounded-xl overflow-hidden cursor-pointer
+        className={`relative w-28 h-40 rounded-xl overflow-hidden cursor-pointer
           bg-gradient-to-br from-primary/30 to-accent/30
           border-2 border-dashed border-primary/60
-          hover:border-primary transition-all duration-300
+          hover:border-primary hover:scale-110 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/30
+          transition-all duration-300 ease-out
           ${mysteryState === 'question' ? 'animate-pulse' : ''}`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
         onClick={handleMysteryClick}
+        whileHover={{ 
+          boxShadow: "0 20px 40px -10px hsl(var(--primary) / 0.4)"
+        }}
       >
         <AnimatePresence mode="wait">
           {mysteryState === 'question' ? (
@@ -122,22 +130,22 @@ export const HeroMiniCards = () => {
               exit={{ opacity: 0, scale: 0.8, rotateY: -90 }}
               transition={{ duration: 0.3 }}
             >
-              <HelpCircle className="w-8 h-8 text-primary mb-1" />
-              <span className="text-[9px] text-muted-foreground">Click me</span>
+              <HelpCircle className="w-10 h-10 text-primary mb-2" />
+              <span className="text-xs text-muted-foreground">Click me</span>
             </motion.div>
           ) : (
             <motion.div
               key="revealed"
-              className="absolute inset-0 p-2 flex flex-col justify-center"
+              className="absolute inset-0 p-3 flex flex-col justify-center"
               initial={{ opacity: 0, scale: 0.8, rotateY: 90 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
               exit={{ opacity: 0, scale: 0.8, rotateY: -90 }}
               transition={{ duration: 0.3 }}
             >
-              <p className={`text-[9px] font-medium ${currentPain.color} mb-1`}>
+              <p className={`text-xs font-medium ${currentPain.color} mb-2`}>
                 {t(`painPoints.${currentPain.key}.label`)}
               </p>
-              <p className="text-[8px] text-muted-foreground leading-tight line-clamp-4">
+              <p className="text-[10px] text-muted-foreground leading-tight line-clamp-5">
                 {t(`painPoints.${currentPain.key}.pain`)}
               </p>
             </motion.div>

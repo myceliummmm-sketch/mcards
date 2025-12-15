@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Zap, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { HeroMiniCards } from './HeroMiniCards';
 import hero3dMockup from '@/assets/hero-3d-mockup.png';
@@ -22,53 +21,27 @@ export const DesktopHero = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Badge 
-                variant="outline" 
-                className="mb-6 px-4 py-2 text-sm border-primary/50 bg-primary/10 text-primary"
-              >
-                <Zap className="w-4 h-4 mr-2" />
-                AI-Powered Startup Validation
-              </Badge>
-            </motion.div>
-
-            {/* Main Headline */}
+            {/* Main Headline - Same as Mobile */}
             <motion.h1
               className="text-5xl lg:text-6xl xl:text-7xl font-display font-bold mb-6 leading-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
             >
-              <span className="text-foreground">{t('landing.hero.headline1')}</span>
+              <span className="text-foreground">{t('landing.mobile.hero.headline1')}</span>
               <br />
-              <span className="text-primary text-glow">{t('landing.hero.headline2')}</span>
+              <span className="text-primary text-glow">{t('landing.mobile.hero.headline2')}</span>
             </motion.h1>
 
-            {/* Subheadline */}
-            <motion.div
-              className="mb-8 space-y-2"
+            {/* Simple Subheadline */}
+            <motion.p
+              className="text-xl text-muted-foreground mb-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
             >
-              <p className="text-lg text-muted-foreground">
-                {t('landing.hero.subheadline')}
-              </p>
-              <p className="text-lg text-destructive font-medium">
-                {t('landing.hero.blindSpots')}
-              </p>
-              <p className="text-xl text-primary font-semibold mt-4">
-                {t('landing.hero.cardSystem')}
-              </p>
-              <p className="text-muted-foreground">
-                {t('landing.hero.toReveal')}
-              </p>
-            </motion.div>
+              {t('landing.mobile.hero.subline')}
+            </motion.p>
 
             {/* Mini Cards */}
             <motion.div
@@ -129,7 +102,7 @@ export const DesktopHero = () => {
               <img
                 src={hero3dMockup}
                 alt="Mycelium Cards Interface"
-                className="w-full max-w-lg xl:max-w-xl -scale-x-100 drop-shadow-2xl"
+                className="w-full max-w-2xl xl:max-w-4xl -scale-x-100 drop-shadow-2xl"
                 style={{
                   filter: 'drop-shadow(0 25px 50px rgba(var(--primary-rgb), 0.3))'
                 }}
