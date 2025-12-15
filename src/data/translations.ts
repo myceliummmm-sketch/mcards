@@ -106,6 +106,15 @@ export const translations = {
         blockerLabel: "Hidden Blocker",
         timeInfo: "⏱️ 30 sec • 4 questions",
       },
+      mobile: {
+        hero: {
+          headline1: "Pick an idea.",
+          headline2: "Make your first $1K.",
+          subline: "Your AI team helps you go from zero to paying customers in under 15 minutes",
+          cta: "Take the 2-min Quiz →",
+          time: "⏱️ 2 min • Free forever",
+        },
+      },
     },
     painPoints: {
       title: "Does This Sound Familiar?",
@@ -639,6 +648,15 @@ export const translations = {
         daysLabel: "Дней до $100",
         blockerLabel: "Скрытый блокер",
         timeInfo: "⏱️ 30 сек • 4 вопроса",
+      },
+      mobile: {
+        hero: {
+          headline1: "Выбери идею.",
+          headline2: "Заработай первую $1K.",
+          subline: "Твоя ИИ-команда поможет перейти от нуля к платящим клиентам за 15 минут",
+          cta: "Пройди тест за 2 мин →",
+          time: "⏱️ 2 мин • Навсегда бесплатно",
+        },
       },
     },
     painPoints: {
