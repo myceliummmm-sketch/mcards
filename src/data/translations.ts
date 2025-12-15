@@ -122,8 +122,8 @@ export const translations = {
             description: "10-step guide to your first $1K. Delivered to your inbox.",
           },
           build: {
-            title: "Start Building Now",
-            description: "Jump straight in — build a website in 15 min",
+            title: "Start polishing your idea now!",
+            description: "Make 5 cards and get a website",
           },
         },
         email: {
@@ -694,8 +694,8 @@ export const translations = {
             description: "10 шагов к первой $1K. Пришлём на почту.",
           },
           build: {
-            title: "Начать строить сейчас",
-            description: "Сразу в бой — создай сайт за 15 минут",
+            title: "Начни полировать свою идею сейчас!",
+            description: "Сделай 5 карточек и получи сайт",
           },
         },
         email: {

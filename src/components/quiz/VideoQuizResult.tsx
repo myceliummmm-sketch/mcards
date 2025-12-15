@@ -55,7 +55,7 @@ export const VideoQuizResult = ({ results }: VideoQuizResultProps) => {
           playsInline
           muted
           loop
-          className="w-full max-w-[240px] aspect-[9/16] rounded-2xl object-cover shadow-2xl"
+          className="w-full max-w-[400px] aspect-[16/9] rounded-2xl object-cover shadow-2xl"
         />
       </motion.div>
 
