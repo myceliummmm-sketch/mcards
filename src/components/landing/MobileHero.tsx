@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
+import myceliumCardsHero from "@/assets/mycelium-cards-hero.png";
 
 export const MobileHero = () => {
   const navigate = useNavigate();
@@ -21,14 +22,22 @@ export const MobileHero = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Icon */}
+        {/* Card stack image with glow */}
         <motion.div
-          className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center"
+          className="relative mb-6"
           initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
+          animate={{ scale: 1, opacity: 1, y: [0, -8, 0] }}
+          transition={{ 
+            scale: { delay: 0.2, duration: 0.4 },
+            y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+          }}
         >
-          <Sparkles className="w-8 h-8 text-primary" />
+          <img 
+            src={myceliumCardsHero} 
+            alt="Mycelium Cards" 
+            className="w-44 h-auto mx-auto"
+          />
+          <div className="absolute inset-0 bg-primary/20 blur-3xl -z-10 scale-150" />
         </motion.div>
 
         {/* Headline */}
