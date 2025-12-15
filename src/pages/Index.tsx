@@ -165,6 +165,46 @@ const Index = () => {
       {/* Pain Points Carousel - NEW */}
       <PainPointsCarousel />
 
+      {/* How It Works - Moved after Pain Points */}
+      <section className="relative z-10 py-24 px-4">
+        <div className="container mx-auto max-w-4xl">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('landing.howItWorks.title')}</h2>
+            <p className="text-muted-foreground text-lg">{t('landing.howItWorks.subtitle')}</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {howItWorks.map((item, index) => (
+              <motion.div
+                key={item.step}
+                className="relative text-center"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15 }}
+              >
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-${item.color}/20 border-2 border-${item.color} flex items-center justify-center`}>
+                  <item.icon className={`w-8 h-8 text-${item.color}`} />
+                </div>
+                <span className="inline-block px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground mb-2">
+                  {t(item.weekKey)}
+                </span>
+                <h3 className={`text-xl font-display font-bold mb-2 text-${item.color}`}>{t(item.titleKey)}</h3>
+                <p className="text-muted-foreground text-sm">{t(item.descriptionKey)}</p>
+
+                {/* Connector line */}
+                {index < 2 && <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-border to-transparent" />}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Quiz Teaser */}
       <QuizTeaser />
 
@@ -256,46 +296,6 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-display font-semibold mb-2">{t(feature.titleKey)}</h3>
                 <p className="text-muted-foreground">{t(feature.descriptionKey)}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="relative z-10 py-24 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('landing.howItWorks.title')}</h2>
-            <p className="text-muted-foreground text-lg">{t('landing.howItWorks.subtitle')}</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {howItWorks.map((item, index) => (
-              <motion.div
-                key={item.step}
-                className="relative text-center"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-              >
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-${item.color}/20 border-2 border-${item.color} flex items-center justify-center`}>
-                  <item.icon className={`w-8 h-8 text-${item.color}`} />
-                </div>
-                <span className="inline-block px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground mb-2">
-                  {t(item.weekKey)}
-                </span>
-                <h3 className={`text-xl font-display font-bold mb-2 text-${item.color}`}>{t(item.titleKey)}</h3>
-                <p className="text-muted-foreground text-sm">{t(item.descriptionKey)}</p>
-
-                {/* Connector line */}
-                {index < 2 && <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-border to-transparent" />}
               </motion.div>
             ))}
           </div>
