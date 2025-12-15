@@ -158,7 +158,7 @@ export const DesktopHero = () => {
 
           {/* Right Column - MASSIVE 3D Mockup - Moved Higher */}
           <motion.div
-            className="absolute right-0 top-[15%] w-[70vw] pointer-events-none z-0"
+            className="absolute right-0 top-[25%] w-[70vw] pointer-events-none z-0"
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.3 }}
