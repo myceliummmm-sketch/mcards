@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Book, Rocket } from "lucide-react";
+import { Book, Rocket, Clock } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { VideoQuizResult } from "@/components/quiz/VideoQuizResult";
 import { type QuizResults } from "@/data/quizData";
@@ -96,6 +96,15 @@ export const PostQuizFork = ({ onGetPlaybook, onStartBuilding, results }: PostQu
               <p className="text-xs text-white/80 font-body line-clamp-2">
                 {t("landing.mobile.postQuiz.build.description")}
               </p>
+              <div className="flex gap-2 mt-1.5">
+                <span className="inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-white/20 text-white font-body">
+                  FREE
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-white/20 text-white font-body">
+                  <Clock className="w-3 h-3" />
+                  15 min
+                </span>
+              </div>
             </div>
           </div>
         </motion.button>
