@@ -169,6 +169,7 @@ const Quiz2 = () => {
                 <PostQuizFork
                   onGetPlaybook={handleGetPlaybook}
                   onStartBuilding={handleStartBuilding}
+                  results={results}
                 />
 
                 <motion.button
