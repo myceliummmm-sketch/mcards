@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
+import myceliumCardsHero from "@/assets/mycelium-cards-hero.png";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -176,12 +177,18 @@ const Auth = () => {
 
       <Card className="w-full max-w-md card-shine border-border/50 backdrop-blur-sm bg-card/95 relative z-10">
         <CardHeader className="text-center space-y-2">
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <Sparkles className="w-12 h-12 text-primary animate-pulse" />
-              <div className="absolute inset-0 w-12 h-12 bg-primary blur-xl opacity-50 animate-pulse" />
-            </div>
-          </div>
+          <motion.div 
+            className="relative mb-2"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <img 
+              src={myceliumCardsHero} 
+              alt="Mycelium Cards" 
+              className="w-48 h-auto mx-auto"
+            />
+            <div className="absolute inset-0 bg-primary/20 blur-3xl -z-10 scale-125" />
+          </motion.div>
           <CardTitle className="text-3xl font-display text-glow">{t('auth.title')}</CardTitle>
           <CardDescription className="text-muted-foreground">
             {t('auth.subtitle')}

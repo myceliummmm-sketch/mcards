@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowRight, Sparkles, X } from "lucide-react";
+import { Loader2, ArrowRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { OnboardingStep } from "@/components/onboarding/OnboardingStep";
 import { TeamShowcase } from "@/components/onboarding/TeamShowcase";
+import myceliumCardsHero from "@/assets/mycelium-cards-hero.png";
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -143,10 +144,18 @@ const Onboarding = () => {
         transition={{ delay: 0.2 }}
         className="text-center"
       >
-        <div className="relative inline-block mb-6">
-          <Sparkles className="w-16 h-16 text-primary" />
-          <div className="absolute inset-0 w-16 h-16 bg-primary blur-2xl opacity-40 animate-pulse" />
-        </div>
+        <motion.div 
+          className="relative inline-block mb-6"
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <img 
+            src={myceliumCardsHero} 
+            alt="Mycelium Cards" 
+            className="w-48 h-auto mx-auto"
+          />
+          <div className="absolute inset-0 bg-primary/20 blur-3xl -z-10 scale-150 animate-pulse" />
+        </motion.div>
         <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 text-glow">
           Welcome, {username}!
         </h1>
