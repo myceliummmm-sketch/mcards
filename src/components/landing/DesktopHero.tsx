@@ -16,7 +16,7 @@ export const DesktopHero = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Left Column - Content */}
           <motion.div
-            className="flex flex-col"
+            className="flex flex-col z-20 relative"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
@@ -75,26 +75,26 @@ export const DesktopHero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right Column - 3D Mockup */}
+          {/* Right Column - MASSIVE 3D Mockup */}
           <motion.div
-            className="relative flex items-center justify-center lg:justify-end"
-            initial={{ opacity: 0, x: 50 }}
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-[70vw] pointer-events-none z-0"
+            initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 1, delay: 0.3 }}
           >
             {/* Glow background */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-pulse" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
             </div>
 
             {/* Floating Image */}
             <motion.div
-              className="relative z-10"
+              className="relative"
               animate={{ 
-                y: [0, -15, 0],
+                y: [0, -20, 0],
               }}
               transition={{
-                duration: 4,
+                duration: 5,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
@@ -102,41 +102,12 @@ export const DesktopHero = () => {
               <img
                 src={hero3dMockup}
                 alt="Mycelium Cards Interface"
-                className="w-full max-w-2xl xl:max-w-4xl -scale-x-100 drop-shadow-2xl"
+                className="w-full -scale-x-100 drop-shadow-2xl"
                 style={{
-                  filter: 'drop-shadow(0 25px 50px rgba(var(--primary-rgb), 0.3))'
+                  filter: 'drop-shadow(0 30px 60px hsl(var(--primary) / 0.4))'
                 }}
               />
-              
-              {/* Subtle reflection */}
-              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background to-transparent" />
             </motion.div>
-
-            {/* Decorative elements */}
-            <motion.div
-              className="absolute top-10 right-10 w-4 h-4 bg-primary rounded-full"
-              animate={{ 
-                scale: [1, 1.5, 1],
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <motion.div
-              className="absolute bottom-20 left-10 w-3 h-3 bg-accent rounded-full"
-              animate={{ 
-                scale: [1, 1.3, 1],
-                opacity: [0.3, 0.8, 0.3]
-              }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-            />
-            <motion.div
-              className="absolute top-1/3 left-5 w-2 h-2 bg-secondary rounded-full"
-              animate={{ 
-                scale: [1, 1.4, 1],
-                opacity: [0.4, 0.9, 0.4]
-              }}
-              transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-            />
           </motion.div>
         </div>
       </div>
