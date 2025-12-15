@@ -35,7 +35,7 @@ export const MobileHero = () => {
           <img 
             src={myceliumCardsHero} 
             alt="Mycelium Cards" 
-            className="w-44 h-auto mx-auto mix-blend-lighten brightness-110"
+            className="w-44 h-auto mx-auto"
           />
           <div className="absolute inset-0 bg-primary/20 blur-3xl -z-10 scale-150" />
         </motion.div>

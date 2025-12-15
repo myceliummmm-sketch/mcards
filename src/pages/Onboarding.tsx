@@ -152,7 +152,7 @@ const Onboarding = () => {
           <img 
             src={myceliumCardsHero} 
             alt="Mycelium Cards" 
-            className="w-48 h-auto mx-auto mix-blend-lighten brightness-110"
+            className="w-48 h-auto mx-auto"
           />
           <div className="absolute inset-0 bg-primary/20 blur-3xl -z-10 scale-150 animate-pulse" />
         </motion.div>
