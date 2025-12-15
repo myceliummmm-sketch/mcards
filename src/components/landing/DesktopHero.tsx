@@ -102,7 +102,7 @@ export const DesktopHero = () => {
               <img
                 src={hero3dMockup}
                 alt="Mycelium Cards Interface"
-                className="w-full -scale-x-100 drop-shadow-2xl"
+                className="w-full rotate-180 drop-shadow-2xl"
                 style={{
                   filter: 'drop-shadow(0 30px 60px hsl(var(--primary) / 0.4))'
                 }}
