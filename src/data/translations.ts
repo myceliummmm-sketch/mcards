@@ -164,6 +164,21 @@ export const translations = {
         pain: "I have no portfolio and no real experience for employers...",
         solution: "Validate a real business idea. That IS the portfolio.",
       },
+      techFounder: {
+        label: "Tech Founder",
+        pain: "I can build anything, but I don't know what to build...",
+        solution: "Stop coding features. Start finding paying customers first.",
+      },
+      freelancer: {
+        label: "Freelancer",
+        pain: "I'm stuck trading time for money, want my own product...",
+        solution: "Build your escape ladder. 30 min/day to productized income.",
+      },
+      secondTimeFounder: {
+        label: "2nd Time Founder",
+        pain: "My first startup failed, scared to make the same mistakes...",
+        solution: "This time, validate first. Cards force the right questions.",
+      },
     },
     whyCards: {
       title: "Why Ideas Die in Notebooks",
@@ -735,6 +750,21 @@ export const translations = {
         label: "Студент",
         pain: "Нет портфолио и реального опыта для работодателя...",
         solution: "Провалидируй реальную бизнес-идею. Это И ЕСТЬ портфолио.",
+      },
+      techFounder: {
+        label: "Технический фаундер",
+        pain: "Я могу построить что угодно, но не знаю что строить...",
+        solution: "Хватит кодить фичи. Сначала найди платящих клиентов.",
+      },
+      freelancer: {
+        label: "Фрилансер",
+        pain: "Застрял в обмене времени на деньги, хочу свой продукт...",
+        solution: "Построй лестницу выхода. 30 мин/день к продуктовому доходу.",
+      },
+      secondTimeFounder: {
+        label: "Повторный фаундер",
+        pain: "Первый стартап провалился, боюсь повторить ошибки...",
+        solution: "В этот раз — сначала валидация. Карты заставляют задавать правильные вопросы.",
       },
     },
     whyCards: {
