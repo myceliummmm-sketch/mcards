@@ -185,7 +185,7 @@ const Auth = () => {
             <img 
               src={myceliumCardsHero} 
               alt="Mycelium Cards" 
-              className="w-48 h-auto mx-auto"
+              className="w-48 h-auto mx-auto mix-blend-lighten brightness-110"
             />
             <div className="absolute inset-0 bg-primary/20 blur-3xl -z-10 scale-125" />
           </motion.div>
