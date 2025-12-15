@@ -14,10 +14,13 @@ import { PainPointsCarousel } from "@/components/landing/PainPointsCarousel";
 import { EverChatWidget } from "@/components/landing/EverChatWidget";
 import { QuizTeaser } from "@/components/landing/QuizTeaser";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileLanding } from "@/components/landing/MobileLanding";
 
 const Index = () => {
   const navigate = useNavigate();
   const { t, language, setLanguage } = useTranslation();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Check existing session
@@ -43,6 +46,11 @@ const Index = () => {
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  // Show mobile-optimized landing for mobile users
+  if (isMobile) {
+    return <MobileLanding />;
+  }
 
   const characters = Object.values(TEAM_CHARACTERS);
 
