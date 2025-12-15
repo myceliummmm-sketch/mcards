@@ -8,6 +8,9 @@ const AUDIENCES = [
   { id: "corporate", icon: Briefcase, color: "hsl(280 70% 60%)" },
   { id: "noCode", icon: Code, color: "hsl(140 70% 50%)" },
   { id: "student", icon: GraduationCap, color: "hsl(45 90% 55%)" },
+  { id: "techFounder", icon: Code, color: "hsl(260 70% 60%)" },
+  { id: "freelancer", icon: Briefcase, color: "hsl(15 90% 60%)" },
+  { id: "secondTimeFounder", icon: User, color: "hsl(320 70% 60%)" },
 ];
 
 export function PainPointsCarousel() {
