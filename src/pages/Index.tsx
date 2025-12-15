@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Globe, Target, Search, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
-import { CardMosaic } from "@/components/landing/CardMosaic";
 import { WhyCardsSection } from "@/components/landing/WhyCardsSection";
 import { FogOfWarJourney } from "@/components/landing/FogOfWarJourney";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
@@ -13,6 +12,7 @@ import { InteractiveCardDemo } from "@/components/landing/InteractiveCardDemo";
 import { PainPointsCarousel } from "@/components/landing/PainPointsCarousel";
 import { EverChatWidget } from "@/components/landing/EverChatWidget";
 import { QuizTeaser } from "@/components/landing/QuizTeaser";
+import { DesktopHero } from "@/components/landing/DesktopHero";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileLanding } from "@/components/landing/MobileLanding";
@@ -160,72 +160,7 @@ const Index = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-20">
-        <div className="container mx-auto max-w-6xl">
-          {/* Main Headline */}
-          <motion.div
-            className="text-center mb-8"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-4">
-              <span className="text-foreground">{t('landing.hero.headline1')}</span>
-              <br />
-              <span className="text-primary text-glow">{t('landing.hero.headline2')}</span>
-            </h1>
-          </motion.div>
-
-          {/* Subheadline - Pain + Solution */}
-          <motion.div
-            className="text-center mb-12 max-w-3xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <p className="text-lg md:text-xl text-muted-foreground mb-2">
-              {t('landing.hero.subheadline')}
-            </p>
-            <p className="text-lg md:text-xl text-destructive font-medium mb-4">
-              {t('landing.hero.blindSpots')}
-            </p>
-            <p className="text-xl md:text-2xl text-primary font-semibold">
-              {t('landing.hero.cardSystem')}
-            </p>
-            <p className="text-muted-foreground mt-2">
-              {t('landing.hero.toReveal')}
-            </p>
-          </motion.div>
-
-          {/* Card Mosaic Visualization */}
-          <motion.div
-            className="mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <CardMosaic />
-          </motion.div>
-
-          {/* CTA */}
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
-          >
-            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg gap-2 px-10 py-6 cta-pulse">
-              <Zap className="h-5 w-5" />
-              {t('landing.hero.cta')}
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-
-            <p className="mt-4 text-sm text-muted-foreground">
-              {t('landing.hero.noCreditCard')}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <DesktopHero />
 
       {/* Pain Points Carousel - NEW */}
       <PainPointsCarousel />
