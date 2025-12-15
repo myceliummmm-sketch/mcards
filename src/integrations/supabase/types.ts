@@ -226,6 +226,33 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          quiz_blocker: string | null
+          quiz_score: number | null
+          source: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          quiz_blocker?: string | null
+          quiz_score?: number | null
+          source?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          quiz_blocker?: string | null
+          quiz_score?: number | null
+          source?: string | null
+        }
+        Relationships: []
+      }
       marketplace_listings: {
         Row: {
           card_id: string

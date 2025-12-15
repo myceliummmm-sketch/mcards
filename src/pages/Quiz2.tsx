@@ -1,20 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuizProgress } from "@/components/quiz/QuizProgress";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { QuizResult } from "@/components/quiz/QuizResult";
+import { PostQuizFork } from "@/components/landing/PostQuizFork";
+import { EmailCaptureModal } from "@/components/landing/EmailCaptureModal";
 import { QUIZ_QUESTIONS, calculateResults, type QuizResults } from "@/data/quizData";
 import { Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 
 const Quiz2 = () => {
   const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
+  const isMobile = useIsMobile();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
+  const [showPostQuizFork, setShowPostQuizFork] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
   const [results, setResults] = useState<QuizResults | null>(null);
   const [isSharing, setIsSharing] = useState(false);
 
@@ -30,13 +36,30 @@ const Quiz2 = () => {
       const calculatedResults = calculateResults(newAnswers);
       setResults(calculatedResults);
       setTimeout(() => {
-        setShowResult(true);
+        // On mobile, show the fork. On desktop, show result directly
+        if (isMobile) {
+          setShowPostQuizFork(true);
+        } else {
+          setShowResult(true);
+        }
       }, 300);
     }
   };
 
   const handleStartVision = () => {
     navigate("/auth");
+  };
+
+  const handleGetPlaybook = () => {
+    setShowEmailModal(true);
+  };
+
+  const handleStartBuilding = () => {
+    navigate("/auth");
+  };
+
+  const handleEmailSuccess = () => {
+    // Optionally navigate after email capture
   };
 
   const handleShare = async () => {
@@ -114,7 +137,7 @@ const Quiz2 = () => {
       <main className="flex-1 p-4 overflow-y-auto">
         <div className="max-w-md mx-auto">
           <AnimatePresence mode="wait">
-            {!showResult ? (
+            {!showResult && !showPostQuizFork ? (
               <motion.div
                 key="quiz"
                 initial={{ opacity: 0 }}
@@ -135,6 +158,28 @@ const Quiz2 = () => {
                     onAnswer={handleAnswer}
                   />
                 </AnimatePresence>
+              </motion.div>
+            ) : showPostQuizFork && results ? (
+              <motion.div
+                key="fork"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <PostQuizFork
+                  onGetPlaybook={handleGetPlaybook}
+                  onStartBuilding={handleStartBuilding}
+                />
+
+                <motion.button
+                  onClick={handleRestart}
+                  className="w-full mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors font-body"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  {t("quiz.restartQuiz")}
+                </motion.button>
               </motion.div>
             ) : results ? (
               <motion.div
@@ -162,6 +207,15 @@ const Quiz2 = () => {
               </motion.div>
             ) : null}
           </AnimatePresence>
+
+          {/* Email Capture Modal */}
+          <EmailCaptureModal
+            isOpen={showEmailModal}
+            onClose={() => setShowEmailModal(false)}
+            quizScore={results?.totalScore}
+            quizBlocker={results?.blocker}
+            onSuccess={handleEmailSuccess}
+          />
         </div>
       </main>
 
