@@ -73,6 +73,27 @@ export interface QuizResults {
   buildDays: number;
 }
 
+export const VIDEO_BY_BLOCKER: Record<string, string> = {
+  fear_of_choice: "/videos/prisma_blocker.mp4",
+  start_paralysis: "/videos/ever_blocker.mp4",
+  fear_of_repeat: "/videos/toxic_blocker.mp4",
+  perfectionism: "/videos/techpriest_blocker.mp4",
+};
+
+export const CHARACTER_BY_BLOCKER: Record<string, string> = {
+  fear_of_choice: "prisma",
+  start_paralysis: "evergreen",
+  fear_of_repeat: "toxic",
+  perfectionism: "techpriest",
+};
+
+export const getVideoUrl = (score: number, blocker: string): string => {
+  if (score >= 80) {
+    return "/videos/phoenix_success.mp4";
+  }
+  return VIDEO_BY_BLOCKER[blocker] || "/videos/ever_blocker.mp4";
+};
+
 export const calculateResults = (answers: number[]): QuizResults => {
   const totalScore = QUIZ_QUESTIONS.reduce(
     (sum, q, i) => sum + q.options[answers[i]].points,

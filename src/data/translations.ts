@@ -566,6 +566,9 @@ export const translations = {
           description: "Hard to take the first step. Our process breaks the path into simple actions.",
         },
       },
+      videoResult: {
+        willHelp: "will help you overcome this",
+      },
       shareText: "🚀 My Launchpad Score: {score}/100!\nTime to first $100 — {days} days.\n\nCheck your result:",
       copiedToClipboard: "Copied to clipboard!",
     },
@@ -1134,6 +1137,9 @@ export const translations = {
           title: "Паралич старта",
           description: "Сложно сделать первый шаг. Наш процесс разбивает путь на простые действия.",
         },
+      },
+      videoResult: {
+        willHelp: "поможет тебе с этим справиться",
       },
       shareText: "🚀 Мой Launchpad Score: {score}/100!\nДо первых $100 — {days} дней.\n\nПроверь свой результат:",
       copiedToClipboard: "Скопировано!",
