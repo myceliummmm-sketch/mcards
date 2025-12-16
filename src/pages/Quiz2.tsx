@@ -192,7 +192,8 @@ const Quiz2 = () => {
                 <QuizResult
                   results={results}
                   answers={answers}
-                  onStartVision={handleStartVision}
+                  onGetPlaybook={handleGetPlaybook}
+                  onStartBuilding={handleStartBuilding}
                   onShare={handleShare}
                 />
 
