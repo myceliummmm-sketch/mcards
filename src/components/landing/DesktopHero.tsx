@@ -173,12 +173,12 @@ export const DesktopHero = () => {
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
-                x: 0,
+                x: [0, 8, 0, -8, 0],
                 y: [0, -12, 0] 
               }}
               transition={{
                 opacity: { duration: 1, delay: 0.5 },
-                x: { duration: 1, delay: 0.5 },
+                x: { duration: 12, repeat: Infinity, ease: "easeInOut" },
                 y: { duration: 8, repeat: Infinity, ease: "easeInOut" }
               }}
             >
