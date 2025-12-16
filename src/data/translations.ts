@@ -110,7 +110,7 @@ export const translations = {
         hero: {
           headline1: "Pick an idea.",
           headline2: "Make your first $1K.",
-          subline: "Your AI team helps you go from zero to paying customers in under 15 minutes",
+          subline: "15 minutes to sharpen your idea. 14 days to paying customers.",
           cta: "Take the 2-min Quiz →",
           time: "⏱️ 2 min • Free forever",
         },
@@ -697,7 +697,7 @@ export const translations = {
         hero: {
           headline1: "Выбери идею.",
           headline2: "Заработай первую $1K.",
-          subline: "Твоя ИИ-команда поможет перейти от нуля к платящим клиентам за 15 минут",
+          subline: "15 минут на оттачивание идеи. 14 дней до платящих клиентов.",
           cta: "Пройди тест за 2 мин →",
           time: "⏱️ 2 мин • Навсегда бесплатно",
         },
