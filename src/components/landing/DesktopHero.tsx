@@ -4,8 +4,11 @@ import { Zap, ArrowRight, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TEAM_CHARACTERS } from '@/data/teamCharacters';
-import hero3dMockup from '@/assets/hero-3d-mockup.png';
 
+// Import separate hero panel images
+import heroAiTeamPanel from '@/assets/hero-ai-team-panel.png';
+import heroMainCards from '@/assets/hero-main-cards.png';
+import heroGenerateButton from '@/assets/hero-generate-button.png';
 // Import phase icons
 import visionIcon from '@/assets/icons/vision.png';
 import researchIcon from '@/assets/icons/research.png';
@@ -156,40 +159,94 @@ export const DesktopHero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right Column - MASSIVE 3D Mockup - Moved Higher */}
-          <motion.div
-            className="absolute right-0 top-[25%] w-[70vw] pointer-events-none z-0"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
-          >
+          {/* Right Column - 3 Independently Floating Panels */}
+          <div className="absolute right-0 top-[15%] w-[70vw] h-[80vh] pointer-events-none z-0">
             {/* Glow background */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
             </div>
 
-            {/* Floating Image */}
+            {/* Layer 1: AI Team Panel - SLOWEST float */}
             <motion.div
-              className="relative"
+              className="absolute"
+              style={{ top: '5%', right: '5%', zIndex: 1 }}
+              initial={{ opacity: 0, x: 100 }}
               animate={{ 
-                y: [0, -20, 0],
+                opacity: 1, 
+                x: 0,
+                y: [0, -12, 0] 
               }}
               transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut"
+                opacity: { duration: 1, delay: 0.5 },
+                x: { duration: 1, delay: 0.5 },
+                y: { duration: 8, repeat: Infinity, ease: "easeInOut" }
               }}
             >
-              <img
-                src={hero3dMockup}
-                alt="Mycelium Cards Interface"
-                className="w-full drop-shadow-2xl"
+              <img 
+                src={heroAiTeamPanel} 
+                alt="AI Team Panel" 
+                className="w-[280px] drop-shadow-2xl"
+                style={{
+                  filter: 'drop-shadow(0 20px 40px hsl(var(--primary) / 0.3))'
+                }}
+              />
+            </motion.div>
+
+            {/* Layer 2: Main Cards - STANDARD float */}
+            <motion.div
+              className="absolute"
+              style={{ top: '15%', right: '15%', zIndex: 2 }}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ 
+                opacity: 1, 
+                x: 0,
+                y: [0, -20, 0] 
+              }}
+              transition={{
+                opacity: { duration: 1, delay: 0.3 },
+                x: { duration: 1, delay: 0.3 },
+                y: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+              }}
+            >
+              <img 
+                src={heroMainCards} 
+                alt="Deck Cards" 
+                className="w-[550px] drop-shadow-2xl"
                 style={{
                   filter: 'drop-shadow(0 30px 60px hsl(var(--primary) / 0.4))'
                 }}
               />
             </motion.div>
-          </motion.div>
+
+            {/* Layer 3: Generate Website Button - CONTRARY float + GLOW PULSE */}
+            <motion.div
+              className="absolute"
+              style={{ top: '55%', right: '45%', zIndex: 3 }}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ 
+                opacity: 1, 
+                x: 0,
+                y: [0, 15, 0],
+                filter: [
+                  'drop-shadow(0 0 20px hsl(var(--primary) / 0.4))',
+                  'drop-shadow(0 0 40px hsl(var(--primary) / 0.8))',
+                  'drop-shadow(0 0 20px hsl(var(--primary) / 0.4))'
+                ]
+              }}
+              transition={{
+                opacity: { duration: 1, delay: 0.7 },
+                x: { duration: 1, delay: 0.7 },
+                y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                filter: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+              }}
+            >
+              <img 
+                src={heroGenerateButton} 
+                alt="Generate Website" 
+                className="w-[320px]"
+              />
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>
