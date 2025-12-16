@@ -195,7 +195,7 @@ export const DesktopHero = () => {
             {/* Layer 2: Main Cards - STANDARD float */}
             <motion.div
               className="absolute"
-              style={{ top: '12%', right: '8%', zIndex: 2 }}
+              style={{ top: '10%', right: '-5%', zIndex: 2 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
@@ -211,7 +211,7 @@ export const DesktopHero = () => {
               <img 
                 src={heroMainCards} 
                 alt="Deck Cards" 
-                className="w-[550px] drop-shadow-2xl"
+                className="w-[650px] drop-shadow-2xl"
                 style={{
                   filter: 'drop-shadow(0 30px 60px hsl(var(--primary) / 0.4))'
                 }}
@@ -221,7 +221,7 @@ export const DesktopHero = () => {
             {/* Layer 3: Generate Website Button - CONTRARY float + GLOW PULSE */}
             <motion.div
               className="absolute"
-              style={{ top: '45%', right: '18%', zIndex: 3 }}
+              style={{ top: '25%', right: '12%', zIndex: 3 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
