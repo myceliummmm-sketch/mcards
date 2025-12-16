@@ -44,7 +44,12 @@ const Quiz = () => {
     }
   };
 
-  const handleStartVision = () => {
+  const handleGetPlaybook = () => {
+    // For the original Quiz page, navigate to auth
+    navigate("/auth");
+  };
+
+  const handleStartBuilding = () => {
     // Send data to Telegram if in Mini App context
     if (window.Telegram?.WebApp && results) {
       window.Telegram.WebApp.sendData(
@@ -177,7 +182,8 @@ const Quiz = () => {
                 <QuizResult
                   results={results}
                   answers={answers}
-                  onStartVision={handleStartVision}
+                  onGetPlaybook={handleGetPlaybook}
+                  onStartBuilding={handleStartBuilding}
                   onShare={handleShare}
                 />
 

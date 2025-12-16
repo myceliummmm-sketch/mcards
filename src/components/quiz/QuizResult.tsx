@@ -1,21 +1,26 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Share2, Rocket, Sparkles, Clock, Target, Zap } from "lucide-react";
-import { BLOCKER_KEYS, type QuizResults } from "@/data/quizData";
+import { Share2, Rocket, Sparkles, Clock, Target, Zap, Book } from "lucide-react";
+import { BLOCKER_KEYS, getVideoUrl, CHARACTER_BY_BLOCKER, type QuizResults } from "@/data/quizData";
+import { getCharacterById } from "@/data/teamCharacters";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface QuizResultProps {
   results: QuizResults;
   answers: number[];
-  onStartVision: () => void;
+  onGetPlaybook: () => void;
+  onStartBuilding: () => void;
   onShare: () => void;
 }
 
-export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizResultProps) => {
+export const QuizResult = ({ results, answers, onGetPlaybook, onStartBuilding, onShare }: QuizResultProps) => {
   const { t } = useLanguage();
   const [displayScore, setDisplayScore] = useState(0);
   const blocker = BLOCKER_KEYS[results.blocker];
+  const videoUrl = getVideoUrl(results.totalScore, results.blocker);
+  const characterId = CHARACTER_BY_BLOCKER[results.blocker];
+  const character = getCharacterById(characterId);
 
   useEffect(() => {
     const duration = 1500;
@@ -80,6 +85,23 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
       transition={{ duration: 0.5 }}
       className="space-y-6"
     >
+      {/* Video Section */}
+      <motion.div
+        className="flex justify-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <video
+          src={videoUrl}
+          autoPlay
+          playsInline
+          muted
+          loop
+          className="w-full max-w-[500px] aspect-[16/9] rounded-2xl object-cover shadow-2xl"
+        />
+      </motion.div>
+
       {/* Score Display */}
       <motion.div
         className="text-center p-6 rounded-xl bg-gradient-to-br from-card to-muted border border-border card-glow-strong"
@@ -154,30 +176,102 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
         </div>
       </motion.div>
 
-      {/* Blocker Analysis */}
+      {/* Blocker Analysis with Character */}
       <motion.div
         className="p-4 rounded-lg bg-destructive/10 border border-destructive/30"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.9 }}
       >
-        <h4 className="font-display text-destructive mb-1">{t(blocker.titleKey)}</h4>
-        <p className="text-sm text-muted-foreground font-body">{t(blocker.descriptionKey)}</p>
+        <div className="flex items-start gap-3">
+          {character && (
+            <img 
+              src={character.avatar} 
+              alt={character.name}
+              className="w-12 h-12 rounded-full border-2 border-destructive/50 shrink-0"
+            />
+          )}
+          <div>
+            <h4 className="font-display text-destructive mb-1">{t(blocker.titleKey)}</h4>
+            <p className="text-sm text-muted-foreground font-body">{t(blocker.descriptionKey)}</p>
+          </div>
+        </div>
       </motion.div>
 
-      {/* CTA Button */}
+      {/* Action Cards - Mobile Style */}
       <motion.div
+        className="space-y-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.1 }}
+        transition={{ delay: 1.0 }}
       >
-        <Button
-          onClick={onStartVision}
-          className="w-full py-6 text-lg font-display cta-pulse bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+        <div className="text-center mb-2">
+          <h3 className="text-lg font-display text-foreground">
+            {t("landing.mobile.postQuiz.title")}
+          </h3>
+          <p className="text-sm text-muted-foreground font-body">
+            {t("landing.mobile.postQuiz.subtitle")}
+          </p>
+        </div>
+
+        {/* Get Playbook Card */}
+        <motion.button
+          onClick={onGetPlaybook}
+          className="w-full p-4 rounded-xl bg-gradient-to-br from-card to-muted border border-primary/30 
+                     hover:border-primary/60 transition-all duration-300 text-left group"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <Rocket className="w-5 h-5 mr-2" />
-          {t("quiz.result.startVisionFree")}
-        </Button>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center 
+                            group-hover:bg-primary/30 transition-colors shrink-0">
+              <Book className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-display text-base text-foreground mb-0.5">
+                {t("landing.mobile.postQuiz.playbook.title")}
+              </h3>
+              <p className="text-xs text-muted-foreground font-body line-clamp-2">
+                {t("landing.mobile.postQuiz.playbook.description")}
+              </p>
+              <span className="inline-block mt-1.5 px-2 py-0.5 text-xs rounded-full bg-status-complete/20 text-status-complete font-body">
+                FREE
+              </span>
+            </div>
+          </div>
+        </motion.button>
+
+        {/* Start Building Card */}
+        <motion.button
+          onClick={onStartBuilding}
+          className="w-full p-4 rounded-xl bg-gradient-to-r from-primary to-secondary 
+                     hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-left group"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+              <Rocket className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-display text-base text-white mb-0.5">
+                {t("landing.mobile.postQuiz.build.title")}
+              </h3>
+              <p className="text-xs text-white/80 font-body line-clamp-2">
+                {t("landing.mobile.postQuiz.build.description")}
+              </p>
+              <div className="flex gap-2 mt-1.5">
+                <span className="inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-white/20 text-white font-body">
+                  FREE
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-white/20 text-white font-body">
+                  <Clock className="w-3 h-3" />
+                  15 min
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.button>
       </motion.div>
 
       {/* Share Section */}
@@ -185,7 +279,7 @@ export const QuizResult = ({ results, answers, onStartVision, onShare }: QuizRes
         className="text-center p-4 rounded-lg bg-card border border-border"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.3 }}
+        transition={{ delay: 1.2 }}
       >
         <p className="text-sm text-muted-foreground font-body mb-3">
           {t("quiz.result.shareBonus")}
