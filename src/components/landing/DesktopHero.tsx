@@ -169,7 +169,7 @@ export const DesktopHero = () => {
             {/* Layer 1: AI Team Panel - SLOWEST float */}
             <motion.div
               className="absolute"
-              style={{ top: '5%', right: '5%', zIndex: 1 }}
+              style={{ top: '8%', right: '12%', zIndex: 1 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
@@ -195,7 +195,7 @@ export const DesktopHero = () => {
             {/* Layer 2: Main Cards - STANDARD float */}
             <motion.div
               className="absolute"
-              style={{ top: '15%', right: '15%', zIndex: 2 }}
+              style={{ top: '12%', right: '8%', zIndex: 2 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
@@ -221,7 +221,7 @@ export const DesktopHero = () => {
             {/* Layer 3: Generate Website Button - CONTRARY float + GLOW PULSE */}
             <motion.div
               className="absolute"
-              style={{ top: '55%', right: '45%', zIndex: 3 }}
+              style={{ top: '45%', right: '18%', zIndex: 3 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
@@ -243,7 +243,7 @@ export const DesktopHero = () => {
               <img 
                 src={heroGenerateButton} 
                 alt="Generate Website" 
-                className="w-[320px]"
+                className="w-[220px]"
               />
             </motion.div>
           </div>
