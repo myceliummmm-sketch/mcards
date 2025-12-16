@@ -169,7 +169,7 @@ export const DesktopHero = () => {
             {/* Layer 1: AI Team Panel - SLOWEST float */}
             <motion.div
               className="absolute"
-              style={{ top: '8%', right: '12%', zIndex: 1 }}
+              style={{ top: '2%', right: '20%', zIndex: 1 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
@@ -185,7 +185,7 @@ export const DesktopHero = () => {
               <img 
                 src={heroAiTeamPanel} 
                 alt="AI Team Panel" 
-                className="w-[280px] drop-shadow-2xl"
+                className="w-[420px] drop-shadow-2xl"
                 style={{
                   filter: 'drop-shadow(0 20px 40px hsl(var(--primary) / 0.3))'
                 }}
@@ -195,7 +195,7 @@ export const DesktopHero = () => {
             {/* Layer 2: Main Cards - STANDARD float */}
             <motion.div
               className="absolute"
-              style={{ top: '10%', right: '-5%', zIndex: 2 }}
+              style={{ top: '25%', right: '5%', zIndex: 2 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
@@ -211,7 +211,7 @@ export const DesktopHero = () => {
               <img 
                 src={heroMainCards} 
                 alt="Deck Cards" 
-                className="w-[650px] drop-shadow-2xl"
+                className="w-[980px] drop-shadow-2xl"
                 style={{
                   filter: 'drop-shadow(0 30px 60px hsl(var(--primary) / 0.4))'
                 }}
@@ -221,7 +221,7 @@ export const DesktopHero = () => {
             {/* Layer 3: Generate Website Button - CONTRARY float + GLOW PULSE */}
             <motion.div
               className="absolute"
-              style={{ top: '25%', right: '12%', zIndex: 3 }}
+              style={{ top: '35%', right: '18%', zIndex: 3 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
                 opacity: 1, 
@@ -243,7 +243,7 @@ export const DesktopHero = () => {
               <img 
                 src={heroGenerateButton} 
                 alt="Generate Website" 
-                className="w-[220px]"
+                className="w-[330px]"
               />
             </motion.div>
           </div>
