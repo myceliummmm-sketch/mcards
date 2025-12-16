@@ -28,6 +28,11 @@ export const DesktopHero = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  const handleGenerateClick = () => {
+    const destination = Math.random() < 0.5 ? '/auth' : '/quiz2';
+    navigate(destination);
+  };
+
   return (
     <section className="relative z-10 min-h-screen flex items-center px-4 py-20 overflow-hidden">
       <div className="container mx-auto max-w-7xl">
@@ -220,7 +225,7 @@ export const DesktopHero = () => {
 
             {/* Layer 3: Generate Website Button - CONTRARY float + GLOW PULSE */}
             <motion.div
-              className="absolute"
+              className="absolute cursor-pointer pointer-events-auto"
               style={{ top: '35%', right: '18%', zIndex: 3 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
@@ -239,6 +244,9 @@ export const DesktopHero = () => {
                 y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
                 filter: { duration: 2, repeat: Infinity, ease: "easeInOut" }
               }}
+              onClick={handleGenerateClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
             >
               <img 
                 src={heroGenerateButton} 
