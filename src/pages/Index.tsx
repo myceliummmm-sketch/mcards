@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { t, language, setLanguage } = useTranslation();
   const isMobile = useIsMobile();
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     // Check existing session
@@ -160,7 +161,7 @@ const Index = () => {
       </div>
 
       {/* Hero Section */}
-      <DesktopHero />
+      <DesktopHero onOpenChat={() => setIsChatOpen(true)} />
 
       {/* Pain Points Carousel - NEW */}
       <PainPointsCarousel />
@@ -369,7 +370,7 @@ const Index = () => {
       <div className="h-32 bg-gradient-to-t from-muted/30 to-transparent" />
 
       {/* Ever Chat Widget */}
-      <EverChatWidget />
+      <EverChatWidget externalOpen={isChatOpen} onExternalOpenChange={setIsChatOpen} />
     </div>
   );
 };
