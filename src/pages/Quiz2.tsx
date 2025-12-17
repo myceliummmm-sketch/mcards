@@ -107,7 +107,9 @@ const Quiz2 = () => {
   };
 
   const toggleLanguage = () => {
-    setLanguage(language === "en" ? "ru" : "en");
+    const langs: ('en' | 'ru' | 'es')[] = ['en', 'es', 'ru'];
+    const currentIndex = langs.indexOf(language as 'en' | 'ru' | 'es');
+    setLanguage(langs[(currentIndex + 1) % langs.length]);
   };
 
   return (
@@ -128,7 +130,7 @@ const Quiz2 = () => {
             className="px-3 py-1 text-sm font-body text-muted-foreground hover:text-foreground 
                        border border-border rounded-lg hover:border-primary transition-colors"
           >
-            {language === "en" ? "🇷🇺 RU" : "🇬🇧 EN"}
+            {language === "en" ? "🇲🇽 ES" : language === "es" ? "🇷🇺 RU" : "🇬🇧 EN"}
           </button>
         </div>
       </motion.header>
