@@ -128,11 +128,15 @@ const Index = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setLanguage(language === 'en' ? 'ru' : 'en')}
+          onClick={() => {
+            const langs: ('en' | 'ru' | 'es')[] = ['en', 'es', 'ru'];
+            const currentIndex = langs.indexOf(language as 'en' | 'ru' | 'es');
+            setLanguage(langs[(currentIndex + 1) % langs.length]);
+          }}
           className="gap-2 bg-background/80 backdrop-blur-sm border-border/50 hover:border-primary/50"
         >
           <Globe className="h-4 w-4" />
-          {language === 'en' ? '🇷🇺 RU' : '🇬🇧 EN'}
+          {language === 'en' ? '🇲🇽 ES' : language === 'es' ? '🇷🇺 RU' : '🇬🇧 EN'}
         </Button>
       </div>
 
