@@ -24,7 +24,11 @@ const ROADMAP_PHASES = [
 
 const teamCharactersArray = Object.values(TEAM_CHARACTERS);
 
-export const DesktopHero = () => {
+interface DesktopHeroProps {
+  onOpenChat?: () => void;
+}
+
+export const DesktopHero = ({ onOpenChat }: DesktopHeroProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -171,9 +175,9 @@ export const DesktopHero = () => {
               <div className="w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
             </div>
 
-            {/* Layer 1: AI Team Panel - SLOWEST float */}
+            {/* Layer 1: AI Team Panel - SLOWEST float - CLICKABLE to open chat */}
             <motion.div
-              className="absolute"
+              className="absolute cursor-pointer pointer-events-auto"
               style={{ top: '2%', right: '20%', zIndex: 1 }}
               initial={{ opacity: 0, x: 100 }}
               animate={{ 
@@ -186,6 +190,9 @@ export const DesktopHero = () => {
                 x: { duration: 12, repeat: Infinity, ease: "easeInOut" },
                 y: { duration: 8, repeat: Infinity, ease: "easeInOut" }
               }}
+              onClick={onOpenChat}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
             >
               <img 
                 src={heroAiTeamPanel} 

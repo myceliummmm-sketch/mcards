@@ -24,7 +24,12 @@ const CONVERSATION_STARTERS = {
   ],
 };
 
-export const EverChatWidget = () => {
+interface EverChatWidgetProps {
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
+}
+
+export const EverChatWidget = ({ externalOpen, onExternalOpenChange }: EverChatWidgetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const { t, language } = useTranslation();
@@ -32,6 +37,18 @@ export const EverChatWidget = () => {
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync with external state
+  useEffect(() => {
+    if (externalOpen !== undefined) {
+      setIsOpen(externalOpen);
+    }
+  }, [externalOpen]);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    onExternalOpenChange?.(open);
+  };
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -72,7 +89,7 @@ export const EverChatWidget = () => {
             exit={{ scale: 0, opacity: 0 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setIsOpen(true)}
+            onClick={() => handleOpenChange(true)}
             className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center group"
           >
             <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-20" />
@@ -115,7 +132,7 @@ export const EverChatWidget = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsOpen(false)}
+                onClick={() => handleOpenChange(false)}
                 className="h-8 w-8"
               >
                 <X className="h-4 w-4" />
