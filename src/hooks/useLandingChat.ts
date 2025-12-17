@@ -9,12 +9,13 @@ export interface ChatMessage {
 
 const GREETINGS = {
   en: "Hey! I'm Ever Green, the visionary behind Mycelium. Got a startup idea brewing? I'm here to help you think bigger. What's on your mind?",
-  ru: "Привет! Я Ever Green, визионер Mycelium. Есть идея стартапа? Я помогу мыслить масштабнее. Что у тебя на уме?"
+  ru: "Привет! Я Ever Green, визионер Mycelium. Есть идея стартапа? Я помогу мыслить масштабнее. Что у тебя на уме?",
+  es: "¡Hola! Soy Ever Green, el visionario detrás de Mycelium. ¿Tienes una idea de startup? Estoy aquí para ayudarte a pensar en grande. ¿Qué tienes en mente?"
 };
 
 const MAX_FREE_MESSAGES = 5;
 
-export const useLandingChat = (language: 'en' | 'ru' = 'en') => {
+export const useLandingChat = (language: 'en' | 'ru' | 'es' = 'en') => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'greeting',
@@ -136,13 +137,17 @@ export const useLandingChat = (language: 'en' | 'ru' = 'en') => {
       setMessages(prev => [...prev, {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: "Hmm, something went wrong on my end. Try again in a moment?",
+        content: language === 'es' 
+          ? "Hmm, algo salió mal de mi lado. ¿Intentamos de nuevo en un momento?"
+          : language === 'ru'
+          ? "Хм, что-то пошло не так с моей стороны. Попробуем ещё раз через момент?"
+          : "Hmm, something went wrong on my end. Try again in a moment?",
         timestamp: new Date(),
       }]);
     } finally {
       setIsStreaming(false);
     }
-  }, [messages, isStreaming, hasReachedLimit]);
+  }, [messages, isStreaming, hasReachedLimit, language]);
 
   const resetChat = useCallback(() => {
     setMessages([{
