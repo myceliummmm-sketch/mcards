@@ -53,3 +53,15 @@ verify_jwt = false
 
 [functions.broadcast-email]
 verify_jwt = false
+
+[functions.get-leads]
+verify_jwt = false
+
+[functions.get-broadcast-history]
+verify_jwt = false
+
+[functions.get-sequence-logs]
+verify_jwt = false
+
+[functions.check-email-sequences]
+verify_jwt = false

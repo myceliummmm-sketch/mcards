@@ -14,6 +14,7 @@ import CheckoutSuccess from "./pages/CheckoutSuccess";
 import Settings from "./pages/Settings";
 import Quiz from "./pages/Quiz";
 import Quiz2 from "./pages/Quiz2";
+import AdminEmails from "./pages/AdminEmails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/quiz2" element={<Quiz2 />} />
+            <Route path="/admin/emails" element={<AdminEmails />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
