@@ -259,12 +259,60 @@ export const FIELD_GUIDANCE: Record<string, FieldGuidance> = {
     example: 'Cost of coaching, time to practice, fear of judgment',
     validationTip: 'Removing barriers = expanding your market',
     aiHelper: 'evergreen'
+  },
+
+  // Additional fields
+  active_hours: {
+    questionTitle: 'When are they most active?',
+    hints: [
+      'Morning commute? Evening wind-down?',
+      'Consider weekday vs weekend patterns',
+      'This helps with notification and content timing'
+    ],
+    example: '6AM-9AM (commute), 8PM-11PM (evening routine)',
+    validationTip: 'Activity windows inform your engagement strategy',
+    aiHelper: 'prisma'
+  },
+  roi_multiple: {
+    questionTitle: 'What ROI do you deliver?',
+    hints: [
+      'Compare your price to the alternative cost',
+      'Express as a multiplier: 5x, 10x, etc.',
+      'Higher ROI = stronger value proposition'
+    ],
+    example: '17x (tutor $500 vs AI $29/mo)',
+    validationTip: 'Strong ROI multiples make pricing conversations easier',
+    aiHelper: 'phoenix'
   }
 };
 
-// Helper function to get guidance for a field
-export function getFieldGuidance(fieldName: string): FieldGuidance | undefined {
-  return FIELD_GUIDANCE[fieldName];
+interface FormFieldConfig {
+  name: string;
+  label: string;
+  placeholder?: string;
+  type?: string;
+}
+
+// Helper function to get guidance for a field with fallback
+export function getFieldGuidance(fieldName: string, field?: FormFieldConfig): FieldGuidance {
+  // Return specific guidance if it exists
+  if (FIELD_GUIDANCE[fieldName]) {
+    return FIELD_GUIDANCE[fieldName];
+  }
+  
+  // Generate fallback guidance from field config
+  const label = field?.label || fieldName.replace(/_/g, ' ');
+  return {
+    questionTitle: `What is your ${label.toLowerCase()}?`,
+    hints: [
+      'Be specific and actionable',
+      'Think about your target audience',
+      'Keep it concise but complete'
+    ],
+    example: field?.placeholder || 'Enter a thoughtful response',
+    validationTip: 'Good answers are clear and specific',
+    aiHelper: 'evergreen'
+  };
 }
 
 // Helper function to get AI character for a field
