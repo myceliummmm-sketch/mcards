@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RefreshCw, Loader2 } from 'lucide-react';
+import { Sparkles, RefreshCw, Loader2, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -75,28 +75,34 @@ export const AISuggestionPanel = ({
 
   return (
     <div className="space-y-3">
-      {/* Generate Button */}
+      {/* Generate Button - Prominent and Always Visible */}
       {!isVisible && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={generateSuggestions}
-          disabled={isLoading}
-          className="w-full border-primary/30 hover:bg-primary/5 hover:border-primary/50"
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              {t('wizard.generating')}
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4" />
-              {t('wizard.aiSuggest')}
-            </>
-          )}
-        </Button>
+          <Button
+            type="button"
+            variant="default"
+            size="lg"
+            onClick={generateSuggestions}
+            disabled={isLoading}
+            className="w-full h-12 gap-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/25 animate-pulse hover:animate-none"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {t('wizard.generating')}
+              </>
+            ) : (
+              <>
+                <Wand2 className="w-5 h-5" />
+                ✨ {t('wizard.aiSuggest')}
+              </>
+            )}
+          </Button>
+        </motion.div>
       )}
 
       {/* Suggestions Panel */}
@@ -116,11 +122,11 @@ export const AISuggestionPanel = ({
               </div>
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={generateSuggestions}
                 disabled={isLoading}
-                className="h-7 text-xs"
+                className="h-8 gap-2"
               >
                 {isLoading ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
