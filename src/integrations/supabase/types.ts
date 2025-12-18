@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      broadcast_history: {
+        Row: {
+          created_at: string
+          failed_count: number
+          html_content: string
+          id: string
+          recipients_count: number
+          sent_by: string | null
+          sent_count: number
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          failed_count?: number
+          html_content: string
+          id?: string
+          recipients_count?: number
+          sent_by?: string | null
+          sent_count?: number
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          failed_count?: number
+          html_content?: string
+          id?: string
+          recipients_count?: number
+          sent_by?: string | null
+          sent_count?: number
+          subject?: string
+        }
+        Relationships: []
+      }
       card_comments: {
         Row: {
           author_id: string
@@ -223,6 +256,45 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      email_sequence_logs: {
+        Row: {
+          clicked_at: string | null
+          created_at: string
+          id: string
+          lead_email: string
+          next_send_at: string | null
+          opened_at: string | null
+          sent_at: string | null
+          sequence_step: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          lead_email: string
+          next_send_at?: string | null
+          opened_at?: string | null
+          sent_at?: string | null
+          sequence_step?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          lead_email?: string
+          next_send_at?: string | null
+          opened_at?: string | null
+          sent_at?: string | null
+          sequence_step?: number
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
