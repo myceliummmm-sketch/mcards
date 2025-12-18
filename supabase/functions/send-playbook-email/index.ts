@@ -8,44 +8,61 @@ const corsHeaders = {
 };
 
 // Character data for personalization
-const CHARACTERS: Record<string, { name: string; emoji: string; title: string; color: string }> = {
+const CHARACTERS: Record<string, { name: string; emoji: string; title: string; color: string; avatar: string }> = {
   start_paralysis: {
     name: "Ever Green",
     emoji: "🌱",
     title: "The Eternal Optimist",
     color: "#22c55e",
+    avatar: "ever.png",
   },
   perfectionism: {
     name: "Tech Priest",
     emoji: "⚙️",
     title: "The Systems Architect",
     color: "#8b5cf6",
+    avatar: "techpriest.png",
   },
   fear_of_choice: {
     name: "Prisma",
     emoji: "🔮",
     title: "The Strategic Oracle",
     color: "#ec4899",
+    avatar: "prisma.png",
   },
   fear_of_repeat: {
     name: "Toxic",
     emoji: "☢️",
     title: "The Risk Analyst",
     color: "#eab308",
+    avatar: "toxic.png",
   },
   resource_anxiety: {
     name: "Zen",
     emoji: "🧘",
     title: "The Mindful Mentor",
     color: "#06b6d4",
+    avatar: "zen.png",
   },
   impostor_syndrome: {
     name: "Phoenix",
     emoji: "🔥",
     title: "The Comeback Coach",
     color: "#f97316",
+    avatar: "phoenix.png",
   },
 };
+
+// AI Team members for display
+const AI_TEAM = [
+  { name: "Ever Green", emoji: "🌱", role: "Idea Spark", avatar: "ever.png", color: "#22c55e" },
+  { name: "Prisma", emoji: "🔮", role: "Strategic Oracle", avatar: "prisma.png", color: "#ec4899" },
+  { name: "Toxic", emoji: "☢️", role: "Risk Analyst", avatar: "toxic.png", color: "#eab308" },
+  { name: "Phoenix", emoji: "🔥", role: "Comeback Coach", avatar: "phoenix.png", color: "#f97316" },
+  { name: "Tech Priest", emoji: "⚙️", role: "Systems Architect", avatar: "techpriest.png", color: "#8b5cf6" },
+  { name: "Virgilia", emoji: "👁️", role: "Guide & Mentor", avatar: "virgilia.png", color: "#6366f1" },
+  { name: "Zen", emoji: "🧘", role: "Mindful Balance", avatar: "zen.png", color: "#06b6d4" },
+];
 
 // Playbook content by blocker type
 const PLAYBOOK_CONTENT: Record<string, { title: string; intro: string; steps: { title: string; content: string }[]; callToAction: string }> = {
@@ -165,6 +182,111 @@ const PLAYBOOK_CONTENT: Record<string, { title: string; intro: string; steps: { 
   },
 };
 
+// Get translations
+function getTranslations(language: string) {
+  const isRussian = language === 'ru';
+  const isSpanish = language === 'es';
+
+  return {
+    greeting: isSpanish 
+      ? `Hola, fundador 👋` 
+      : isRussian 
+      ? `Привет, основатель 👋` 
+      : `Hey there, founder 👋`,
+    scoreLabel: isSpanish
+      ? `Tu puntuación del quiz`
+      : isRussian
+      ? `Ваш результат теста`
+      : `Your quiz score`,
+    daysLabel: isSpanish
+      ? `Días proyectados hasta tus primeros $1,000`
+      : isRussian
+      ? `Прогнозируемые дни до первых $1,000`
+      : `Projected days to your first $1,000`,
+    daysUnit: isSpanish ? `días` : isRussian ? `дней` : `days`,
+    advisorTitle: isSpanish
+      ? `Tu asesor IA personal`
+      : isRussian
+      ? `Ваш персональный AI-советник`
+      : `Your Personal AI Advisor`,
+    checklistTitle: isSpanish
+      ? `📋 Tu checklist de lanzamiento de 5 pasos`
+      : isRussian
+      ? `📋 Ваш 5-шаговый чек-лист запуска`
+      : `📋 Your 5-Step Launch Checklist`,
+    checklist: isSpanish
+      ? [
+          { emoji: "🎯", text: "Define tu único problema (hoy)" },
+          { emoji: "📝", text: "Crea tu primera carta (15 min)" },
+          { emoji: "💬", text: "Obtén retroalimentación del equipo IA (instantáneo)" },
+          { emoji: "🧪", text: "Prueba con 5 personas reales (48 horas)" },
+          { emoji: "💰", text: "Lanza y obtén tus primeros $1,000 (14 días)" },
+        ]
+      : isRussian
+      ? [
+          { emoji: "🎯", text: "Определите одну проблему (сегодня)" },
+          { emoji: "📝", text: "Создайте первую карточку (15 мин)" },
+          { emoji: "💬", text: "Получите отзыв AI-команды (мгновенно)" },
+          { emoji: "🧪", text: "Протестируйте с 5 реальными людьми (48 часов)" },
+          { emoji: "💰", text: "Запуск и первые $1,000 (14 дней)" },
+        ]
+      : [
+          { emoji: "🎯", text: "Define Your One Problem (today)" },
+          { emoji: "📝", text: "Create Your First Card (15 min)" },
+          { emoji: "💬", text: "Get AI Team Feedback (instant)" },
+          { emoji: "🧪", text: "Test With 5 Real People (48 hours)" },
+          { emoji: "💰", text: "Launch & Get First $1,000 (14 days)" },
+        ],
+    meetTeamTitle: isSpanish
+      ? `👥 Conoce a tu equipo IA`
+      : isRussian
+      ? `👥 Познакомьтесь с вашей AI-командой`
+      : `👥 Meet Your AI Team`,
+    meetTeamSubtitle: isSpanish
+      ? `7 asesores especializados listos para guiarte`
+      : isRussian
+      ? `7 специализированных советников готовы помочь вам`
+      : `7 specialized advisors ready to guide you`,
+    whyWorksTitle: isSpanish
+      ? `¿Por qué funciona Mycelium?`
+      : isRussian
+      ? `Почему Mycelium работает?`
+      : `Why Mycelium Works`,
+    whyWorks: isSpanish
+      ? [
+          { icon: "🧠", title: "Equipo IA curado por humanos", desc: "7 asesores especializados, cada uno entrenado con la sabiduría de miles de fundadores." },
+          { icon: "🎴", title: "Sistema de validación de 21 cartas", desc: "Cartas estructuradas te guían desde la idea inicial hasta los ingresos en 14 días." },
+          { icon: "📈", title: "Responsabilidad integrada", desc: "Rastrea cada paso. Sabe exactamente dónde estás en el camino a $1,000." },
+        ]
+      : isRussian
+      ? [
+          { icon: "🧠", title: "AI-команда под руководством людей", desc: "7 специализированных советников, каждый обучен на мудрости тысяч основателей." },
+          { icon: "🎴", title: "Система валидации из 21 карты", desc: "Структурированные карты ведут вас от идеи к доходу за 14 дней." },
+          { icon: "📈", title: "Встроенная ответственность", desc: "Отслеживайте каждый шаг. Точно знайте, где вы на пути к $1,000." },
+        ]
+      : [
+          { icon: "🧠", title: "Human-Curated AI Team", desc: "7 specialized advisors, each trained on startup wisdom from thousands of founders." },
+          { icon: "🎴", title: "21-Card Validation System", desc: "Structured cards guide you from raw idea to revenue in 14 days." },
+          { icon: "📈", title: "Built-in Accountability", desc: "Track every step. Know exactly where you are on the path to $1,000." },
+        ],
+    ctaMain: isSpanish
+      ? `Conoce a tu equipo IA y comienza ahora`
+      : isRussian
+      ? `Познакомьтесь с AI-командой и начните сейчас`
+      : `Meet Your AI Team & Start Now`,
+    ctaSubtext: isSpanish
+      ? `Tu hoja de ruta personalizada te espera`
+      : isRussian
+      ? `Ваша персональная дорожная карта ждёт вас`
+      : `Your personalized roadmap is waiting`,
+    footer: isSpanish
+      ? `Construido con 💚 por el equipo de Mycelium`
+      : isRussian
+      ? `Создано с 💚 командой Mycelium`
+      : `Built with 💚 by the Mycelium team`,
+  };
+}
+
 // Generate HTML email
 function generatePlaybookEmail(
   email: string,
@@ -174,48 +296,12 @@ function generatePlaybookEmail(
 ): string {
   const character = CHARACTERS[blocker] || CHARACTERS.start_paralysis;
   const playbook = PLAYBOOK_CONTENT[blocker] || PLAYBOOK_CONTENT.start_paralysis;
+  const t = getTranslations(language);
   
   // Calculate projected days to first $1000 (inverse relationship with score)
   const daysTo1000 = Math.max(7, Math.round(60 - (score * 0.4)));
   
-  const isRussian = language === 'ru';
-  const isSpanish = language === 'es';
-  
-  const greetingText = isSpanish 
-    ? `Hola, fundador 👋` 
-    : isRussian 
-    ? `Привет, основатель 👋` 
-    : `Hey there, founder 👋`;
-    
-  const scoreText = isSpanish
-    ? `Tu puntuación del quiz: <strong>${score}/100</strong>`
-    : isRussian
-    ? `Ваш результат теста: <strong>${score}/100</strong>`
-    : `Your quiz score: <strong>${score}/100</strong>`;
-    
-  const daysText = isSpanish
-    ? `Días proyectados hasta tus primeros $1,000: <strong>${daysTo1000} días</strong>`
-    : isRussian
-    ? `Прогнозируемые дни до первых $1,000: <strong>${daysTo1000} дней</strong>`
-    : `Projected days to your first $1,000: <strong>${daysTo1000} days</strong>`;
-    
-  const advisorText = isSpanish
-    ? `Tu asesor IA personal`
-    : isRussian
-    ? `Ваш персональный AI-советник`
-    : `Your Personal AI Advisor`;
-    
-  const ctaText = isSpanish
-    ? `Comienza a Construir con Mycelium`
-    : isRussian
-    ? `Начать строить с Mycelium`
-    : `Start Building with Mycelium`;
-    
-  const footerText = isSpanish
-    ? `Construido con 💚 por el equipo de Mycelium`
-    : isRussian
-    ? `Создано с 💚 командой Mycelium`
-    : `Built with 💚 by the Mycelium team`;
+  const baseUrl = "https://mycelium.lovable.app";
 
   return `
 <!DOCTYPE html>
@@ -242,9 +328,9 @@ function generatePlaybookEmail(
           <!-- Greeting -->
           <tr>
             <td style="background: linear-gradient(135deg, #1a1a1a 0%, #0d1f0d 100%); border-radius: 16px; padding: 30px; margin-bottom: 20px;">
-              <p style="margin: 0 0 15px; font-size: 18px;">${greetingText}</p>
-              <p style="margin: 0 0 10px; color: #a3a3a3;">${scoreText}</p>
-              <p style="margin: 0; color: #a3a3a3;">${daysText}</p>
+              <p style="margin: 0 0 15px; font-size: 18px;">${t.greeting}</p>
+              <p style="margin: 0 0 10px; color: #a3a3a3;">${t.scoreLabel}: <strong style="color: #22c55e;">${score}/100</strong></p>
+              <p style="margin: 0; color: #a3a3a3;">${t.daysLabel}: <strong style="color: #22c55e;">${daysTo1000} ${t.daysUnit}</strong></p>
             </td>
           </tr>
           
@@ -254,18 +340,27 @@ function generatePlaybookEmail(
           <!-- Character Card -->
           <tr>
             <td style="background: #1a1a1a; border-radius: 16px; padding: 25px; border-left: 4px solid ${character.color};">
-              <p style="margin: 0 0 5px; color: #737373; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">${advisorText}</p>
-              <h2 style="margin: 0 0 5px; font-size: 24px; color: #ffffff;">
-                ${character.emoji} ${character.name}
-              </h2>
-              <p style="margin: 0; color: ${character.color}; font-size: 14px;">${character.title}</p>
+              <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td width="70" style="vertical-align: top;">
+                    <img src="${baseUrl}/avatars/${character.avatar}" alt="${character.name}" width="60" height="60" style="border-radius: 50%; border: 2px solid ${character.color};" />
+                  </td>
+                  <td style="vertical-align: top; padding-left: 15px;">
+                    <p style="margin: 0 0 5px; color: #737373; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">${t.advisorTitle}</p>
+                    <h2 style="margin: 0 0 5px; font-size: 22px; color: #ffffff;">
+                      ${character.emoji} ${character.name}
+                    </h2>
+                    <p style="margin: 0; color: ${character.color}; font-size: 14px;">${character.title}</p>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           
           <!-- Spacer -->
           <tr><td style="height: 20px;"></td></tr>
           
-          <!-- Playbook Content -->
+          <!-- Playbook Content (3 Personalized Steps) -->
           <tr>
             <td style="background: #1a1a1a; border-radius: 16px; padding: 30px;">
               <h2 style="margin: 0 0 15px; font-size: 22px; color: #22c55e;">${playbook.title}</h2>
@@ -281,11 +376,87 @@ function generatePlaybookEmail(
               `).join('')}
               
               <div style="background: #0d1f0d; border-radius: 12px; padding: 20px; margin-top: 25px;">
-                <p style="margin: 0 0 15px; color: #a3a3a3; font-size: 14px;">💡 ${playbook.callToAction}</p>
-                <a href="https://mycelium.lovable.app/auth" style="display: inline-block; background: #22c55e; color: #0a0a0a; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
-                  ${ctaText} →
-                </a>
+                <p style="margin: 0; color: #a3a3a3; font-size: 14px;">💡 ${playbook.callToAction}</p>
               </div>
+            </td>
+          </tr>
+          
+          <!-- Spacer -->
+          <tr><td style="height: 20px;"></td></tr>
+          
+          <!-- 5-Step Checklist -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #1a1a1a 0%, #1a0d1f 100%); border-radius: 16px; padding: 30px;">
+              <h2 style="margin: 0 0 20px; font-size: 20px; color: #ffffff;">${t.checklistTitle}</h2>
+              
+              ${t.checklist.map((item, index) => `
+                <div style="display: flex; align-items: center; margin-bottom: 15px; padding: 12px 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                  <span style="font-size: 20px; margin-right: 12px;">${item.emoji}</span>
+                  <span style="color: #e5e5e5; font-size: 14px;"><strong>${index + 1}.</strong> ${item.text}</span>
+                </div>
+              `).join('')}
+            </td>
+          </tr>
+          
+          <!-- Spacer -->
+          <tr><td style="height: 20px;"></td></tr>
+          
+          <!-- Meet Your AI Team -->
+          <tr>
+            <td style="background: #1a1a1a; border-radius: 16px; padding: 30px;">
+              <h2 style="margin: 0 0 5px; font-size: 20px; color: #ffffff; text-align: center;">${t.meetTeamTitle}</h2>
+              <p style="margin: 0 0 25px; color: #737373; font-size: 14px; text-align: center;">${t.meetTeamSubtitle}</p>
+              
+              <!-- Avatar Row -->
+              <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  ${AI_TEAM.map(member => `
+                    <td style="text-align: center; padding: 0 3px;">
+                      <img src="${baseUrl}/avatars/${member.avatar}" alt="${member.name}" width="50" height="50" style="border-radius: 50%; border: 2px solid ${member.color};" />
+                    </td>
+                  `).join('')}
+                </tr>
+                <tr>
+                  ${AI_TEAM.map(member => `
+                    <td style="text-align: center; padding-top: 8px;">
+                      <p style="margin: 0; font-size: 10px; color: #a3a3a3;">${member.emoji}</p>
+                      <p style="margin: 2px 0 0; font-size: 9px; color: #737373;">${member.name.split(' ')[0]}</p>
+                    </td>
+                  `).join('')}
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Spacer -->
+          <tr><td style="height: 20px;"></td></tr>
+          
+          <!-- Why Mycelium Works -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0d1f0d 0%, #1a1a1a 100%); border-radius: 16px; padding: 30px;">
+              <h2 style="margin: 0 0 25px; font-size: 20px; color: #22c55e; text-align: center;">${t.whyWorksTitle}</h2>
+              
+              ${t.whyWorks.map(item => `
+                <div style="margin-bottom: 20px; padding: 15px; background: rgba(34, 197, 94, 0.1); border-radius: 12px; border-left: 3px solid #22c55e;">
+                  <h3 style="margin: 0 0 8px; font-size: 16px; color: #ffffff;">
+                    ${item.icon} ${item.title}
+                  </h3>
+                  <p style="margin: 0; color: #a3a3a3; font-size: 13px; line-height: 1.5;">${item.desc}</p>
+                </div>
+              `).join('')}
+            </td>
+          </tr>
+          
+          <!-- Spacer -->
+          <tr><td style="height: 25px;"></td></tr>
+          
+          <!-- Main CTA -->
+          <tr>
+            <td style="text-align: center; padding: 30px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-radius: 16px;">
+              <p style="margin: 0 0 15px; color: #0a0a0a; font-size: 14px;">${t.ctaSubtext}</p>
+              <a href="${baseUrl}/auth" style="display: inline-block; background: #0a0a0a; color: #22c55e; padding: 16px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 16px;">
+                ${t.ctaMain} →
+              </a>
             </td>
           </tr>
           
@@ -295,9 +466,9 @@ function generatePlaybookEmail(
           <!-- Footer -->
           <tr>
             <td style="text-align: center; padding: 20px;">
-              <p style="margin: 0 0 10px; color: #525252; font-size: 12px;">${footerText}</p>
+              <p style="margin: 0 0 10px; color: #525252; font-size: 12px;">${t.footer}</p>
               <p style="margin: 0; color: #404040; font-size: 11px;">
-                <a href="https://mycelium.lovable.app" style="color: #525252;">mycelium.lovable.app</a>
+                <a href="${baseUrl}" style="color: #525252;">mycelium.lovable.app</a>
               </p>
             </td>
           </tr>
@@ -326,7 +497,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, blocker, score, language = 'en' }: PlaybookEmailRequest = await req.json();
     
-    console.log(`Sending playbook email to ${email} for blocker: ${blocker}, score: ${score}`);
+    console.log(`Sending playbook email to ${email} for blocker: ${blocker}, score: ${score}, language: ${language}`);
 
     if (!email || !blocker) {
       throw new Error("Missing required fields: email and blocker");
