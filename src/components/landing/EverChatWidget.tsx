@@ -22,6 +22,12 @@ const CONVERSATION_STARTERS = {
     "Почему одни стартапы выживают, а другие нет?",
     "Как Mycelium помогает основателям?",
   ],
+  es: [
+    "Tengo una idea de startup pero no sé por dónde empezar",
+    "¿Cómo valido mi idea de negocio?",
+    "¿Qué hace que una startup fracase o tenga éxito?",
+    "¿Cómo ayuda Mycelium a los fundadores?",
+  ],
 };
 
 interface EverChatWidgetProps {
@@ -33,7 +39,7 @@ export const EverChatWidget = ({ externalOpen, onExternalOpenChange }: EverChatW
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const { t, language } = useTranslation();
-  const { messages, isStreaming, hasReachedLimit, messageCount, maxMessages, sendMessage } = useLandingChat(language as 'en' | 'ru');
+  const { messages, isStreaming, hasReachedLimit, messageCount, maxMessages, sendMessage } = useLandingChat(language as 'en' | 'ru' | 'es');
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -75,7 +81,7 @@ export const EverChatWidget = ({ externalOpen, onExternalOpenChange }: EverChatW
     sendMessage(starter);
   };
 
-  const starters = CONVERSATION_STARTERS[language] || CONVERSATION_STARTERS.en;
+  const starters = CONVERSATION_STARTERS[language as keyof typeof CONVERSATION_STARTERS] || CONVERSATION_STARTERS.en;
   const showStarters = messages.length === 1; // Only show greeting
 
   return (
@@ -183,7 +189,7 @@ export const EverChatWidget = ({ externalOpen, onExternalOpenChange }: EverChatW
                     className="space-y-2 pt-2"
                   >
                     <p className="text-xs text-muted-foreground text-center mb-3">
-                      {language === 'ru' ? 'Или выберите вопрос:' : 'Or pick a question:'}
+                      {language === 'es' ? 'O elige una pregunta:' : language === 'ru' ? 'Или выберите вопрос:' : 'Or pick a question:'}
                     </p>
                     {starters.map((starter, index) => (
                       <button
@@ -207,10 +213,12 @@ export const EverChatWidget = ({ externalOpen, onExternalOpenChange }: EverChatW
                   >
                     <Sparkles className="w-8 h-8 text-primary mx-auto mb-2" />
                     <p className="text-sm font-medium mb-1">
-                      {language === 'ru' ? 'Понравился разговор?' : 'Enjoying the conversation?'}
+                      {language === 'es' ? '¿Te gusta la conversación?' : language === 'ru' ? 'Понравился разговор?' : 'Enjoying the conversation?'}
                     </p>
                     <p className="text-xs text-muted-foreground mb-3">
-                      {language === 'ru' 
+                      {language === 'es' 
+                        ? 'Regístrate para seguir chateando con Ever y conocer a todo el equipo de asesores IA'
+                        : language === 'ru' 
                         ? 'Зарегистрируйтесь, чтобы продолжить общение с Ever и встретить всю команду AI-советников'
                         : 'Sign up to continue chatting with Ever and meet the entire AI advisory team'}
                     </p>
@@ -218,7 +226,7 @@ export const EverChatWidget = ({ externalOpen, onExternalOpenChange }: EverChatW
                       onClick={() => navigate('/auth')}
                       className="w-full gap-2"
                     >
-                      {language === 'ru' ? 'Начать бесплатно' : 'Start Free'}
+                      {language === 'es' ? 'Empieza Gratis' : language === 'ru' ? 'Начать бесплатно' : 'Start Free'}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </motion.div>
@@ -235,7 +243,7 @@ export const EverChatWidget = ({ externalOpen, onExternalOpenChange }: EverChatW
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                    placeholder={language === 'ru' ? 'Напишите сообщение...' : 'Type a message...'}
+                    placeholder={language === 'es' ? 'Escribe un mensaje...' : language === 'ru' ? 'Напишите сообщение...' : 'Type a message...'}
                     disabled={isStreaming}
                     className="flex-1"
                   />
@@ -249,7 +257,9 @@ export const EverChatWidget = ({ externalOpen, onExternalOpenChange }: EverChatW
                 </div>
               ) : (
                 <p className="text-xs text-center text-muted-foreground">
-                  {language === 'ru' 
+                  {language === 'es' 
+                    ? `${messageCount}/${maxMessages} mensajes gratis usados`
+                    : language === 'ru' 
                     ? `${messageCount}/${maxMessages} бесплатных сообщений использовано`
                     : `${messageCount}/${maxMessages} free messages used`}
                 </p>
