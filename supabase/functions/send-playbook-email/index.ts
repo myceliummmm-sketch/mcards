@@ -138,7 +138,7 @@ const PLAYBOOK_CONTENT: Record<string, { title: string; intro: string; steps: { 
         content: "Instead of 'how do I fund this?' ask 'how can I get paid while building this?' Pre-sales, consulting in your space, or building for a paying first customer.",
       },
       {
-        title: "The $100 Test",
+        title: "The $1,000 Test",
         content: "Can you test your core idea for under $100? If not, you're overcomplicating it. Every big startup started with a version that cost almost nothing to test.",
       },
     ],
@@ -175,8 +175,8 @@ function generatePlaybookEmail(
   const character = CHARACTERS[blocker] || CHARACTERS.start_paralysis;
   const playbook = PLAYBOOK_CONTENT[blocker] || PLAYBOOK_CONTENT.start_paralysis;
   
-  // Calculate projected days to first $100 (inverse relationship with score)
-  const daysTo100 = Math.max(7, Math.round(60 - (score * 0.4)));
+  // Calculate projected days to first $1000 (inverse relationship with score)
+  const daysTo1000 = Math.max(7, Math.round(60 - (score * 0.4)));
   
   const isRussian = language === 'ru';
   const isSpanish = language === 'es';
@@ -194,10 +194,10 @@ function generatePlaybookEmail(
     : `Your quiz score: <strong>${score}/100</strong>`;
     
   const daysText = isSpanish
-    ? `Días proyectados hasta tus primeros $100: <strong>${daysTo100} días</strong>`
+    ? `Días proyectados hasta tus primeros $1,000: <strong>${daysTo1000} días</strong>`
     : isRussian
-    ? `Прогнозируемые дни до первых $100: <strong>${daysTo100} дней</strong>`
-    : `Projected days to your first $100: <strong>${daysTo100} days</strong>`;
+    ? `Прогнозируемые дни до первых $1,000: <strong>${daysTo1000} дней</strong>`
+    : `Projected days to your first $1,000: <strong>${daysTo1000} days</strong>`;
     
   const advisorText = isSpanish
     ? `Tu asesor IA personal`

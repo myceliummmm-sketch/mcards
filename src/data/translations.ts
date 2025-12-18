@@ -102,7 +102,7 @@ export const translations = {
         title: "Discover Your Startup Speed",
         cta: "Take the Quiz →",
         scoreLabel: "Your Score",
-        daysLabel: "Days to $100",
+        daysLabel: "Days to $1K",
         blockerLabel: "Hidden Blocker",
         timeInfo: "⏱️ 30 sec • 4 questions",
       },
@@ -549,7 +549,7 @@ export const translations = {
       },
       result: {
         yourScore: "Your Launchpad Score",
-        timeToFirst100: "Time to First $100",
+        timeToFirst1000: "Time to First $1,000",
         day: "day",
         days2to4: "days",
         days: "days",
@@ -563,6 +563,8 @@ export const translations = {
         shareBonus: "🎁 Share with a friend → get a bonus card",
         shareResult: "Share Result",
         blockerTitle: "Your Blocker",
+        meetYourTeam: "Meet Your Human-Curated AI Team",
+        myceliumValue: "7 specialized AI advisors challenge your blind spots through our 21-card validation system. Each card forces you to answer the hard questions BEFORE you build — saving months of wasted effort.",
       },
       blockers: {
         fear_of_choice: {
@@ -585,7 +587,7 @@ export const translations = {
       videoResult: {
         willHelp: "will help you overcome this",
       },
-      shareText: "🚀 My Launchpad Score: {score}/100!\nTime to first $100 — {days} days.\n\nCheck your result:",
+      shareText: "🚀 My Launchpad Score: {score}/100!\nTime to first $1,000 — {days} days.\n\nCheck your result:",
       copiedToClipboard: "Copied to clipboard!",
     },
     chat: {
@@ -697,7 +699,7 @@ export const translations = {
         title: "Узнай свою скорость запуска",
         cta: "Пройти тест →",
         scoreLabel: "Твой Score",
-        daysLabel: "Дней до $100",
+        daysLabel: "Дней до $1K",
         blockerLabel: "Скрытый блокер",
         timeInfo: "⏱️ 30 сек • 4 вопроса",
       },
@@ -1144,7 +1146,7 @@ export const translations = {
       },
       result: {
         yourScore: "Твой Launchpad Score",
-        timeToFirst100: "До первых $100",
+        timeToFirst1000: "До первых $1,000",
         day: "день",
         days2to4: "дня",
         days: "дней",
@@ -1158,6 +1160,8 @@ export const translations = {
         shareBonus: "🎁 Поделись с другом → получи бонусную карточку",
         shareResult: "Поделиться результатом",
         blockerTitle: "Твой блокер",
+        meetYourTeam: "Познакомься с AI-командой",
+        myceliumValue: "7 специализированных AI-советников бросят вызов твоим слепым зонам через нашу 21-карточную систему валидации. Каждая карточка заставляет ответить на сложные вопросы ДО того, как ты начнёшь строить — экономя месяцы напрасных усилий.",
       },
       blockers: {
         fear_of_choice: {
@@ -1180,7 +1184,7 @@ export const translations = {
       videoResult: {
         willHelp: "поможет тебе с этим справиться",
       },
-      shareText: "🚀 Мой Launchpad Score: {score}/100!\nДо первых $100 — {days} дней.\n\nПроверь свой результат:",
+      shareText: "🚀 Мой Launchpad Score: {score}/100!\nДо первых $1,000 — {days} дней.\n\nПроверь свой результат:",
       copiedToClipboard: "Скопировано!",
     },
     chat: {
@@ -1292,7 +1296,7 @@ export const translations = {
         title: "Descubre Tu Velocidad de Startup",
         cta: "Tomar el Quiz →",
         scoreLabel: "Tu Puntaje",
-        daysLabel: "Días a $100",
+        daysLabel: "Días a $1K",
         blockerLabel: "Bloqueador Oculto",
         timeInfo: "⏱️ 30 seg • 4 preguntas",
       },
@@ -1739,7 +1743,7 @@ export const translations = {
       },
       result: {
         yourScore: "Tu Puntaje Launchpad",
-        timeToFirst100: "Tiempo a Primeros $100",
+        timeToFirst1000: "Tiempo a Primeros $1,000",
         day: "día",
         days2to4: "días",
         days: "días",
@@ -1753,6 +1757,8 @@ export const translations = {
         shareBonus: "🎁 Comparte con un amigo → obtén una carta bonus",
         shareResult: "Compartir Resultado",
         blockerTitle: "Tu Bloqueador",
+        meetYourTeam: "Conoce a Tu Equipo IA",
+        myceliumValue: "7 asesores IA especializados desafían tus puntos ciegos a través de nuestro sistema de validación de 21 cartas. Cada carta te obliga a responder las preguntas difíciles ANTES de construir — ahorrando meses de esfuerzo desperdiciado.",
       },
       blockers: {
         fear_of_choice: {
@@ -1775,7 +1781,7 @@ export const translations = {
       videoResult: {
         willHelp: "te ayudará a superar esto",
       },
-      shareText: "🚀 Mi Puntaje Launchpad: {score}/100!\nTiempo a primeros $100 — {days} días.\n\nRevisa tu resultado:",
+      shareText: "🚀 Mi Puntaje Launchpad: {score}/100!\nTiempo a primeros $1,000 — {days} días.\n\nRevisa tu resultado:",
       copiedToClipboard: "¡Copiado al portapapeles!",
     },
     chat: {

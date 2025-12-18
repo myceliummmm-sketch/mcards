@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Share2, Rocket, Sparkles, Clock, Target, Zap, Book } from "lucide-react";
+import { Share2, Rocket, Sparkles, Clock, Target, Zap, Book, Users } from "lucide-react";
 import { BLOCKER_KEYS, getVideoUrl, CHARACTER_BY_BLOCKER, type QuizResults } from "@/data/quizData";
-import { getCharacterById } from "@/data/teamCharacters";
+import { getCharacterById, TEAM_CHARACTERS } from "@/data/teamCharacters";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 interface QuizResultProps {
   results: QuizResults;
   answers: number[];
@@ -119,7 +118,7 @@ export const QuizResult = ({ results, answers, onGetPlaybook, onStartBuilding, o
         </motion.div>
       </motion.div>
 
-      {/* Time to First $100 */}
+      {/* Time to First $1000 */}
       <motion.div
         className="flex items-center justify-center gap-3 p-4 rounded-lg bg-card border border-primary/30"
         initial={{ opacity: 0 }}
@@ -128,11 +127,46 @@ export const QuizResult = ({ results, answers, onGetPlaybook, onStartBuilding, o
       >
         <Clock className="w-6 h-6 text-primary" />
         <div>
-          <p className="text-sm text-muted-foreground font-body">{t("quiz.result.timeToFirst100")}</p>
+          <p className="text-sm text-muted-foreground font-body">{t("quiz.result.timeToFirst1000")}</p>
           <p className="text-2xl font-display text-foreground">
             {results.daysToFirst100} {getDaysText(results.daysToFirst100)}
           </p>
         </div>
+      </motion.div>
+
+      {/* Team Avatars & Mycelium Value */}
+      <motion.div
+        className="p-4 rounded-lg bg-gradient-to-br from-card to-muted border border-border"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <Users className="w-5 h-5 text-primary" />
+          <h4 className="font-display text-foreground text-sm">{t("quiz.result.meetYourTeam")}</h4>
+        </div>
+        
+        {/* Avatar Stack */}
+        <div className="flex items-center mb-3">
+          <div className="flex -space-x-3">
+            {Object.values(TEAM_CHARACTERS).slice(0, 7).map((char, idx) => (
+              <motion.img
+                key={char.id}
+                src={char.avatar}
+                alt={char.name}
+                className="w-10 h-10 rounded-full border-2 border-card object-cover"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 + idx * 0.05 }}
+              />
+            ))}
+          </div>
+          <span className="ml-3 text-sm font-display text-primary">7 AI Advisors</span>
+        </div>
+        
+        <p className="text-xs text-muted-foreground font-body leading-relaxed">
+          {t("quiz.result.myceliumValue")}
+        </p>
       </motion.div>
 
       {/* Roadmap */}
