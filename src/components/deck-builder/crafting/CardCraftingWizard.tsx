@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { WizardProgress } from './WizardProgress';
 import { WizardStep } from './WizardStep';
@@ -31,9 +31,12 @@ export const CardCraftingWizard = ({
   const { t } = useTranslation();
 
   const totalSteps = definition.fields.length;
-  const currentFieldIndex = currentStep - 1;
+  
+  // Safety check for step bounds
+  const safeCurrentStep = Math.min(Math.max(1, currentStep), totalSteps);
+  const currentFieldIndex = safeCurrentStep - 1;
   const currentField = definition.fields[currentFieldIndex];
-  const currentValue = formData[currentField?.name];
+  const currentValue = currentField ? formData[currentField.name] : undefined;
 
   // Get guidance for current field (now with fallback support)
   const guidance = currentField ? getFieldGuidance(currentField.name, currentField) : null;
@@ -44,21 +47,43 @@ export const CardCraftingWizard = ({
 
   // Update completed steps
   useEffect(() => {
-    if (isCurrentStepComplete && !completedSteps.has(currentStep)) {
-      setCompletedSteps(prev => new Set([...prev, currentStep]));
+    if (isCurrentStepComplete && !completedSteps.has(safeCurrentStep)) {
+      setCompletedSteps(prev => new Set([...prev, safeCurrentStep]));
     }
-  }, [isCurrentStepComplete, currentStep]);
+  }, [isCurrentStepComplete, safeCurrentStep, completedSteps]);
 
   // Sync with parent
   useEffect(() => {
     onChange(formData);
-  }, [formData]);
+  }, [formData, onChange]);
 
-  // Keyboard navigation
+  // Navigation handlers wrapped in useCallback
+  const handleNext = useCallback(() => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      setIsReviewMode(true);
+    }
+  }, [currentStep, totalSteps]);
+
+  const handlePrevious = useCallback(() => {
+    if (isReviewMode) {
+      setIsReviewMode(false);
+    } else if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1);
+    }
+  }, [isReviewMode, currentStep]);
+
+  const handleSkip = useCallback(() => {
+    handleNext();
+  }, [handleNext]);
+
+  // Keyboard navigation with proper null checks
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey && !isReviewMode) {
-        if (isCurrentStepComplete || !currentField.required) {
+        // Safe null check for currentField
+        if (currentField && (isCurrentStepComplete || !currentField.required)) {
           handleNext();
         }
       }
@@ -66,33 +91,14 @@ export const CardCraftingWizard = ({
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentStep, isCurrentStepComplete, currentField, isReviewMode]);
+  }, [currentField, isCurrentStepComplete, isReviewMode, handleNext]);
 
   const handleFieldChange = (value: any) => {
+    if (!currentField) return;
     setFormData(prev => ({
       ...prev,
       [currentField.name]: value
     }));
-  };
-
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      setIsReviewMode(true);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (isReviewMode) {
-      setIsReviewMode(false);
-    } else if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
-
-  const handleSkip = () => {
-    handleNext();
   };
 
   const handleStepClick = (step: number) => {
@@ -135,11 +141,28 @@ export const CardCraftingWizard = ({
     );
   }
 
+  // Ensure we have a valid field before rendering
+  if (!currentField) {
+    return (
+      <div className="space-y-6">
+        <WizardProgress
+          currentStep={safeCurrentStep}
+          totalSteps={totalSteps}
+          completedSteps={completedSteps}
+          onStepClick={handleStepClick}
+        />
+        <div className="text-center text-muted-foreground py-8">
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Progress Bar */}
       <WizardProgress
-        currentStep={currentStep}
+        currentStep={safeCurrentStep}
         totalSteps={totalSteps}
         completedSteps={completedSteps}
         onStepClick={handleStepClick}
@@ -148,9 +171,9 @@ export const CardCraftingWizard = ({
       {/* AI Guide */}
       <AIGuidePanel characterId={aiHelper} />
 
-      {/* Current Step */}
-      <AnimatePresence mode="wait">
-        {currentField && guidance && (
+      {/* Current Step - guidance is guaranteed by fallback */}
+      <AnimatePresence mode="sync">
+        {guidance && (
           <WizardStep
             key={currentField.name}
             field={currentField}
@@ -165,12 +188,12 @@ export const CardCraftingWizard = ({
         )}
       </AnimatePresence>
 
-      {/* Navigation */}
+      {/* Navigation - always render when we have a field */}
       <StepNavigation
-        currentStep={currentStep}
+        currentStep={safeCurrentStep}
         totalSteps={totalSteps}
         canGoNext={isCurrentStepComplete}
-        isOptionalField={!currentField?.required}
+        isOptionalField={!currentField.required}
         onPrevious={handlePrevious}
         onNext={handleNext}
         onSkip={handleSkip}
