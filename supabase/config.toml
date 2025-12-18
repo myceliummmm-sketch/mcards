@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.check-email-sequences]
 verify_jwt = false
+
+[functions.upload-avatars]
+verify_jwt = false

@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import Quiz from "./pages/Quiz";
 import Quiz2 from "./pages/Quiz2";
 import AdminEmails from "./pages/AdminEmails";
+import UploadAvatars from "./pages/UploadAvatars";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/quiz2" element={<Quiz2 />} />
             <Route path="/admin/emails" element={<AdminEmails />} />
+            <Route path="/upload-avatars" element={<UploadAvatars />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
