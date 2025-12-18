@@ -302,7 +302,7 @@ function generatePlaybookEmail(
   const daysTo1000 = Math.max(7, Math.round(60 - (score * 0.4)));
   
   const baseUrl = "https://mycelium.gg";
-  const avatarBaseUrl = "https://nanzsuokgzzdeibyopkw.supabase.co/storage/v1/object/public/avatars";
+  const avatarBaseUrl = "https://mycelium.gg/avatars";
 
   return `
 <!DOCTYPE html>

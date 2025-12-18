@@ -26,8 +26,8 @@ const BLOCKER_CONTENT = {
   },
 };
 
-// Avatar base URL from Supabase Storage
-const AVATAR_BASE_URL = "https://nanzsuokgzzdeibyopkw.supabase.co/storage/v1/object/public/avatars";
+// Avatar base URL from production domain
+const AVATAR_BASE_URL = "https://mycelium.gg/avatars";
 
 // Email templates for each step
 const EMAIL_TEMPLATES = {
