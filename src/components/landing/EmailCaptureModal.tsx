@@ -22,7 +22,7 @@ export const EmailCaptureModal = ({
   quizBlocker,
   onSuccess 
 }: EmailCaptureModalProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -31,6 +31,29 @@ export const EmailCaptureModal = ({
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
+  };
+
+  const sendPlaybookEmail = async (emailAddress: string) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-playbook-email', {
+        body: {
+          email: emailAddress,
+          blocker: quizBlocker || 'start_paralysis',
+          score: quizScore || 50,
+          language: language,
+        },
+      });
+
+      if (error) {
+        console.error("Error sending playbook email:", error);
+        // Don't throw - email sending failure shouldn't block the flow
+      } else {
+        console.log("Playbook email sent successfully");
+      }
+    } catch (err) {
+      console.error("Failed to send playbook email:", err);
+      // Silent failure - don't block the user flow
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,12 +66,13 @@ export const EmailCaptureModal = ({
     }
 
     setIsLoading(true);
+    const normalizedEmail = email.toLowerCase().trim();
 
     try {
       const { error: insertError } = await supabase
         .from("leads")
         .insert({
-          email: email.toLowerCase().trim(),
+          email: normalizedEmail,
           source: "quiz_playbook",
           quiz_score: quizScore,
           quiz_blocker: quizBlocker,
@@ -59,12 +83,16 @@ export const EmailCaptureModal = ({
         if (insertError.code === "23505") {
           setIsSuccess(true);
           toast.success(t("landing.mobile.email.alreadySubscribed"));
+          // Still send the email for returning users
+          await sendPlaybookEmail(normalizedEmail);
         } else {
           throw insertError;
         }
       } else {
         setIsSuccess(true);
         toast.success(t("landing.mobile.email.success"));
+        // Send the playbook email
+        await sendPlaybookEmail(normalizedEmail);
       }
 
       onSuccess?.();
