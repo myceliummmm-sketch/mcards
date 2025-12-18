@@ -47,3 +47,6 @@ verify_jwt = true
 
 [functions.research-discuss]
 verify_jwt = true
+
+[functions.send-playbook-email]
+verify_jwt = false
