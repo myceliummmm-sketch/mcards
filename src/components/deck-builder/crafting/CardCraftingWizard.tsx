@@ -35,8 +35,8 @@ export const CardCraftingWizard = ({
   const currentField = definition.fields[currentFieldIndex];
   const currentValue = formData[currentField?.name];
 
-  // Get guidance for current field
-  const guidance = currentField ? getFieldGuidance(currentField.name) : null;
+  // Get guidance for current field (now with fallback support)
+  const guidance = currentField ? getFieldGuidance(currentField.name, currentField) : null;
   const aiHelper = currentField ? getFieldAIHelper(currentField.name, definition) : definition.aiHelpers[0];
 
   // Check if current field is complete
