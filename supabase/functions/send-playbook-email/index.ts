@@ -301,7 +301,8 @@ function generatePlaybookEmail(
   // Calculate projected days to first $1000 (inverse relationship with score)
   const daysTo1000 = Math.max(7, Math.round(60 - (score * 0.4)));
   
-  const baseUrl = "https://mycelium.lovable.app";
+  const baseUrl = "https://mycelium.gg";
+  const avatarBaseUrl = "https://nanzsuokgzzdeibyopkw.supabase.co/storage/v1/object/public/avatars";
 
   return `
 <!DOCTYPE html>
@@ -343,7 +344,7 @@ function generatePlaybookEmail(
               <table cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td width="70" style="vertical-align: top;">
-                    <img src="${baseUrl}/avatars/${character.avatar}" alt="${character.name}" width="60" height="60" style="border-radius: 50%; border: 2px solid ${character.color};" />
+                    <img src="${avatarBaseUrl}/${character.avatar}" alt="${character.name}" width="60" height="60" style="border-radius: 50%; border: 2px solid ${character.color};" />
                   </td>
                   <td style="vertical-align: top; padding-left: 15px;">
                     <p style="margin: 0 0 5px; color: #737373; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">${t.advisorTitle}</p>
@@ -412,7 +413,7 @@ function generatePlaybookEmail(
                 <tr>
                   ${AI_TEAM.map(member => `
                     <td style="text-align: center; padding: 0 3px;">
-                      <img src="${baseUrl}/avatars/${member.avatar}" alt="${member.name}" width="50" height="50" style="border-radius: 50%; border: 2px solid ${member.color};" />
+                      <img src="${avatarBaseUrl}/${member.avatar}" alt="${member.name}" width="50" height="50" style="border-radius: 50%; border: 2px solid ${member.color};" />
                     </td>
                   `).join('')}
                 </tr>

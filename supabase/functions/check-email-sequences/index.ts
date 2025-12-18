@@ -26,6 +26,9 @@ const BLOCKER_CONTENT = {
   },
 };
 
+// Avatar base URL from Supabase Storage
+const AVATAR_BASE_URL = "https://nanzsuokgzzdeibyopkw.supabase.co/storage/v1/object/public/avatars";
+
 // Email templates for each step
 const EMAIL_TEMPLATES = {
   1: {
@@ -43,9 +46,6 @@ const EMAIL_TEMPLATES = {
     p { line-height: 1.6; color: #a3a3a3; }
     .highlight { background: linear-gradient(135deg, #22c55e20, #16a34a20); border: 1px solid #22c55e40; border-radius: 12px; padding: 20px; margin: 20px 0; }
     .team-section { background: #111; border-radius: 12px; padding: 24px; margin: 24px 0; }
-    .team-member { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid #262626; }
-    .team-member:last-child { border-bottom: none; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .cta { display: inline-block; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 24px 0; font-size: 16px; }
     .tip-box { background: #1a1a2e; border-left: 3px solid #22c55e; padding: 16px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
     .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #262626; font-size: 12px; color: #737373; }
@@ -67,40 +67,70 @@ const EMAIL_TEMPLATES = {
     </div>
     
     <div class="team-section">
-      <p style="color: #e5e5e5; font-weight: 600; margin-top: 0;">Your AI Advisory Team:</p>
-      <div class="team-member">
-        <span class="avatar">🎯</span>
-        <div><strong style="color: #e5e5e5;">Phoenix</strong> - Vision & Strategy</div>
-      </div>
-      <div class="team-member">
-        <span class="avatar">📊</span>
-        <div><strong style="color: #e5e5e5;">Prisma</strong> - Market Analysis</div>
-      </div>
-      <div class="team-member">
-        <span class="avatar">⚡</span>
-        <div><strong style="color: #e5e5e5;">Zen</strong> - Execution Planning</div>
-      </div>
-      <div class="team-member">
-        <span class="avatar">🛡️</span>
-        <div><strong style="color: #e5e5e5;">Ever</strong> - Risk Assessment</div>
-      </div>
-      <div class="team-member">
-        <span class="avatar">💻</span>
-        <div><strong style="color: #e5e5e5;">Techpriest</strong> - Technical Guidance</div>
-      </div>
-      <div class="team-member">
-        <span class="avatar">🌟</span>
-        <div><strong style="color: #e5e5e5;">Virgilia</strong> - Growth Strategy</div>
-      </div>
-      <div class="team-member">
-        <span class="avatar">☠️</span>
-        <div><strong style="color: #e5e5e5;">Toxic</strong> - Devil's Advocate</div>
-      </div>
+      <p style="color: #e5e5e5; font-weight: 600; margin-top: 0; margin-bottom: 20px;">Your AI Advisory Team:</p>
+      <table cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td width="60" style="padding: 8px 0;">
+            <img src="${AVATAR_BASE_URL}/phoenix.png" alt="Phoenix" width="50" height="50" style="border-radius: 50%; border: 2px solid #f97316;" />
+          </td>
+          <td style="padding-left: 12px; border-bottom: 1px solid #262626;">
+            <strong style="color: #e5e5e5;">Phoenix</strong> <span style="color: #737373;">- Vision & Strategy</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="60" style="padding: 8px 0;">
+            <img src="${AVATAR_BASE_URL}/prisma.png" alt="Prisma" width="50" height="50" style="border-radius: 50%; border: 2px solid #ec4899;" />
+          </td>
+          <td style="padding-left: 12px; border-bottom: 1px solid #262626;">
+            <strong style="color: #e5e5e5;">Prisma</strong> <span style="color: #737373;">- Market Analysis</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="60" style="padding: 8px 0;">
+            <img src="${AVATAR_BASE_URL}/zen.png" alt="Zen" width="50" height="50" style="border-radius: 50%; border: 2px solid #06b6d4;" />
+          </td>
+          <td style="padding-left: 12px; border-bottom: 1px solid #262626;">
+            <strong style="color: #e5e5e5;">Zen</strong> <span style="color: #737373;">- Execution Planning</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="60" style="padding: 8px 0;">
+            <img src="${AVATAR_BASE_URL}/ever.png" alt="Ever" width="50" height="50" style="border-radius: 50%; border: 2px solid #22c55e;" />
+          </td>
+          <td style="padding-left: 12px; border-bottom: 1px solid #262626;">
+            <strong style="color: #e5e5e5;">Ever</strong> <span style="color: #737373;">- Risk Assessment</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="60" style="padding: 8px 0;">
+            <img src="${AVATAR_BASE_URL}/techpriest.png" alt="Techpriest" width="50" height="50" style="border-radius: 50%; border: 2px solid #8b5cf6;" />
+          </td>
+          <td style="padding-left: 12px; border-bottom: 1px solid #262626;">
+            <strong style="color: #e5e5e5;">Techpriest</strong> <span style="color: #737373;">- Technical Guidance</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="60" style="padding: 8px 0;">
+            <img src="${AVATAR_BASE_URL}/virgilia.png" alt="Virgilia" width="50" height="50" style="border-radius: 50%; border: 2px solid #6366f1;" />
+          </td>
+          <td style="padding-left: 12px; border-bottom: 1px solid #262626;">
+            <strong style="color: #e5e5e5;">Virgilia</strong> <span style="color: #737373;">- Growth Strategy</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="60" style="padding: 8px 0;">
+            <img src="${AVATAR_BASE_URL}/toxic.png" alt="Toxic" width="50" height="50" style="border-radius: 50%; border: 2px solid #eab308;" />
+          </td>
+          <td style="padding-left: 12px;">
+            <strong style="color: #e5e5e5;">Toxic</strong> <span style="color: #737373;">- Devil's Advocate</span>
+          </td>
+        </tr>
+      </table>
     </div>
     
     <p><strong style="color: #e5e5e5;">Ready to start?</strong> Create your first card and get instant feedback from your AI team.</p>
     
-    <a href="https://mycelium.lovable.app/auth" class="cta">Start Building Your Deck →</a>
+    <a href="https://mycelium.gg/auth" class="cta">Start Building Your Deck →</a>
     
     <div class="footer">
       <p>You're receiving this because you took our startup validation quiz at Mycelium.</p>
@@ -148,7 +178,7 @@ const EMAIL_TEMPLATES = {
       <li>☠️ Toxic will challenge your assumptions</li>
     </ul>
     
-    <a href="https://mycelium.lovable.app" class="cta">Start Building Your Deck →</a>
+    <a href="https://mycelium.gg" class="cta">Start Building Your Deck →</a>
     
     <div class="footer">
       <p>You're receiving this because you took our startup validation quiz.</p>
@@ -210,7 +240,7 @@ const EMAIL_TEMPLATES = {
     
     <p><strong style="color: #e5e5e5;">The best part?</strong> You don't need to have all the answers. Your AI team will help you discover them.</p>
     
-    <a href="https://mycelium.lovable.app/auth" class="cta">Create My First Card →</a>
+    <a href="https://mycelium.gg/auth" class="cta">Create My First Card →</a>
     
     <div class="footer">
       <p>You're receiving this because you took our startup validation quiz.</p>
@@ -258,7 +288,7 @@ const EMAIL_TEMPLATES = {
     
     <p><strong style="color: #e5e5e5;">This is our last reminder.</strong> After this, we'll assume you've found another path. But if you're still stuck, your team is one click away.</p>
     
-    <a href="https://mycelium.lovable.app/auth" class="cta">Meet My AI Team Now →</a>
+    <a href="https://mycelium.gg/auth" class="cta">Meet My AI Team Now →</a>
     
     <div class="footer">
       <p>You're receiving this because you took our startup validation quiz.</p>
