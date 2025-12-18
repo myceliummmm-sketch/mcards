@@ -342,7 +342,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Mycelium <onboarding@resend.dev>",
+        from: "Mycelium <team@mycelium.gg>",
         to: [email],
         subject: `🍄 Your Playbook: ${playbook.title}`,
         html,
