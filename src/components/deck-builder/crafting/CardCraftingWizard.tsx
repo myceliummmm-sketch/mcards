@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { WizardProgress } from './WizardProgress';
 import { WizardStep } from './WizardStep';
 import { AIGuidePanel } from './AIGuidePanel';
@@ -113,7 +113,7 @@ export const CardCraftingWizard = ({
 
   if (isReviewMode) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 pb-32">
         <WizardProgress
           currentStep={totalSteps}
           totalSteps={totalSteps}
@@ -142,24 +142,30 @@ export const CardCraftingWizard = ({
   }
 
   // Ensure we have a valid field before rendering
-  if (!currentField) {
+  if (!currentField || !guidance) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 pb-32">
         <WizardProgress
           currentStep={safeCurrentStep}
           totalSteps={totalSteps}
           completedSteps={completedSteps}
           onStepClick={handleStepClick}
         />
-        <div className="text-center text-muted-foreground py-8">
-          Loading...
+        <div className="flex items-center justify-center py-12">
+          <motion.div
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="text-muted-foreground"
+          >
+            Loading step...
+          </motion.div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-32">
       {/* Progress Bar */}
       <WizardProgress
         currentStep={safeCurrentStep}
@@ -171,11 +177,16 @@ export const CardCraftingWizard = ({
       {/* AI Guide */}
       <AIGuidePanel characterId={aiHelper} />
 
-      {/* Current Step - guidance is guaranteed by fallback */}
-      <AnimatePresence mode="sync">
-        {guidance && (
+      {/* Current Step - No mode prop to prevent flickering */}
+      <AnimatePresence>
+        <motion.div
+          key={`step-${currentField.name}`}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.2 }}
+        >
           <WizardStep
-            key={currentField.name}
             field={currentField}
             guidance={guidance}
             value={currentValue}
@@ -185,10 +196,10 @@ export const CardCraftingWizard = ({
             cardDefinition={definition}
             previousAnswers={formData}
           />
-        )}
+        </motion.div>
       </AnimatePresence>
 
-      {/* Navigation - always render when we have a field */}
+      {/* Fixed Navigation at Bottom */}
       <StepNavigation
         currentStep={safeCurrentStep}
         totalSteps={totalSteps}
