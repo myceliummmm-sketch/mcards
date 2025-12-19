@@ -132,6 +132,15 @@ export const translations = {
           close: "Got it",
         },
       },
+      quizTeaser: {
+        badge: "Free Assessment",
+        title: "How fast can you get to $1K?",
+        scoreLabel: "Your Score",
+        daysLabel: "Days to $1K",
+        blockerLabel: "Your Blocker",
+        cta: "Take the Quiz",
+        timeInfo: "⏱️ Takes 2 minutes • 100% free",
+      },
     },
     quiz: {
       title: "Validation Quiz",
@@ -825,6 +834,15 @@ export const translations = {
           successMessage: "Playbook валидации уже в пути к твоему email.",
           close: "Понял",
         },
+      },
+      quizTeaser: {
+        badge: "Бесплатный тест",
+        title: "Как быстро ты можешь заработать $1K?",
+        scoreLabel: "Твой балл",
+        daysLabel: "Дней до $1K",
+        blockerLabel: "Твой блокер",
+        cta: "Пройти тест",
+        timeInfo: "⏱️ Занимает 2 минуты • Бесплатно",
       },
     },
     quiz: {
