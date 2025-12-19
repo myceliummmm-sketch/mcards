@@ -65,3 +65,24 @@ verify_jwt = false
 
 [functions.check-email-sequences]
 verify_jwt = false
+
+[functions.auto-complete-single-card]
+verify_jwt = true
+
+[functions.auto-complete-vision]
+verify_jwt = true
+
+[functions.build-generate]
+verify_jwt = true
+
+[functions.generate-research-report]
+verify_jwt = true
+
+[functions.research-evaluate]
+verify_jwt = true
+
+[functions.research-insights]
+verify_jwt = true
+
+[functions.translate-text]
+verify_jwt = true
