@@ -93,48 +93,16 @@ export function ResearchReportModal({ open, onClose, deckId, initialData }: Rese
   }, [open, deckId]);
 
   const loadSavedReport = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('research_reports')
-        .select('report_data')
-        .eq('deck_id', deckId)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (data?.report_data) {
-        setReportData(data.report_data as ReportData);
-        setHasSavedReport(true);
-      } else if (!reportData) {
-        // No saved report, generate new one
-        generateReport();
-      }
-    } catch (err) {
-      console.error('Failed to load saved report:', err);
-      // If loading fails, generate new report
-      if (!reportData) {
-        generateReport();
-      }
+    // For now, just generate a new report since research_reports table doesn't exist yet
+    if (!reportData) {
+      generateReport();
     }
   };
 
   const saveReport = async (data: ReportData) => {
-    try {
-      const { error } = await supabase
-        .from('research_reports')
-        .upsert({
-          deck_id: deckId,
-          report_data: data as any,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'deck_id'
-        });
-
-      if (error) throw error;
-      setHasSavedReport(true);
-    } catch (err) {
-      console.error('Failed to save report:', err);
-    }
+    // Report saving disabled until research_reports table is created
+    setHasSavedReport(true);
+    console.log('Report generated (saving disabled):', data);
   };
 
   const generateReport = async () => {

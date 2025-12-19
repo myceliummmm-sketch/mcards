@@ -229,6 +229,47 @@ export type Database = {
           },
         ]
       }
+      deck_invitations: {
+        Row: {
+          created_at: string
+          deck_id: string
+          id: string
+          invitee_email: string
+          inviter_id: string
+          responded_at: string | null
+          role: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          deck_id: string
+          id?: string
+          invitee_email: string
+          inviter_id: string
+          responded_at?: string | null
+          role?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          deck_id?: string
+          id?: string
+          invitee_email?: string
+          inviter_id?: string
+          responded_at?: string | null
+          role?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deck_invitations_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decks: {
         Row: {
           created_at: string

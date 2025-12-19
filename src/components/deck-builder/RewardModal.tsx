@@ -19,7 +19,7 @@ interface RewardModalProps {
 }
 
 const REWARD_ICONS: Record<CardPhase, React.ElementType> = {
-  vision: Globe,
+  idea: Globe,
   research: FileText,
   build: Zap,
   grow: DollarSign,
@@ -27,7 +27,7 @@ const REWARD_ICONS: Record<CardPhase, React.ElementType> = {
 };
 
 const REWARD_ICON_COLORS: Record<CardPhase, string> = {
-  vision: 'text-violet-400',
+  idea: 'text-violet-400',
   research: 'text-amber-400',
   build: 'text-blue-400',
   grow: 'text-green-400',

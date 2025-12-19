@@ -1,4 +1,4 @@
-export type Language = 'en' | 'ru';
+export type Language = 'en' | 'ru' | 'es';
 
 export type CardPhase = 'idea' | 'research' | 'build' | 'grow' | 'pivot';
 export type CardType = 'template' | 'insight' | 'both' | 'research';
