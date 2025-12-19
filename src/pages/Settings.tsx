@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   ArrowLeft, 
   Crown, 
@@ -134,22 +135,23 @@ export default function Settings() {
             <CardDescription>{t('settings.language.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-3">
-              <Button
-                variant={language === 'en' ? 'default' : 'outline'}
-                onClick={() => setLanguage('en')}
-                className="flex-1 gap-2"
-              >
-                🇬🇧 {t('settings.language.english')}
-              </Button>
-              <Button
-                variant={language === 'ru' ? 'default' : 'outline'}
-                onClick={() => setLanguage('ru')}
-                className="flex-1 gap-2"
-              >
-                🇷🇺 {t('settings.language.russian')}
-              </Button>
-            </div>
+            <Select value={language} onValueChange={(value: 'en' | 'ru') => setLanguage(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">
+                  <span className="flex items-center gap-2">
+                    🇬🇧 {t('settings.language.english')}
+                  </span>
+                </SelectItem>
+                <SelectItem value="ru">
+                  <span className="flex items-center gap-2">
+                    🇷🇺 {t('settings.language.russian')}
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </CardContent>
         </Card>
 
