@@ -31,7 +31,7 @@ export const LanguageSwitcher = ({ variant = 'ghost', size = 'sm' }: LanguageSwi
         <Button
           variant={variant}
           size={size}
-          className="gap-1.5 text-muted-foreground hover:text-foreground"
+          className="gap-1.5 text-muted-foreground hover:text-foreground bg-background/80 backdrop-blur-sm border-border/50 hover:border-primary/50"
         >
           <Globe className="h-4 w-4" />
           <span className="hidden sm:inline">{currentLang.flag}</span>

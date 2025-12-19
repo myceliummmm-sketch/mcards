@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Globe, Target, Search, DollarSign } from "lucide-react";
+import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Target, Search, DollarSign } from "lucide-react";
+import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import { motion } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
 import { WhyCardsSection } from "@/components/landing/WhyCardsSection";
@@ -19,7 +20,7 @@ import { MobileLanding } from "@/components/landing/MobileLanding";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { t, language, setLanguage } = useTranslation();
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [isChatOpen, setIsChatOpen] = useState(false);
 
@@ -125,19 +126,7 @@ const Index = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Language Toggle - Fixed in top right */}
       <div className="fixed top-4 right-4 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const langs: ('en' | 'ru' | 'es')[] = ['en', 'es', 'ru'];
-            const currentIndex = langs.indexOf(language as 'en' | 'ru' | 'es');
-            setLanguage(langs[(currentIndex + 1) % langs.length]);
-          }}
-          className="gap-2 bg-background/80 backdrop-blur-sm border-border/50 hover:border-primary/50"
-        >
-          <Globe className="h-4 w-4" />
-          {language === 'en' ? '🇲🇽 ES' : language === 'es' ? '🇷🇺 RU' : '🇬🇧 EN'}
-        </Button>
+        <LanguageSwitcher variant="outline" />
       </div>
 
       {/* Animated background particles */}
