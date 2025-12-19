@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { TEAM_CHARACTERS, getCharacterById } from '@/data/teamCharacters';
+import { getCharacterById } from '@/data/teamCharacters';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -19,6 +20,7 @@ interface UseGroupChatProps {
 }
 
 export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
+  const { language } = useLanguage();
   const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
   const [messages, setMessages] = useState<GroupChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -75,12 +77,15 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
       
       // If chat is already open, add greeting from new character
       if (isOpen) {
-        const character = getCharacterById(characterId);
+        const character = getCharacterById(characterId, language);
         if (character) {
+          const greetingText = language === 'ru' 
+            ? `*присоединяется к встрече* ${character.signaturePhrases[0]} Что я пропустил?`
+            : `*joins the meeting* ${character.signaturePhrases[0]} What have I missed?`;
           const greeting: GroupChatMessage = {
             id: `greeting-${characterId}-${Date.now()}`,
             role: 'assistant',
-            content: `*joins the meeting* ${character.signaturePhrases[0]} What have I missed?`,
+            content: greetingText,
             characterId,
             timestamp: new Date(),
           };
@@ -88,7 +93,7 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
         }
       }
     }
-  }, [selectedCharacters, isOpen]);
+  }, [selectedCharacters, isOpen, language]);
 
   // Remove character from group
   const removeCharacter = useCallback((characterId: string) => {
@@ -103,14 +108,20 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
     
     // Add greetings from all selected characters
     const greetings: GroupChatMessage[] = selectedCharacters.map((charId, index) => {
-      const character = getCharacterById(charId);
+      const character = getCharacterById(charId, language);
       if (!character) return null;
       
-      const greetingVariants = [
+      const greetingVariantsEn = [
         `Hello everyone! ${character.tagline}`,
         `Great to be here. ${character.signaturePhrases[0]}`,
         `Looking forward to this discussion. ${character.tagline}`,
       ];
+      const greetingVariantsRu = [
+        `Привет всем! ${character.tagline}`,
+        `Рад быть здесь. ${character.signaturePhrases[0]}`,
+        `Жду с нетерпением эту дискуссию. ${character.tagline}`,
+      ];
+      const greetingVariants = language === 'ru' ? greetingVariantsRu : greetingVariantsEn;
       
       return {
         id: `greeting-${charId}-${Date.now()}-${index}`,
@@ -122,7 +133,7 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
     }).filter(Boolean) as GroupChatMessage[];
 
     setMessages(greetings);
-  }, [selectedCharacters]);
+  }, [selectedCharacters, language]);
 
   // Close group chat
   const closeGroupChat = useCallback(() => {
@@ -163,7 +174,7 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
       const conversationMessages = [...messages, userMessage].map(m => ({
         role: m.role,
         content: m.characterId 
-          ? `[${getCharacterById(m.characterId)?.name || 'Unknown'}]: ${m.content}`
+          ? `[${getCharacterById(m.characterId, language)?.name || 'Unknown'}]: ${m.content}`
           : m.content,
       }));
 
@@ -181,6 +192,7 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
               otherCharacterIds: selectedCharacters.filter(id => id !== characterId),
               messages: conversationMessages,
               deckContext,
+              language,
             }),
           }
         );
@@ -310,7 +322,7 @@ export const useGroupChat = ({ deckId, cards }: UseGroupChatProps) => {
       const formattedMessages = messages.map(m => ({
         role: m.role,
         content: m.content,
-        characterName: m.characterId ? getCharacterById(m.characterId)?.name : undefined
+        characterName: m.characterId ? getCharacterById(m.characterId, language)?.name : undefined
       }));
 
       const response = await fetch(

@@ -42,9 +42,9 @@ serve(async (req) => {
 
     // Extract key information from deck cards
     const filledCards = deckCards.filter(card => card.card_data && Object.keys(card.card_data).length > 0);
-    const phases = ['vision', 'research', 'build', 'grow'];
+    const phases = ['idea', 'research', 'build', 'grow'];
     const phaseSlots = {
-      vision: [1, 2, 3, 4, 5],
+      idea: [1, 2, 3, 4, 5],
       research: [6, 7, 8, 9, 10, 11],
       build: [12, 13, 14, 15, 16, 17],
       grow: [18, 19, 20, 21, 22]
@@ -129,7 +129,7 @@ Respond with JSON only, no other text:
       { id: '2', title: 'User Interview Framework', phase: 'research', industry: 'General', cardType: 'framework', stats: { avgRating: 4.9, purchases: 567 } },
       { id: '3', title: 'Viral Loop Strategy', phase: 'grow', industry: 'SaaS', cardType: 'strategy', stats: { avgRating: 4.7, purchases: 189 } },
       { id: '4', title: 'Retention Metrics Dashboard', phase: 'grow', industry: 'SaaS', cardType: 'tool', stats: { avgRating: 4.6, purchases: 312 } },
-      { id: '5', title: 'Lean Canvas Workshop', phase: 'vision', industry: 'General', cardType: 'framework', stats: { avgRating: 4.8, purchases: 445 } },
+      { id: '5', title: 'Lean Canvas Workshop', phase: 'idea', industry: 'General', cardType: 'framework', stats: { avgRating: 4.8, purchases: 445 } },
       { id: '8', title: 'Market Sizing Template', phase: 'research', industry: 'General', cardType: 'template', stats: { avgRating: 4.7, purchases: 289 } },
     ];
 

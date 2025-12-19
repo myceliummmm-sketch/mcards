@@ -1,13 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  SubscriptionTier, 
+import {
+  SubscriptionTier,
   SUBSCRIPTION_TIERS,
+  SUBSCRIPTION_FEATURES,
   canAccessPhase,
   canUseAdvisor,
   getProjectLimit,
   canSellOnMarketplace,
 } from '@/data/subscriptionConfig';
+import {
+  getDevSubscriptionOverride,
+  setupDevKeyboardShortcut,
+  isDevModeEnabled,
+} from '@/lib/devSubscriptionOverride';
 
 interface Subscription {
   tier: SubscriptionTier;
@@ -36,6 +42,29 @@ export function useSubscription(): UseSubscriptionReturn {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [devOverrideTier, setDevOverrideTier] = useState<SubscriptionTier | null>(
+    () => getDevSubscriptionOverride()
+  );
+
+  // Listen for dev subscription changes (from keyboard shortcut or console)
+  useEffect(() => {
+    if (!isDevModeEnabled()) return;
+
+    const handleDevChange = (e: CustomEvent<{ tier: SubscriptionTier | null }>) => {
+      setDevOverrideTier(e.detail.tier);
+    };
+
+    window.addEventListener('dev-subscription-change', handleDevChange as EventListener);
+    return () => {
+      window.removeEventListener('dev-subscription-change', handleDevChange as EventListener);
+    };
+  }, []);
+
+  // Setup keyboard shortcut for cycling tiers
+  useEffect(() => {
+    const cleanup = setupDevKeyboardShortcut();
+    return cleanup;
+  }, []);
 
   const fetchSubscription = useCallback(async () => {
     try {
@@ -104,9 +133,17 @@ export function useSubscription(): UseSubscriptionReturn {
     };
   }, [fetchSubscription]);
 
-  const tier = subscription?.tier || SUBSCRIPTION_TIERS.free;
+  // Use dev override if available, otherwise use actual subscription
+  const actualTier = subscription?.tier || SUBSCRIPTION_TIERS.free;
+  const tier = devOverrideTier || actualTier;
   const isPro = tier === SUBSCRIPTION_TIERS.pro || tier === SUBSCRIPTION_TIERS.ultra;
   const isUltra = tier === SUBSCRIPTION_TIERS.ultra;
+
+  // For dev mode, also override spore balance based on tier
+  const devSporeBalance = devOverrideTier
+    ? SUBSCRIPTION_FEATURES[devOverrideTier].monthlySpore
+    : null;
+  const sporeBalance = devSporeBalance ?? subscription?.sporeBalance ?? 0;
 
   return {
     subscription,
@@ -115,7 +152,7 @@ export function useSubscription(): UseSubscriptionReturn {
     isPro,
     isUltra,
     tier,
-    sporeBalance: subscription?.sporeBalance || 0,
+    sporeBalance,
     canAccessPhase: (phase: string) => canAccessPhase(tier, phase),
     canUseAdvisor: (advisorId: string) => canUseAdvisor(tier, advisorId),
     projectLimit: getProjectLimit(tier),

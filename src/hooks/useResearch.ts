@@ -18,11 +18,15 @@ export interface ResearchResult {
     snippet: string;
   }>;
   rarity_scores: {
-    depth: number;
-    actionability: number;
-    uniqueness: number;
-    source_quality: number;
-    final_score: number;
+    // Support both formats from different flows
+    depth?: number;
+    relevance?: number;
+    actionability?: number;
+    uniqueness?: number;
+    source_quality?: number;
+    actuality?: number;
+    final_score?: number;
+    vision_ceiling?: number;
   };
   final_rarity: string;
   verdict: string | null;
@@ -53,18 +57,49 @@ export function useResearch(deckId: string) {
     if (!deckId) return;
 
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) return;
+      // First, do a quick local check for vision cards (slots 1-5)
+      const { data: visionCards, error: localError } = await supabase
+        .from('deck_cards')
+        .select('card_slot, evaluation')
+        .eq('deck_id', deckId)
+        .in('card_slot', [1, 2, 3, 4, 5]);
 
-      const response = await supabase.functions.invoke('research-orchestrator', {
-        body: { action: 'check_readiness', deckId }
-      });
+      if (!localError && visionCards) {
+        // Check if all 5 vision cards exist and have evaluations
+        const completedSlots = visionCards.filter(c => c.evaluation !== null).length;
+        const localIsReady = completedSlots >= 5;
+        
+        // Set immediately from local data for faster UI update
+        setIsReady(localIsReady);
+      }
 
-      if (response.error) throw response.error;
+      // ALWAYS fetch research results - don't wait for isReady check
+      const { data: researchResults } = await supabase
+        .from('research_results')
+        .select('*')
+        .eq('deck_id', deckId);
+      
+      if (researchResults && researchResults.length > 0) {
+        setResults(researchResults as unknown as ResearchResult[]);
+      }
 
-      setIsReady(response.data.isReady);
-      setSession(response.data.session);
-      setResults(response.data.results || []);
+      // Fallback to edge function if local check fails
+      if (localError) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!sessionData.session) return;
+
+        const response = await supabase.functions.invoke('research-orchestrator', {
+          body: { action: 'check_readiness', deckId }
+        });
+
+        if (response.error) throw response.error;
+
+        setIsReady(response.data.isReady);
+        setSession(response.data.session);
+        if (response.data.results?.length > 0) {
+          setResults(response.data.results);
+        }
+      }
     } catch (error) {
       console.error('Error checking readiness:', error);
     }
@@ -75,18 +110,58 @@ export function useResearch(deckId: string) {
 
     try {
       setIsLoading(true);
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) return;
-
-      const response = await supabase.functions.invoke('research-orchestrator', {
-        body: { action: 'get_status', deckId }
+      console.log('useResearch fetchStatus: Starting fetch for deck', deckId);
+      
+      // First, always fetch directly from database for reliability
+      const { data: researchResults, error: resultsError } = await supabase
+        .from('research_results')
+        .select('*')
+        .eq('deck_id', deckId);
+      
+      console.log('useResearch fetchStatus: Got results', { 
+        resultsCount: researchResults?.length || 0, 
+        slots: researchResults?.map(r => r.card_slot),
+        error: resultsError?.message 
       });
+      
+      if (resultsError) {
+        console.error('Error fetching research_results:', resultsError);
+      }
+      
+      if (researchResults && researchResults.length > 0) {
+        console.log('useResearch: Setting results:', researchResults.length, 'items');
+        // Log each result's findings
+        researchResults.forEach(r => {
+          console.log(`  Slot ${r.card_slot}: status=${r.status}, hasFindings=${!!r.findings}, findingsKeys=${r.findings ? Object.keys(r.findings) : 'none'}`);
+        });
+        setResults(researchResults as unknown as ResearchResult[]);
+        
+        // Calculate unlocked slot from accepted results
+        const acceptedSlots = researchResults
+          .filter(r => r.status === 'accepted')
+          .map(r => r.card_slot);
+        const maxAccepted = Math.max(0, ...acceptedSlots);
+        setCurrentUnlockedSlot(maxAccepted < 10 ? maxAccepted + 1 : 10);
+      } else {
+        console.log('useResearch: No results found, setting empty array');
+        setResults([]);
+      }
 
-      if (response.error) throw response.error;
+      // Try to get session from edge function (non-blocking)
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData.session) {
+        try {
+          const response = await supabase.functions.invoke('research-orchestrator', {
+            body: { action: 'get_status', deckId }
+          });
 
-      setSession(response.data.session);
-      setResults(response.data.results || []);
-      setCurrentUnlockedSlot(response.data.currentUnlockedSlot);
+          if (!response.error && response.data?.session) {
+            setSession(response.data.session);
+          }
+        } catch (edgeError) {
+          console.log('Edge function unavailable, using direct DB data');
+        }
+      }
     } catch (error) {
       console.error('Error fetching status:', error);
     } finally {
@@ -199,6 +274,52 @@ export function useResearch(deckId: string) {
     }
   }, [deckId, toast]);
 
+  const reResearch = useCallback(async (cardSlot: number) => {
+    if (!deckId) return;
+
+    try {
+      setIsResearching(cardSlot);
+      
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        toast({
+          title: 'Authentication required',
+          description: 'Please sign in to start research.',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      toast({
+        title: '🔬 Поиск новых инсайтов...',
+        description: 'AI ищет свежие данные для карточки',
+      });
+
+      // Call research-execute again - it will overwrite existing findings
+      const response = await supabase.functions.invoke('research-execute', {
+        body: { deckId, cardSlot, isReResearch: true }
+      });
+
+      if (response.error) throw response.error;
+
+      toast({
+        title: '✨ Новые инсайты найдены!',
+        description: 'Просмотрите обновлённые данные.',
+      });
+
+      await fetchStatus();
+    } catch (error: any) {
+      console.error('Error re-researching:', error);
+      toast({
+        title: 'Ошибка исследования',
+        description: error.message || 'Что-то пошло не так',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsResearching(null);
+    }
+  }, [deckId, fetchStatus, toast]);
+
   const getResultForSlot = useCallback((slot: number): ResearchResult | undefined => {
     return results.find(r => r.card_slot === slot);
   }, [results]);
@@ -212,9 +333,52 @@ export function useResearch(deckId: string) {
   }, [isReady, getResultForSlot]);
 
   useEffect(() => {
+    console.log('useResearch: initializing for deck', deckId);
     checkReadiness();
     fetchStatus();
-  }, [checkReadiness, fetchStatus]);
+
+    // Subscribe to card changes
+    const cardsChannel = supabase
+      .channel(`research-cards-changes:${deckId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'deck_cards',
+          filter: `deck_id=eq.${deckId}`
+        },
+        () => {
+          console.log('useResearch: deck_cards changed, refetching');
+          checkReadiness();
+          fetchStatus();
+        }
+      )
+      .subscribe();
+
+    // Subscribe to research_results changes
+    const resultsChannel = supabase
+      .channel(`research-results-changes:${deckId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'research_results',
+          filter: `deck_id=eq.${deckId}`
+        },
+        () => {
+          console.log('useResearch: research_results changed, refetching');
+          fetchStatus();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(cardsChannel);
+      supabase.removeChannel(resultsChannel);
+    };
+  }, [deckId, checkReadiness, fetchStatus]);
 
   return {
     isReady,
@@ -226,6 +390,7 @@ export function useResearch(deckId: string) {
     startResearch,
     acceptResearch,
     discussResearch,
+    reResearch,
     getResultForSlot,
     canResearchSlot,
     refetch: fetchStatus

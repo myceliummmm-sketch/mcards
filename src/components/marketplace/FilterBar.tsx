@@ -47,7 +47,7 @@ export const FilterBar = ({
   onClearFilters,
 }: FilterBarProps) => {
   const { t } = useTranslation();
-  const phases = ['vision', 'research', 'build', 'grow'];
+  const phases = ['idea', 'research', 'build', 'grow'];
   const rarities: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 
   const hasActiveFilters =
@@ -75,7 +75,7 @@ export const FilterBar = ({
               className="cursor-pointer hover:scale-105 transition-transform"
               onClick={() => onPhaseToggle(phase)}
             >
-              {phase === 'vision' && '🔮'}
+              {phase === 'idea' && '💡'}
               {phase === 'research' && '🔬'}
               {phase === 'build' && '🔧'}
               {phase === 'grow' && '🚀'}

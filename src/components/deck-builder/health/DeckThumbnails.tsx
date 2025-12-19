@@ -1,8 +1,9 @@
 import { Lock, Check, Sparkles } from 'lucide-react';
-import { PHASE_CONFIG, CARD_DEFINITIONS, type CardPhase } from '@/data/cardDefinitions';
+import { PHASE_CONFIG, CARD_DEFINITIONS, type CardPhase, getLocalizedText } from '@/data/cardDefinitions';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { PhaseIcon } from '../PhaseIcon';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -12,7 +13,16 @@ interface DeckThumbnailsProps {
 }
 
 export function DeckThumbnails({ cards }: DeckThumbnailsProps) {
-  const phases: CardPhase[] = ['vision', 'research', 'build', 'grow'];
+  const { language } = useLanguage();
+  const phases: CardPhase[] = ['idea', 'research', 'build', 'grow'];
+
+  const phaseNames: Record<CardPhase, { en: string; ru: string }> = {
+    idea: { en: 'IDEA', ru: 'ИДЕЯ' },
+    research: { en: 'RESEARCH', ru: 'ИССЛЕДОВАНИЕ' },
+    build: { en: 'BUILD', ru: 'РАЗРАБОТКА' },
+    grow: { en: 'GROW', ru: 'РОСТ' },
+    pivot: { en: 'PIVOT', ru: 'ПИВОТ' },
+  };
 
   const getCardBySlot = (slot: number) => {
     return cards.find(c => c.card_slot === slot);
@@ -56,7 +66,9 @@ export function DeckThumbnails({ cards }: DeckThumbnailsProps) {
       <div className="bg-card/50 rounded-xl border border-border p-4">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="w-5 h-5 text-primary" />
-          <h3 className="font-semibold text-foreground">Your Deck Collection</h3>
+          <h3 className="font-semibold text-foreground">
+            {language === 'ru' ? 'Твоя коллекция карт' : 'Your Deck Collection'}
+          </h3>
         </div>
 
         <div className="space-y-4">
@@ -70,10 +82,12 @@ export function DeckThumbnails({ cards }: DeckThumbnailsProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <PhaseIcon phase={phase} size="sm" />
-                    <span className="text-sm font-medium text-foreground">{config.name}</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {phaseNames[phase][language]}
+                    </span>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {progress.filled}/{progress.total} crafted
+                    {progress.filled}/{progress.total} {language === 'ru' ? 'создано' : 'crafted'}
                   </span>
                 </div>
 
@@ -116,7 +130,7 @@ export function DeckThumbnails({ cards }: DeckThumbnailsProps) {
                                 {imageUrl ? (
                                   <img
                                     src={imageUrl}
-                                    alt={definition?.title || `Card ${slot}`}
+                                    alt={definition ? getLocalizedText(definition.title, language) : `Card ${slot}`}
                                     className="absolute inset-0 w-full h-full object-cover"
                                   />
                                 ) : (
@@ -158,17 +172,23 @@ export function DeckThumbnails({ cards }: DeckThumbnailsProps) {
                             )}
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-[200px]">
+                        <TooltipContent side="bottom" className="max-w-[200px]">
                           <div className="text-xs">
-                            <p className="font-semibold">{definition?.title || `Card ${slot}`}</p>
+                            <p className="font-semibold">{definition ? getLocalizedText(definition.title, language) : `Card ${slot}`}</p>
                             {status === 'empty' && (
-                              <p className="text-muted-foreground mt-1">Not yet crafted - unlock this card!</p>
+                              <p className="text-muted-foreground mt-1">
+                                {language === 'ru' ? 'Ещё не создана - разблокируй!' : 'Not yet crafted - unlock this card!'}
+                              </p>
                             )}
                             {status === 'in-progress' && (
-                              <p className="text-amber-500 mt-1">In progress - forge to complete</p>
+                              <p className="text-amber-500 mt-1">
+                                {language === 'ru' ? 'В процессе - скуй для завершения' : 'In progress - forge to complete'}
+                              </p>
                             )}
                             {status === 'forged' && score !== null && (
-                              <p className="text-emerald-500 mt-1">Forged! Score: {score.toFixed(1)}/10</p>
+                              <p className="text-emerald-500 mt-1">
+                                {language === 'ru' ? `Скована! Оценка: ${score.toFixed(1)}/10` : `Forged! Score: ${score.toFixed(1)}/10`}
+                              </p>
                             )}
                           </div>
                         </TooltipContent>
@@ -184,9 +204,11 @@ export function DeckThumbnails({ cards }: DeckThumbnailsProps) {
         {/* Overall progress */}
         <div className="mt-4 pt-4 border-t border-border">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Total Collection</span>
+            <span className="text-muted-foreground">
+              {language === 'ru' ? 'Всего в коллекции' : 'Total Collection'}
+            </span>
             <span className="font-semibold text-foreground">
-              {cards.filter(c => c.card_data && Object.keys(c.card_data as object).length > 0).length} / 21 cards
+              {cards.filter(c => c.card_data && Object.keys(c.card_data as object).length > 0).length} / 21 {language === 'ru' ? 'карт' : 'cards'}
             </span>
           </div>
         </div>

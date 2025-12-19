@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import type { CardDefinition } from '@/data/cardDefinitions';
+import { getLocalizedText } from '@/data/cardDefinitions';
 import { RarityBadge } from '@/components/marketplace/RarityBadge';
-import { Rarity } from '@/data/rarityConfig';
+import { calculateRarity } from '@/data/rarityConfig';
 import { PhaseIcon } from './PhaseIcon';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -15,31 +16,24 @@ interface CardFrontProps {
   evaluationScore?: number;
 }
 
-const getCardRarity = (score?: number): Rarity => {
-  if (!score) return 'common';
-  if (score <= 3) return 'common';
-  if (score <= 5) return 'uncommon';
-  if (score <= 7) return 'rare';
-  if (score <= 9) return 'epic';
-  return 'legendary';
-}
-
 export const CardFront = ({ 
   definition, 
   imageUrl,
   evaluationScore
 }: CardFrontProps) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const getPhaseGlowClass = () => {
     const phase = definition.phase?.toLowerCase();
-    if (phase === 'vision') return 'phase-glow-vision';
+    if (phase === 'idea') return 'phase-glow-idea';
     if (phase === 'research') return 'phase-glow-research';
     if (phase === 'build') return 'phase-glow-build';
     if (phase === 'grow') return 'phase-glow-grow';
     if (phase === 'pivot') return 'phase-glow-pivot';
-    return 'phase-glow-vision';
+    return 'phase-glow-idea';
   };
+
+  const title = getLocalizedText(definition.title, language);
 
   return (
     <motion.div
@@ -71,7 +65,7 @@ export const CardFront = ({
               <div className="w-16 h-16 rounded-full bg-white/5 border border-white/20 flex items-center justify-center orb-pulse backdrop-blur-sm">
                 <PhaseIcon phase={definition.phase} size="lg" className="opacity-60" />
               </div>
-              <span className="text-[10px] text-white/40 font-mono tracking-[0.2em] uppercase">
+              <span className="text-[10px] text-white/60 font-mono tracking-[0.2em] uppercase animate-pulse">
                 {t('cardEditor.awaitingForge')}
               </span>
             </div>
@@ -89,7 +83,7 @@ export const CardFront = ({
       <div className="absolute bottom-0 left-0 right-0 p-3">
         <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg px-4 py-2 shadow-lg">
           <span className="text-white/90 text-sm font-semibold tracking-widest uppercase">
-            {definition.title}
+            {title}
           </span>
         </div>
       </div>
@@ -101,10 +95,13 @@ export const CardFront = ({
         </span>
       </div>
 
-      {/* Rarity badge */}
+      {/* Rarity badge with score */}
       {evaluationScore !== undefined && (
-        <div className="absolute top-2 right-2">
-          <RarityBadge rarity={getCardRarity(evaluationScore)} />
+        <div className="absolute top-2 right-2 flex items-center gap-1.5">
+          <div className="backdrop-blur-md bg-black/40 border border-white/30 rounded px-2 py-1">
+            <span className="text-xs font-bold text-white">{evaluationScore.toFixed(1)}</span>
+          </div>
+          <RarityBadge rarity={calculateRarity(evaluationScore)} />
         </div>
       )}
     </motion.div>

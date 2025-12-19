@@ -3,7 +3,7 @@ import { Rarity } from './rarityConfig';
 export interface MarketplaceCard {
   id: string;
   title: string;
-  phase: 'vision' | 'research' | 'build' | 'grow';
+  phase: 'idea' | 'research' | 'build' | 'grow';
   cardType: 'insight' | 'action' | 'milestone' | 'team';
   rarity: Rarity;
   price: number;
@@ -87,7 +87,7 @@ export const MOCK_MARKETPLACE_CARDS: MarketplaceCard[] = [
   {
     id: '5',
     title: 'Vision Board Template',
-    phase: 'vision',
+    phase: 'idea',
     cardType: 'insight',
     rarity: 'uncommon',
     price: 75,
@@ -132,7 +132,7 @@ export const MOCK_MARKETPLACE_CARDS: MarketplaceCard[] = [
   {
     id: '8',
     title: 'Investor Pitch Deck Blueprint',
-    phase: 'vision',
+    phase: 'idea',
     cardType: 'milestone',
     rarity: 'epic',
     price: 350,
@@ -192,7 +192,7 @@ export const MOCK_MARKETPLACE_CARDS: MarketplaceCard[] = [
   {
     id: '12',
     title: 'Problem-Solution Fit Canvas',
-    phase: 'vision',
+    phase: 'idea',
     cardType: 'action',
     rarity: 'rare',
     price: 160,

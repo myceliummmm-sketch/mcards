@@ -1,10 +1,11 @@
-import { TEAM_CHARACTERS } from '@/data/teamCharacters';
+import { getAllCharacters } from '@/data/teamCharacters';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Lock, Crown } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CharacterSelectorProps {
   selectedCharacters: string[];
@@ -19,7 +20,8 @@ export const CharacterSelector = ({
   onStartMeeting,
   canUseAdvisor = () => true,
 }: CharacterSelectorProps) => {
-  const characters = Object.values(TEAM_CHARACTERS);
+  const { t, language } = useTranslation();
+  const characters = getAllCharacters(language);
 
   // Count only unlocked selected characters for the meeting
   const unlockedSelectedCount = selectedCharacters.filter(id => canUseAdvisor(id)).length;
@@ -27,7 +29,9 @@ export const CharacterSelector = ({
   return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">
-        Select 2 or more team members for a group discussion
+        {language === 'ru' 
+          ? 'Выберите 2 или более членов команды для группового обсуждения'
+          : 'Select 2 or more team members for a group discussion'}
       </div>
       
       <div className="grid gap-2">
@@ -40,7 +44,7 @@ export const CharacterSelector = ({
               key={character.id}
               onClick={() => onToggleCharacter(character.id)}
               className={cn(
-                "relative flex items-center gap-3 p-3 rounded-lg border transition-all text-left",
+                "relative flex items-center gap-3 p-3 rounded-lg border transition-all text-left w-full overflow-hidden",
                 isLocked
                   ? "border-border bg-muted/30 opacity-70"
                   : isSelected 
@@ -69,15 +73,15 @@ export const CharacterSelector = ({
                   {character.emoji}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className={cn(
-                    "font-medium text-sm",
+                    "font-medium text-sm whitespace-nowrap",
                     isLocked && "text-muted-foreground"
                   )}>
                     {character.name}
                   </span>
-                  <span className="text-xs text-muted-foreground">{character.role}</span>
+                  <span className="text-xs text-muted-foreground truncate">{character.role}</span>
                 </div>
                 <p className="text-xs text-muted-foreground truncate">
                   {character.specialty}
@@ -102,8 +106,12 @@ export const CharacterSelector = ({
         size="lg"
       >
         {unlockedSelectedCount < 2 
-          ? `Select ${2 - unlockedSelectedCount} more`
-          : `Start Meeting (${unlockedSelectedCount} members)`
+          ? (language === 'ru' 
+              ? `Выберите ещё ${2 - unlockedSelectedCount}`
+              : `Select ${2 - unlockedSelectedCount} more`)
+          : (language === 'ru'
+              ? `Начать встречу (${unlockedSelectedCount} участников)`
+              : `Start Meeting (${unlockedSelectedCount} members)`)
         }
       </Button>
     </div>

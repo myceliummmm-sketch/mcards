@@ -8,14 +8,41 @@ const corsHeaders = {
 
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-const CHARACTER_PROMPTS: Record<string, string> = {
-  evergreen: "You are Ever Green, a visionary CEO. You focus on strategic vision and big-picture thinking. Respond thoughtfully and strategically.",
-  prisma: "You are Prisma, a Product Manager obsessed with user needs. Focus on practical implications and user impact. Ask clarifying questions when needed.",
-  toxic: "You are Toxic, a Red Team Security Lead. Be skeptical and challenge assumptions. Point out risks and weaknesses directly but constructively.",
-  phoenix: "You are Phoenix, a CMO focused on growth and market positioning. Think about competitive advantage and go-to-market implications.",
-  techpriest: "You are Tech Priest, the CTO. Focus on technical feasibility and implementation considerations. Use clear analogies.",
-  zen: "You are Zen, focused on team dynamics and sustainable growth. Bring empathy and consider the human factors.",
-  virgilia: "You are Virgilia, a Visual Storyteller. Focus on how insights can be communicated effectively and emotionally."
+const CHARACTER_PERSONALITIES_RU: Record<string, string> = {
+  evergreen: `Ты Ever Green, дальновидный CEO с 20-летним опытом. 
+Твоя суперсила - видеть стратегическую картину и находить скрытые возможности.
+Стиль: Вдумчивый, стратегический, всегда ищешь долгосрочную перспективу.
+В обсуждении: Задавай вопросы "А что если...?", предлагай неожиданные ракурсы.`,
+
+  prisma: `Ты Prisma, Product Manager с лазерным фокусом на пользователях.
+Твоя суперсила - понимать реальные потребности людей и превращать их в продукт.
+Стиль: Практичный, эмпатичный, всегда думаешь о пользовательском опыте.
+В обсуждении: Спрашивай "А как пользователь будет...?", предлагай конкретные улучшения UX.`,
+
+  toxic: `Ты Toxic, глава Red Team по безопасности и критическому анализу.
+Твоя суперсила - видеть слабые места и риски, которые другие упускают.
+Стиль: Скептичный, прямой, но конструктивный. Ты не злой - ты защищаешь от провала.
+В обсуждении: Указывай на риски, спрашивай "А что если это не сработает?", но ВСЕГДА предлагай решение.`,
+
+  phoenix: `Ты Phoenix, CMO с талантом находить точки роста.
+Твоя суперсила - видеть рыночные возможности и каналы привлечения.
+Стиль: Энергичный, креативный, ориентирован на рост и метрики.
+В обсуждении: Предлагай идеи продвижения, спрашивай "Как мы достигнем первых 1000 пользователей?"`,
+
+  techpriest: `Ты Tech Priest, CTO с глубокой технической экспертизой.
+Твоя суперсила - оценивать техническую осуществимость и находить элегантные решения.
+Стиль: Технически точный, использует понятные аналогии для сложных концепций.
+В обсуждении: Объясняй техническую сторону, предлагай архитектурные решения.`,
+
+  zen: `Ты Zen, HR-lead фокусирующийся на команде и устойчивости.
+Твоя суперсила - видеть человеческий фактор и предотвращать выгорание.
+Стиль: Эмпатичный, сбалансированный, думает о долгосрочной устойчивости.
+В обсуждении: Спрашивай о ресурсах и реалистичности сроков.`,
+
+  virgilia: `Ты Virgilia, Visual Storyteller с талантом к коммуникации.
+Твоя суперсила - превращать сложные идеи в понятные истории.
+Стиль: Креативный, визуальный, эмоционально вовлечённый.
+В обсуждении: Предлагай способы донести инсайт до инвесторов/пользователей.`
 };
 
 serve(async (req) => {
@@ -47,57 +74,74 @@ serve(async (req) => {
       });
     }
 
-    const { deckId, cardSlot, message, characterId } = await req.json();
+    const { characterId, message, insightContext, deckId, language = 'ru' } = await req.json();
 
-    // Verify deck ownership
-    const { data: deck, error: deckError } = await supabase
-      .from('decks')
-      .select('*')
-      .eq('id', deckId)
-      .eq('user_id', user.id)
-      .single();
+    // Get full project context from vision cards
+    let projectContext = '';
+    let projectName = 'проект';
+    if (deckId) {
+      const { data: visionCards } = await supabase
+        .from('deck_cards')
+        .select('card_data')
+        .eq('deck_id', deckId)
+        .in('card_slot', [1, 2, 3, 4, 5]);
 
-    if (deckError || !deck) {
-      return new Response(JSON.stringify({ error: 'Deck not found' }), {
-        status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      if (visionCards && visionCards.length > 0) {
+        const visionData: Record<string, any> = {};
+        visionCards.forEach(card => {
+          const data = card.card_data as Record<string, any>;
+          Object.assign(visionData, data);
+        });
+
+        projectName = visionData.product_name || 'проект';
+        projectContext = `
+КОНТЕКСТ ПРОЕКТА:
+- Название: ${projectName}
+- Суть: ${visionData.one_liner || 'N/A'}
+- Аналогия: ${visionData.analogy || 'N/A'}
+- Аудитория: ${visionData.target_audience || 'N/A'}
+- Проблема: ${visionData.pain_description || 'N/A'}
+- Ценность: ${visionData.value_proposition || 'N/A'}
+- Почему сейчас: ${visionData.why_now || 'N/A'}
+`;
+      }
     }
 
-    // Get the research result for context
-    const { data: researchResult } = await supabase
-      .from('research_results')
-      .select('*')
-      .eq('deck_id', deckId)
-      .eq('card_slot', cardSlot)
-      .single();
+    const characterPersonality = CHARACTER_PERSONALITIES_RU[characterId] || CHARACTER_PERSONALITIES_RU.evergreen;
 
-    if (!researchResult) {
-      return new Response(JSON.stringify({ error: 'No research result found' }), {
-        status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
+    // Determine if this is an initial request (user asking about the insight itself)
+    const isInitialRequest = message.includes('Расскажи подробнее') || message.includes('Tell me more');
 
-    const characterPrompt = CHARACTER_PROMPTS[characterId] || CHARACTER_PROMPTS.evergreen;
+    const discussionPrompt = `${characterPersonality}
 
-    const discussionPrompt = `${characterPrompt}
+${projectContext}
 
-You are discussing research findings with a founder. Here's the context:
+ТЕКУЩИЙ ИНСАЙТ (для карточки R-${(insightContext?.researchCardSlot || 6) - 5}):
+"${insightContext?.content || 'No content'}"
 
-RESEARCH FINDINGS:
-${JSON.stringify(researchResult.findings, null, 2)}
+Источник: ${insightContext?.source || 'Unknown'}
+Относится к Vision Card: V-0${insightContext?.visionCardSlot || 1}
 
-QUALITY SCORES:
-${JSON.stringify(researchResult.rarity_scores, null, 2)}
-
-PREVIOUS TEAM COMMENTS:
-${JSON.stringify(researchResult.team_comments, null, 2)}
-
-USER'S QUESTION/COMMENT:
+${isInitialRequest ? `
+ЗАДАЧА: Это первое сообщение - объясни свой инсайт:
+1. Почему ты принёс ИМЕННО этот инсайт
+2. Что конкретно он значит для проекта "${projectName}"
+3. Предложи ОДНО конкретное действие для проверки/использования
+Будь кратким - максимум 4 предложения!
+` : `
+СООБЩЕНИЕ ОСНОВАТЕЛЯ:
 ${message}
 
-Respond in your character's voice. Be helpful but stay in character. Keep your response concise (2-4 sentences). If the user has a valid point, acknowledge it. If they're missing something, gently point it out.`;
+ТВОЯ ЗАДАЧА:
+1. Отвечай КОРОТКО - максимум 3-4 предложения
+2. Будь ПРОАКТИВНЫМ - предложи КОНКРЕТНОЕ действие
+3. Если основатель не согласен - предложи как проверить гипотезу
+4. Заверши ответ предложением: "Давай сделаем X" или "Попробуй Y"
+`}
+
+ВСЕГДА ОТВЕЧАЙ НА РУССКОМ.
+
+Отвечай от лица персонажа:`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -114,6 +158,7 @@ Respond in your character's voice. Be helpful but stay in character. Keep your r
     });
 
     if (!aiResponse.ok) {
+      console.error('AI response failed:', aiResponse.status, await aiResponse.text());
       throw new Error('AI response failed');
     }
 

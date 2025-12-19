@@ -6,7 +6,7 @@ import techPriestAvatar from '@/assets/avatars/techpriest.png';
 export interface DemoCard {
   id: string;
   type: string;
-  phase: 'vision' | 'research' | 'build' | 'grow';
+  phase: 'idea' | 'research' | 'build' | 'grow';
   title: string;
   slot: number;
   templateKey: string;
@@ -27,7 +27,7 @@ export const DEMO_CARDS: DemoCard[] = [
   {
     id: 'demo-problem',
     type: 'problem',
-    phase: 'vision',
+    phase: 'idea',
     title: 'Problem',
     slot: 2,
     templateKey: 'pain_point',
@@ -50,7 +50,7 @@ export const DEMO_CARDS: DemoCard[] = [
   {
     id: 'demo-audience',
     type: 'audience',
-    phase: 'vision',
+    phase: 'idea',
     title: 'Audience',
     slot: 3,
     templateKey: 'true_user',
@@ -119,28 +119,28 @@ export const DEMO_CARDS: DemoCard[] = [
 ];
 
 export const PHASE_COLORS: Record<string, string> = {
-  vision: 'from-purple-500/20 to-violet-600/20',
+  idea: 'from-purple-500/20 to-violet-600/20',
   research: 'from-blue-500/20 to-cyan-600/20',
   build: 'from-amber-500/20 to-orange-600/20',
   grow: 'from-emerald-500/20 to-green-600/20'
 };
 
 export const PHASE_BORDER_COLORS: Record<string, string> = {
-  vision: 'border-purple-500/40',
+  idea: 'border-purple-500/40',
   research: 'border-blue-500/40',
   build: 'border-amber-500/40',
   grow: 'border-emerald-500/40'
 };
 
 export const PHASE_GLOW: Record<string, string> = {
-  vision: 'shadow-purple-500/30',
+  idea: 'shadow-purple-500/30',
   research: 'shadow-blue-500/30',
   build: 'shadow-amber-500/30',
   grow: 'shadow-emerald-500/30'
 };
 
 export const PHASE_ACCENT: Record<string, string> = {
-  vision: 'text-purple-400',
+  idea: 'text-purple-400',
   research: 'text-blue-400',
   build: 'text-amber-400',
   grow: 'text-emerald-400'

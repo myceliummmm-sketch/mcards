@@ -12,14 +12,16 @@ serve(async (req) => {
   }
 
   try {
-    const { cardType, currentField, previousAnswers, cardDefinition } = await req.json();
+    const { cardType, currentField, previousAnswers, cardDefinition, language = 'en' } = await req.json();
     
-    console.log('Generating suggestions for field:', currentField, 'in card type:', cardType);
+    console.log('Generating suggestions for field:', currentField, 'in card type:', cardType, 'language:', language);
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
+
+    const isRussian = language === 'ru';
 
     // Build context from previous answers
     const context = Object.entries(previousAnswers || {})
@@ -32,11 +34,28 @@ serve(async (req) => {
     const fieldLabel = field?.label || currentField;
     const fieldPlaceholder = field?.placeholder || '';
 
-    // Build prompt
-    const prompt = `You are helping a user fill out a ${cardType} card for their business strategy deck.
+    // Build localized prompt
+    const prompt = isRussian 
+      ? `Ты помогаешь пользователю заполнить карточку "${cardType}" для его стратегии бизнеса.
 
-Current field to fill: ${fieldLabel}
-${fieldPlaceholder ? `Placeholder hint: ${fieldPlaceholder}` : ''}
+Текущее поле для заполнения: ${typeof fieldLabel === 'object' ? fieldLabel.ru || fieldLabel.en : fieldLabel}
+${fieldPlaceholder ? `Подсказка: ${typeof fieldPlaceholder === 'object' ? fieldPlaceholder.ru || fieldPlaceholder.en : fieldPlaceholder}` : ''}
+
+Контекст из предыдущих ответов:
+${context || 'Предыдущих ответов пока нет'}
+
+Сгенерируй 3 разнообразных, качественных предложения для этого поля. Каждое предложение должно:
+- Быть конкретным и применимым
+- Соответствовать предыдущим ответам
+- Отличаться по тону/подходу (например, формальное, неформальное, креативное)
+- Быть кратким, но полным
+
+Верни ТОЛЬКО JSON массив из 3 строк на РУССКОМ языке, ничего больше. Пример формата:
+["предложение 1", "предложение 2", "предложение 3"]`
+      : `You are helping a user fill out a ${cardType} card for their business strategy deck.
+
+Current field to fill: ${typeof fieldLabel === 'object' ? fieldLabel.en : fieldLabel}
+${fieldPlaceholder ? `Placeholder hint: ${typeof fieldPlaceholder === 'object' ? fieldPlaceholder.en : fieldPlaceholder}` : ''}
 
 Context from previous answers:
 ${context || 'No previous answers yet'}
@@ -49,6 +68,10 @@ Generate 3 diverse, high-quality suggestions for this field. Each suggestion sho
 
 Return ONLY a JSON array of 3 strings, nothing else. Example format:
 ["suggestion 1", "suggestion 2", "suggestion 3"]`;
+
+    const systemPrompt = isRussian
+      ? 'Ты эксперт по бизнес-стратегии, помогающий пользователям создавать убедительные стратегические карточки. Всегда возвращай валидный JSON массив ровно из 3 предложений НА РУССКОМ ЯЗЫКЕ.'
+      : 'You are a business strategy expert helping users craft compelling strategy cards. Always return valid JSON arrays of exactly 3 suggestions.';
 
     console.log('Sending request to Lovable AI...');
 
@@ -67,14 +90,8 @@ Return ONLY a JSON array of 3 strings, nothing else. Example format:
           body: JSON.stringify({
             model: 'google/gemini-2.5-flash',
             messages: [
-              {
-                role: 'system',
-                content: 'You are a business strategy expert helping users craft compelling strategy cards. Always return valid JSON arrays of exactly 3 suggestions.'
-              },
-              {
-                role: 'user',
-                content: prompt
-              }
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: prompt }
             ],
             temperature: 0.8,
           }),
@@ -84,13 +101,13 @@ Return ONLY a JSON array of 3 strings, nothing else. Example format:
         
         if (response.status === 429) {
           return new Response(
-            JSON.stringify({ error: 'Rate limit exceeded. Please try again in a moment.' }),
+            JSON.stringify({ error: isRussian ? 'Превышен лимит запросов. Попробуйте позже.' : 'Rate limit exceeded. Please try again in a moment.' }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
         if (response.status === 402) {
           return new Response(
-            JSON.stringify({ error: 'AI usage limit reached. Please add credits to your workspace.' }),
+            JSON.stringify({ error: isRussian ? 'Лимит AI исчерпан. Пополните баланс.' : 'AI usage limit reached. Please add credits to your workspace.' }),
             { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
@@ -115,15 +132,20 @@ Return ONLY a JSON array of 3 strings, nothing else. Example format:
 
     if (!response || !response.ok) {
       console.error('All retry attempts failed:', lastError);
-      // Return fallback suggestions instead of error
-      return new Response(
-        JSON.stringify({ 
-          suggestions: [
+      // Return fallback suggestions
+      const fallbackSuggestions = isRussian
+        ? [
+            'Введите конкретное, применимое описание',
+            'Опишите ключевую выгоду или результат',
+            'Сфокусируйтесь на потребностях целевой аудитории'
+          ]
+        : [
             'Enter a specific, actionable description',
             'Describe the key benefit or outcome',
             'Focus on your target audience needs'
-          ]
-        }),
+          ];
+      return new Response(
+        JSON.stringify({ suggestions: fallbackSuggestions }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -146,14 +168,19 @@ Return ONLY a JSON array of 3 strings, nothing else. Example format:
     if (!content) {
       console.error('No content found in response. Full data:', JSON.stringify(data));
       // Return fallback suggestions
-      return new Response(
-        JSON.stringify({ 
-          suggestions: [
+      const fallbackSuggestions = isRussian
+        ? [
+            'Введите конкретное, применимое описание',
+            'Опишите ключевую выгоду или результат',
+            'Сфокусируйтесь на потребностях целевой аудитории'
+          ]
+        : [
             'Enter a specific, actionable description',
             'Describe the key benefit or outcome',
             'Focus on your target audience needs'
-          ]
-        }),
+          ];
+      return new Response(
+        JSON.stringify({ suggestions: fallbackSuggestions }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

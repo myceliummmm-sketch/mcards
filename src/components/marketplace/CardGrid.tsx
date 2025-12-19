@@ -6,6 +6,7 @@ interface CardGridProps {
   ownedCardIds: string[];
   favoritedCardIds: string[];
   gapPhases: string[];
+  currentUserId?: string | null;
   onBuy: (cardId: string) => void;
   onQuickView: (card: MarketplaceCard) => void;
   onFavorite: (cardId: string) => void;
@@ -16,6 +17,7 @@ export const CardGrid = ({
   ownedCardIds,
   favoritedCardIds,
   gapPhases,
+  currentUserId,
   onBuy,
   onQuickView,
   onFavorite,
@@ -26,7 +28,7 @@ export const CardGrid = ({
         <div className="text-6xl mb-4">🔍</div>
         <h3 className="text-xl font-bold mb-2">No cards found</h3>
         <p className="text-muted-foreground">
-          Try adjusting your filters or search terms
+          Try adjusting your filters or create some cards first!
         </p>
       </div>
     );
@@ -34,18 +36,23 @@ export const CardGrid = ({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {cards.map((card) => (
-        <MarketplaceCardComponent
-          key={card.id}
-          card={card}
-          onBuy={() => onBuy(card.id)}
-          onQuickView={() => onQuickView(card)}
-          onFavorite={() => onFavorite(card.id)}
-          isInCollection={ownedCardIds.includes(card.id)}
-          isFavorited={favoritedCardIds.includes(card.id)}
-          fillsGap={gapPhases.includes(card.phase)}
-        />
-      ))}
+      {cards.map((card) => {
+        const isOwnCard = (card.previewData as any)?.ownerId === currentUserId;
+        
+        return (
+          <MarketplaceCardComponent
+            key={card.id}
+            card={card}
+            onBuy={() => onBuy(card.id)}
+            onQuickView={() => onQuickView(card)}
+            onFavorite={() => onFavorite(card.id)}
+            isInCollection={ownedCardIds.includes(card.id)}
+            isFavorited={favoritedCardIds.includes(card.id)}
+            fillsGap={gapPhases.includes(card.phase)}
+            isOwnCard={isOwnCard}
+          />
+        );
+      })}
     </div>
   );
 };

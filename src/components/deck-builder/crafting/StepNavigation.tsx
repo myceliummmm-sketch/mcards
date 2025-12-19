@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, SkipForward, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface StepNavigationProps {
@@ -26,56 +26,41 @@ export const StepNavigation = ({
   const { t } = useTranslation();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-50">
-      <div className="max-w-2xl mx-auto flex items-center gap-3">
-        {/* Previous Button */}
-        <Button
-          variant="outline"
-          onClick={onPrevious}
-          disabled={isFirstStep}
-          className="h-12 px-4"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
+    <div className="flex items-center justify-between pt-6 border-t border-border">
+      <Button
+        variant="outline"
+        onClick={onPrevious}
+        disabled={isFirstStep}
+        className="gap-2"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        {t('wizard.previous')}
+      </Button>
 
-        {/* Skip Button (if optional) */}
+      <div className="flex items-center gap-3">
         {isOptionalField && (
           <Button
             variant="ghost"
             onClick={onSkip}
-            className="h-12 gap-2 text-muted-foreground"
+            className="gap-2 text-muted-foreground"
           >
             <SkipForward className="w-4 h-4" />
             {t('wizard.skip')}
           </Button>
         )}
         
-        {/* Main Action Button - Big and Prominent */}
         <Button
           onClick={onNext}
           disabled={!canGoNext && !isOptionalField}
-          className="flex-1 h-14 text-lg gap-3 font-semibold"
-          size="lg"
+          className="gap-2 min-w-[120px]"
         >
-          {isLastStep ? (
-            <>
-              <Sparkles className="w-5 h-5" />
-              {t('wizard.reviewForge')}
-            </>
-          ) : (
-            <>
-              {t('wizard.next')}
-              <ArrowRight className="w-5 h-5" />
-            </>
-          )}
+          {isLastStep ? t('wizard.review') : t('wizard.next')}
+          <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
-      
-      {/* Keyboard hint */}
-      <div className="max-w-2xl mx-auto mt-2 text-center">
-        <span className="text-xs text-muted-foreground">
-          {t('wizard.pressEnter')}
-        </span>
+
+      <div className="text-xs text-muted-foreground">
+        {t('wizard.pressEnter')}
       </div>
     </div>
   );

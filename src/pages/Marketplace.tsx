@@ -6,7 +6,8 @@ import { CardGrid } from '@/components/marketplace/CardGrid';
 import { CardQuickView } from '@/components/marketplace/CardQuickView';
 import { DeckSelector } from '@/components/marketplace/DeckSelector';
 import { RecommendationSidebar } from '@/components/marketplace/RecommendationSidebar';
-import { MOCK_MARKETPLACE_CARDS, MarketplaceCard } from '@/data/mockMarketplaceData';
+import { MarketplaceCard } from '@/data/mockMarketplaceData';
+import { useMarketplaceCards } from '@/hooks/useMarketplaceCards';
 import { Rarity } from '@/data/rarityConfig';
 import { useToast } from '@/hooks/use-toast';
 import { useUserDecks } from '@/hooks/useUserDecks';
@@ -20,6 +21,7 @@ import growIcon from '@/assets/icons/grow.png';
 export default function Marketplace() {
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { cards: realCards, loading: cardsLoading, currentUserId } = useMarketplaceCards();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeView, setActiveView] = useState('browse');
   const [selectedPhases, setSelectedPhases] = useState<string[]>([]);
@@ -34,14 +36,14 @@ export default function Marketplace() {
   const { decks, loading: decksLoading } = useUserDecks();
   const { recommendations, deckAnalysis, isLoading: recommendationsLoading, refetch } = useRecommendations(selectedDeckId);
 
-  // Mock user data
-  const [ownedCardIds, setOwnedCardIds] = useState<string[]>(['1', '3']);
-  const [favoritedCardIds, setFavoritedCardIds] = useState<string[]>(['2', '4', '8']);
-  const [sellingCardIds] = useState<string[]>(['1']);
+  // User data from real cards
+  const [ownedCardIds, setOwnedCardIds] = useState<string[]>([]);
+  const [favoritedCardIds, setFavoritedCardIds] = useState<string[]>([]);
+  const [sellingCardIds] = useState<string[]>([]);
 
-  // Mock deck gaps (for Gap Filler Mode)
+  // Deck gaps (for Gap Filler Mode)
   const deckGaps = [
-    { phase: 'vision', filled: 3, total: 5, icon: visionIcon, color: 'purple' },
+    { phase: 'idea', filled: 3, total: 5, icon: visionIcon, color: 'purple' },
     { phase: 'research', filled: 4, total: 6, icon: researchIcon, color: 'blue' },
     { phase: 'build', filled: 2, total: 6, icon: buildIcon, color: 'orange' },
     { phase: 'grow', filled: 5, total: 5, icon: growIcon, color: 'green' },
@@ -49,9 +51,9 @@ export default function Marketplace() {
 
   const gapPhases = deckGaps.filter((g) => g.filled < g.total).map((g) => g.phase);
 
-  // Filter and sort cards
+  // Filter and sort cards - use real cards
   const filteredCards = useMemo(() => {
-    let cards = [...MOCK_MARKETPLACE_CARDS];
+    let cards = [...realCards];
 
     // View filter
     if (activeView === 'collection') {
@@ -126,6 +128,7 @@ export default function Marketplace() {
 
     return cards;
   }, [
+    realCards,
     activeView,
     searchQuery,
     selectedPhases,
@@ -166,14 +169,25 @@ export default function Marketplace() {
     setShowOwned(true);
   };
 
-  const handleBuy = (cardId: string) => {
-    const card = MOCK_MARKETPLACE_CARDS.find((c) => c.id === cardId);
+  const handleRequestPurchase = (cardId: string) => {
+    const card = realCards.find((c) => c.id === cardId);
     if (!card) return;
 
-    setOwnedCardIds((prev) => [...prev, cardId]);
+    // Check if it's own card
+    const isOwnCard = (card.previewData as any)?.ownerId === currentUserId;
+    if (isOwnCard) {
+      toast({
+        title: "This is your card",
+        description: "You can't request your own card",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Send purchase request (mock for now)
     toast({
-      title: `🎉 ${t('marketplace.purchaseSuccess')}`,
-      description: `${t('marketplace.youNowOwn')} "${card.title}"`,
+      title: `📩 Request Sent!`,
+      description: `Purchase request sent to @${card.seller.username} for "${card.title}"`,
     });
     setQuickViewCard(null);
   };
@@ -237,7 +251,7 @@ export default function Marketplace() {
           <RecommendationSidebar
             recommendations={recommendations}
             deckAnalysis={deckAnalysis}
-            marketplaceCards={MOCK_MARKETPLACE_CARDS}
+            marketplaceCards={realCards}
             isLoading={recommendationsLoading}
             onRefresh={refetch}
             onCardView={setQuickViewCard}
@@ -260,7 +274,8 @@ export default function Marketplace() {
             ownedCardIds={ownedCardIds}
             favoritedCardIds={favoritedCardIds}
             gapPhases={gapFillerMode ? gapPhases : []}
-            onBuy={handleBuy}
+            currentUserId={currentUserId}
+            onBuy={handleRequestPurchase}
             onQuickView={setQuickViewCard}
             onFavorite={handleFavorite}
           />
@@ -271,7 +286,7 @@ export default function Marketplace() {
         card={quickViewCard}
         isOpen={!!quickViewCard}
         onClose={() => setQuickViewCard(null)}
-        onBuy={() => quickViewCard && handleBuy(quickViewCard.id)}
+        onBuy={() => quickViewCard && handleRequestPurchase(quickViewCard.id)}
         onFavorite={() => quickViewCard && handleFavorite(quickViewCard.id)}
         isInCollection={quickViewCard ? ownedCardIds.includes(quickViewCard.id) : false}
         isFavorited={quickViewCard ? favoritedCardIds.includes(quickViewCard.id) : false}

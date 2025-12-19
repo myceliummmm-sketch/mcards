@@ -2,7 +2,7 @@
 // Based on technical documentation v1.0
 
 export const PHASE_COLORS = {
-  vision: { name: 'mint green', hex: '#64FFDA' },
+  idea: { name: 'mint green', hex: '#64FFDA' },
   research: { name: 'deep teal', hex: '#0D4F4F' },
   build: { name: 'warm coral', hex: '#FF8A80' },
   grow: { name: 'electric violet', hex: '#9D4EDD' },
@@ -111,11 +111,11 @@ export const KEYWORD_TO_FORMS: Record<string, string[]> = {
 
 // 23 Card Templates (Mycelium system)
 export const CARD_TEMPLATES: Record<string, any> = {
-  // PHASE: VISION (mint green #64FFDA)
+  // PHASE: IDEA (mint green #64FFDA)
   idea_seed: {
     id: 1,
     slot: 1,
-    phase: 'vision',
+    phase: 'idea',
     name_en: 'IDEA SEED',
     metaphor: 'The small contains the infinite',
     composition: 'straight front view',
@@ -125,7 +125,7 @@ export const CARD_TEMPLATES: Record<string, any> = {
   pain_point: {
     id: 2,
     slot: 2,
-    phase: 'vision',
+    phase: 'idea',
     name_en: 'PAIN POINT',
     metaphor: 'Darkness shows where to bring light',
     composition: 'straight front view',
@@ -135,7 +135,7 @@ export const CARD_TEMPLATES: Record<string, any> = {
   true_user: {
     id: 3,
     slot: 3,
-    phase: 'vision',
+    phase: 'idea',
     name_en: 'TRUE USER',
     metaphor: 'In infinity one flickers in your rhythm',
     composition: 'straight front view',
@@ -145,7 +145,7 @@ export const CARD_TEMPLATES: Record<string, any> = {
   success_signal: {
     id: 4,
     slot: 4,
-    phase: 'vision',
+    phase: 'idea',
     name_en: 'SUCCESS SIGNAL',
     metaphor: 'True growth measured by depth of glow',
     composition: 'straight front view',
@@ -155,7 +155,7 @@ export const CARD_TEMPLATES: Record<string, any> = {
   strange_gift: {
     id: 5,
     slot: 5,
-    phase: 'vision',
+    phase: 'idea',
     name_en: 'STRANGE GIFT',
     metaphor: 'One mutated and changed the spectrum',
     composition: 'straight front view',

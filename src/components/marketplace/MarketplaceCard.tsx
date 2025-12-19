@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Eye, ShoppingCart, Check } from 'lucide-react';
+import { Heart, Eye, ShoppingCart, Check, Send } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,7 @@ interface MarketplaceCardProps {
   isInCollection: boolean;
   isFavorited: boolean;
   fillsGap?: boolean;
+  isOwnCard?: boolean;
 }
 
 export const MarketplaceCard = ({
@@ -30,6 +31,7 @@ export const MarketplaceCard = ({
   isInCollection,
   isFavorited,
   fillsGap,
+  isOwnCard = false,
 }: MarketplaceCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const rarityConfig = RARITY_CONFIG[card.rarity];
@@ -176,12 +178,23 @@ export const MarketplaceCard = ({
             </Button>
             <Button
               size="sm"
-              className="flex-1 bg-gradient-to-r from-primary to-secondary text-background font-bold"
+              className={cn(
+                "flex-1 font-bold",
+                isOwnCard 
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-gradient-to-r from-primary to-secondary text-background"
+              )}
               onClick={onBuy}
-              disabled={isInCollection}
+              disabled={isInCollection || isOwnCard}
             >
-              <ShoppingCart size={14} className="mr-1" />
-              {isInCollection ? 'Owned' : 'Buy'}
+              {isOwnCard ? (
+                <>Your Card</>
+              ) : (
+                <>
+                  <Send size={14} className="mr-1" />
+                  Request
+                </>
+              )}
             </Button>
           </div>
         </div>

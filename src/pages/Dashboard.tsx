@@ -10,6 +10,7 @@ import { SporeWallet } from "@/components/paywall/SporeWallet";
 import { SubscriptionBadge } from "@/components/paywall/SubscriptionBadge";
 import { UpgradeModal } from "@/components/paywall/UpgradeModal";
 import { WelcomeBackOverlay } from "@/components/dashboard/WelcomeBackOverlay";
+import { InvitationNotifications } from "@/components/InvitationNotifications";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useTranslation } from "@/hooks/useTranslation";
 import { formatDistanceToNow } from "date-fns";
@@ -51,10 +52,26 @@ const Dashboard = () => {
 
       if (!mounted) return;
 
-      // Redirect to onboarding if not completed
-      if (!profile || profile?.onboarding_completed === false) {
+      // Redirect to onboarding only if profile doesn't exist (new user)
+      // If onboarding_completed is false but profile exists, user might have started onboarding
+      if (!profile) {
         navigate("/onboarding");
         return;
+      }
+      
+      // Only redirect to onboarding if explicitly false AND no decks exist
+      if (profile.onboarding_completed === false) {
+        // Check if user has any decks - if yes, they've used the app before
+        const { data: existingDecks } = await supabase
+          .from("decks")
+          .select("id")
+          .eq("user_id", session.user.id)
+          .limit(1);
+        
+        if (!existingDecks || existingDecks.length === 0) {
+          navigate("/onboarding");
+          return;
+        }
       }
 
       setUsername(profile?.username || session.user.email?.split("@")[0] || "User");
@@ -196,6 +213,30 @@ const Dashboard = () => {
     }
   };
 
+  const handleRenameDeck = async (deckId: string, newTitle: string) => {
+    try {
+      const { error } = await supabase
+        .from("decks")
+        .update({ title: newTitle })
+        .eq("id", deckId);
+
+      if (error) throw error;
+
+      setDecks(decks.map(d => d.id === deckId ? { ...d, title: newTitle } : d));
+      
+      toast({
+        title: "Колода переименована",
+        description: `Новое название: ${newTitle}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -274,6 +315,7 @@ const Dashboard = () => {
                 key={deck.id}
                 deck={deck}
                 onDelete={handleDeleteDeck}
+                onRename={handleRenameDeck}
               />
             ))}
           </div>
@@ -290,6 +332,8 @@ const Dashboard = () => {
         open={isUpgradeModalOpen}
         onOpenChange={setIsUpgradeModalOpen}
       />
+
+      <InvitationNotifications />
 
       <WelcomeBackOverlay
         username={username}

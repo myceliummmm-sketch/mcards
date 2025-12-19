@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, Scale, Star, Palette } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, Scale } from 'lucide-react';
 import { PhaseIcon } from '../PhaseIcon';
 import type { CardPhase } from '@/data/cardDefinitions';
 
@@ -33,7 +32,7 @@ interface MetricBreakdownProps {
   };
 }
 
-export function MetricBreakdown({ completion, balance, quality, variety }: MetricBreakdownProps) {
+export function MetricBreakdown({ completion, balance }: MetricBreakdownProps) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -83,50 +82,6 @@ export function MetricBreakdown({ completion, balance, quality, variety }: Metri
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Quality */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Star className="w-5 h-5 text-yellow-500" />
-            Content Quality
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold">{quality.score}%</span>
-            <Badge variant="secondary">
-              {quality.evaluatedCards} evaluated
-            </Badge>
-          </div>
-          <Progress value={quality.score} className="h-2" />
-          <p className="text-xs text-muted-foreground">
-            Based on AI evaluation scores from {quality.evaluatedCards} of {quality.totalFilled} filled cards
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Variety */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Palette className="w-5 h-5 text-purple-500" />
-            Card Variety
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold">{variety.score}%</span>
-            <span className="text-sm text-muted-foreground">
-              {variety.uniqueTypes} types
-            </span>
-          </div>
-          <Progress value={variety.score} className="h-2" />
-          <p className="text-xs text-muted-foreground">
-            Diversity of card types improves deck comprehensiveness
-          </p>
         </CardContent>
       </Card>
     </div>
