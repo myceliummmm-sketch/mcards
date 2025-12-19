@@ -13,6 +13,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const getBrowserLanguage = (): Language => {
   const browserLang = navigator.language.toLowerCase();
   if (browserLang.startsWith('ru')) return 'ru';
+  if (browserLang.startsWith('es')) return 'es';
   return 'en';
 };
 
@@ -20,7 +21,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app-language');
     // Use saved preference if valid, otherwise auto-detect from browser
-    return (saved === 'ru' || saved === 'en') ? saved : getBrowserLanguage();
+    return (saved === 'ru' || saved === 'en' || saved === 'es') ? saved : getBrowserLanguage();
   });
 
   const setLanguage = (lang: Language) => {
@@ -30,13 +31,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = (key: string): string => {
     const keys = key.split('.');
-    let result: any = translations[language];
-    
+
+    // Use selected language or fallback to English if language doesn't exist
+    const effectiveLang = translations[language] ? language : 'en';
+    let result: any = translations[effectiveLang];
+
     for (const k of keys) {
       if (result && typeof result === 'object' && k in result) {
         result = result[k];
       } else {
-        // Fallback to English
+        // Fallback to English if key not found in current language
         result = translations.en;
         for (const fallbackK of keys) {
           if (result && typeof result === 'object' && fallbackK in result) {
@@ -48,7 +52,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         break;
       }
     }
-    
+
     return typeof result === 'string' ? result : key;
   };
 

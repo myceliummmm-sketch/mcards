@@ -135,7 +135,7 @@ export default function Settings() {
             <CardDescription>{t('settings.language.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Select value={language} onValueChange={(value: 'en' | 'ru') => setLanguage(value)}>
+            <Select value={language} onValueChange={(value: 'en' | 'ru' | 'es') => setLanguage(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -148,6 +148,11 @@ export default function Settings() {
                 <SelectItem value="ru">
                   <span className="flex items-center gap-2">
                     🇷🇺 {t('settings.language.russian')}
+                  </span>
+                </SelectItem>
+                <SelectItem value="es">
+                  <span className="flex items-center gap-2">
+                    🇪🇸 {t('settings.language.spanish')}
                   </span>
                 </SelectItem>
               </SelectContent>

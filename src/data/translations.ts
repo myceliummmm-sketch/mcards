@@ -1,4 +1,4 @@
-export type Language = 'en' | 'ru';
+export type Language = 'en' | 'ru' | 'es';
 
 export const translations = {
   en: {
@@ -309,6 +309,7 @@ export const translations = {
         subtitle: "Choose your preferred language",
         english: "English",
         russian: "Русский",
+        spanish: "Español",
       },
       subscription: {
         title: "Subscription",
@@ -1003,6 +1004,7 @@ export const translations = {
         subtitle: "Выбери предпочитаемый язык",
         english: "English",
         russian: "Русский",
+        spanish: "Español",
       },
       subscription: {
         title: "Подписка",
