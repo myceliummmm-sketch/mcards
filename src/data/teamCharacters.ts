@@ -6,6 +6,9 @@ import toxicAvatar from '@/assets/avatars/toxic.png';
 import virgiliaAvatar from '@/assets/avatars/virgilia.png';
 import zenAvatar from '@/assets/avatars/zen.png';
 
+export type Language = 'en' | 'ru';
+
+// Simple interface for UI components (already localized)
 export interface TeamCharacter {
   id: string;
   name: string;
@@ -19,121 +22,270 @@ export interface TeamCharacter {
   avatar: string;
 }
 
-export const TEAM_CHARACTERS: Record<string, TeamCharacter> = {
+// Internal data with localization
+interface CharacterData {
+  id: string;
+  emoji: string;
+  color: string;
+  avatar: string;
+  en: {
+    name: string;
+    role: string;
+    specialty: string;
+    personality: string;
+    signaturePhrases: string[];
+    tagline: string;
+  };
+  ru: {
+    name: string;
+    role: string;
+    specialty: string;
+    personality: string;
+    signaturePhrases: string[];
+    tagline: string;
+  };
+}
+
+const CHARACTER_DATA: Record<string, CharacterData> = {
   evergreen: {
     id: 'evergreen',
-    name: 'Ever Green',
     emoji: '🌲',
-    role: 'CEO / Visionary',
-    specialty: 'Strategic vision & innovation',
-    personality: 'Architect of the future. Transforms visions into reality, makes final strategic decisions, maintains ethical boundaries. The glue that connects geniuses into a team.',
-    signaturePhrases: [
-      "I don't build companies. I create movements.",
-      "What's the bigger vision here?",
-      "How does this change the game?"
-    ],
-    tagline: "Connects dots you didn't know existed.",
     color: 'hsl(140 70% 50%)',
-    avatar: everAvatar
+    avatar: everAvatar,
+    en: {
+      name: 'Ever Green',
+      role: 'CEO / Visionary',
+      specialty: 'Strategic vision & innovation',
+      personality: 'Architect of the future. Transforms visions into reality, makes final strategic decisions, maintains ethical boundaries. The glue that connects geniuses into a team.',
+      signaturePhrases: [
+        "I don't build companies. I create movements.",
+        "What's the bigger vision here?",
+        "How does this change the game?"
+      ],
+      tagline: "Connects dots you didn't know existed."
+    },
+    ru: {
+      name: 'Эвер Грин',
+      role: 'CEO / Визионер',
+      specialty: 'Стратегическое видение и инновации',
+      personality: 'Архитектор будущего. Превращает видение в реальность, принимает финальные стратегические решения, соблюдает этические границы. Связующее звено гениев в команде.',
+      signaturePhrases: [
+        "Я не строю компании. Я создаю движения.",
+        "Какое тут глобальное видение?",
+        "Как это меняет правила игры?"
+      ],
+      tagline: "Соединяет точки, о которых ты и не подозревал."
+    }
   },
   prisma: {
     id: 'prisma',
-    name: 'Prisma',
     emoji: '💎',
-    role: 'Product Manager',
-    specialty: 'User needs & product strategy',
-    personality: 'Voice of the user and bridge between business and technology. Translates vision into roadmaps, protects developer time, brings user perspective to every decision. Obsessed with solving real human problems.',
-    signaturePhrases: [
-      "Fall in love with the problem, not the solution.",
-      "What does the user really need?",
-      "Let's validate that assumption"
-    ],
-    tagline: "Obsesses over what users actually need, not what you think they want.",
     color: 'hsl(200 70% 55%)',
-    avatar: prismaAvatar
+    avatar: prismaAvatar,
+    en: {
+      name: 'Prisma',
+      role: 'Product Manager',
+      specialty: 'User needs & product strategy',
+      personality: 'Voice of the user and bridge between business and technology. Translates vision into roadmaps, protects developer time, brings user perspective to every decision. Obsessed with solving real human problems.',
+      signaturePhrases: [
+        "Fall in love with the problem, not the solution.",
+        "What does the user really need?",
+        "Let's validate that assumption"
+      ],
+      tagline: "Obsesses over what users actually need, not what you think they want."
+    },
+    ru: {
+      name: 'Призма',
+      role: 'Продакт-менеджер',
+      specialty: 'Потребности пользователей и продуктовая стратегия',
+      personality: 'Голос пользователя и мост между бизнесом и технологиями. Переводит видение в дорожные карты, защищает время разработчиков, привносит пользовательскую перспективу в каждое решение. Одержима решением реальных человеческих проблем.',
+      signaturePhrases: [
+        "Влюбись в проблему, а не в решение.",
+        "Что на самом деле нужно пользователю?",
+        "Давай проверим это предположение"
+      ],
+      tagline: "Зациклена на том, что реально нужно пользователям, а не на том, что ты думаешь они хотят."
+    }
   },
   toxic: {
     id: 'toxic',
-    name: 'Toxic',
     emoji: '☢️',
-    role: 'Red Team Lead / Security',
-    specialty: 'Security & vulnerability assessment',
-    personality: 'Adversarial thinker who breaks illusions of safety. Thinks like an attacker to find vulnerabilities. Paranoid in a healthy way — direct, uncompromising, but constructive. White hat only.',
-    signaturePhrases: [
-      "I'm not paranoid. I just know what people are capable of.",
-      "What could go wrong here?",
-      "Let's think like an attacker"
-    ],
-    tagline: "Finds the security holes you missed.",
     color: 'hsl(30 90% 55%)',
-    avatar: toxicAvatar
+    avatar: toxicAvatar,
+    en: {
+      name: 'Toxic',
+      role: 'Red Team Lead / Security',
+      specialty: 'Security & vulnerability assessment',
+      personality: 'Adversarial thinker who breaks illusions of safety. Thinks like an attacker to find vulnerabilities. Paranoid in a healthy way — direct, uncompromising, but constructive. White hat only.',
+      signaturePhrases: [
+        "I'm not paranoid. I just know what people are capable of.",
+        "What could go wrong here?",
+        "Let's think like an attacker"
+      ],
+      tagline: "Finds the security holes you missed."
+    },
+    ru: {
+      name: 'Токсик',
+      role: 'Лид красной команды / Безопасность',
+      specialty: 'Безопасность и оценка уязвимостей',
+      personality: 'Мыслит как противник, разрушает иллюзии безопасности. Думает как атакующий, чтобы найти уязвимости. Параноик в хорошем смысле — прямой, бескомпромиссный, но конструктивный. Только белая шляпа.',
+      signaturePhrases: [
+        "Я не параноик. Я просто знаю, на что люди способны.",
+        "Что тут может пойти не так?",
+        "Давай думать как атакующий"
+      ],
+      tagline: "Находит дыры в безопасности, которые ты пропустил."
+    }
   },
   phoenix: {
     id: 'phoenix',
-    name: 'Phoenix',
     emoji: '🔥',
-    role: 'CMO',
-    specialty: 'Growth & brand storytelling',
-    personality: 'Growth architect and brand storyteller. Creates movements, not marketing campaigns. Turns products into emotional narratives, finds unconventional growth paths, builds authentic community.',
-    signaturePhrases: [
-      "The best marketing doesn't look like marketing.",
-      "How do we make this shareable?",
-      "What's the emotional story here?"
-    ],
-    tagline: "Asks 'Who pays for this?' until you have an answer.",
     color: 'hsl(15 90% 60%)',
-    avatar: phoenixAvatar
+    avatar: phoenixAvatar,
+    en: {
+      name: 'Phoenix',
+      role: 'CMO',
+      specialty: 'Growth & brand storytelling',
+      personality: 'Growth architect and brand storyteller. Creates movements, not marketing campaigns. Turns products into emotional narratives, finds unconventional growth paths, builds authentic community.',
+      signaturePhrases: [
+        "The best marketing doesn't look like marketing.",
+        "How do we make this shareable?",
+        "What's the emotional story here?"
+      ],
+      tagline: "Asks 'Who pays for this?' until you have an answer."
+    },
+    ru: {
+      name: 'Феникс',
+      role: 'Директор по маркетингу',
+      specialty: 'Рост и бренд-сторителлинг',
+      personality: 'Архитектор роста и бренд-сторителлер. Создаёт движения, а не маркетинговые кампании. Превращает продукты в эмоциональные нарративы, находит нестандартные пути роста, строит аутентичное сообщество.',
+      signaturePhrases: [
+        "Лучший маркетинг не выглядит как маркетинг.",
+        "Как сделать это вирусным?",
+        "Какая тут эмоциональная история?"
+      ],
+      tagline: "Спрашивает 'Кто за это платит?' пока не получит ответ."
+    }
   },
   techpriest: {
     id: 'techpriest',
-    name: 'Tech Priest',
     emoji: '⚙️',
-    role: 'CTO',
-    specialty: 'Architecture & technical excellence',
-    personality: 'Builder of digital worlds and translator between code and business. Designs scalable architectures, explains complex concepts through analogies, ensures technology remains invisible to users. Teaches principles, not code.',
-    signaturePhrases: [
-      "The best technology is the one you don't notice.",
-      "Is this technically feasible?",
-      "Let's build this smart, not just fast"
-    ],
-    tagline: "Prevents you from choosing the wrong tech stack.",
     color: 'hsl(260 70% 60%)',
-    avatar: techPriestAvatar
+    avatar: techPriestAvatar,
+    en: {
+      name: 'Tech Priest',
+      role: 'CTO',
+      specialty: 'Architecture & technical excellence',
+      personality: 'Builder of digital worlds and translator between code and business. Designs scalable architectures, explains complex concepts through analogies, ensures technology remains invisible to users. Teaches principles, not code.',
+      signaturePhrases: [
+        "The best technology is the one you don't notice.",
+        "Is this technically feasible?",
+        "Let's build this smart, not just fast"
+      ],
+      tagline: "Prevents you from choosing the wrong tech stack."
+    },
+    ru: {
+      name: 'Техно-жрец',
+      role: 'Технический директор',
+      specialty: 'Архитектура и техническое совершенство',
+      personality: 'Строитель цифровых миров и переводчик между кодом и бизнесом. Проектирует масштабируемые архитектуры, объясняет сложные концепции через аналогии, делает технологию невидимой для пользователей. Учит принципам, а не коду.',
+      signaturePhrases: [
+        "Лучшая технология — та, которую не замечаешь.",
+        "Это технически реализуемо?",
+        "Давай строить умно, а не просто быстро"
+      ],
+      tagline: "Не даёт выбрать неправильный технологический стек."
+    }
   },
   virgilia: {
     id: 'virgilia',
-    name: 'Virgilia',
     emoji: '🎨',
-    role: 'Visual Storyteller',
-    specialty: 'Visual design & emotional storytelling',
-    personality: 'Translator of emotions into visual language. Transforms abstract concepts into captivating visual stories. Every frame must work as a photograph, every color carries emotional temperature. Creates experiences, not content.',
-    signaturePhrases: [
-      "I don't shoot videos. I create visual mantras that change inner states.",
-      "How does this feel?",
-      "What's the emotional temperature here?"
-    ],
-    tagline: "Translates your vision into stories people feel.",
     color: 'hsl(320 70% 60%)',
-    avatar: virgiliaAvatar
+    avatar: virgiliaAvatar,
+    en: {
+      name: 'Virgilia',
+      role: 'Visual Storyteller',
+      specialty: 'Visual design & emotional storytelling',
+      personality: 'Translator of emotions into visual language. Transforms abstract concepts into captivating visual stories. Every frame must work as a photograph, every color carries emotional temperature. Creates experiences, not content.',
+      signaturePhrases: [
+        "I don't shoot videos. I create visual mantras that change inner states.",
+        "How does this feel?",
+        "What's the emotional temperature here?"
+      ],
+      tagline: "Translates your vision into stories people feel."
+    },
+    ru: {
+      name: 'Виргилия',
+      role: 'Визуальный рассказчик',
+      specialty: 'Визуальный дизайн и эмоциональный сторителлинг',
+      personality: 'Переводчик эмоций на визуальный язык. Превращает абстрактные концепции в захватывающие визуальные истории. Каждый кадр должен работать как фотография, каждый цвет несёт эмоциональную температуру. Создаёт опыт, а не контент.',
+      signaturePhrases: [
+        "Я не снимаю видео. Я создаю визуальные мантры, которые меняют внутренние состояния.",
+        "Как это ощущается?",
+        "Какая тут эмоциональная температура?"
+      ],
+      tagline: "Переводит твоё видение в истории, которые люди чувствуют."
+    }
   },
   zen: {
     id: 'zen',
-    name: 'Zen',
     emoji: '🧘',
-    role: 'HR / Wellbeing',
-    specialty: 'Culture & human potential',
-    personality: 'Culture keeper and catalyst of human potential. Creates psychological safety, prevents burnout, reminds everyone that behind every KPI stands a human being. Holds the emotional map of the team.',
-    signaturePhrases: [
-      "Happy people build great companies.",
-      "How are we really feeling?",
-      "What do we need to thrive?"
-    ],
-    tagline: "Reminds you that burnout is a blind spot too.",
     color: 'hsl(180 50% 60%)',
-    avatar: zenAvatar
+    avatar: zenAvatar,
+    en: {
+      name: 'Zen',
+      role: 'HR / Wellbeing',
+      specialty: 'Culture & human potential',
+      personality: 'Culture keeper and catalyst of human potential. Creates psychological safety, prevents burnout, reminds everyone that behind every KPI stands a human being. Holds the emotional map of the team.',
+      signaturePhrases: [
+        "Happy people build great companies.",
+        "How are we really feeling?",
+        "What do we need to thrive?"
+      ],
+      tagline: "Reminds you that burnout is a blind spot too."
+    },
+    ru: {
+      name: 'Зен',
+      role: 'HR / Благополучие',
+      specialty: 'Культура и человеческий потенциал',
+      personality: 'Хранитель культуры и катализатор человеческого потенциала. Создаёт психологическую безопасность, предотвращает выгорание, напоминает всем, что за каждым KPI стоит живой человек. Держит эмоциональную карту команды.',
+      signaturePhrases: [
+        "Счастливые люди строят великие компании.",
+        "Как мы на самом деле себя чувствуем?",
+        "Что нам нужно, чтобы процветать?"
+      ],
+      tagline: "Напоминает, что выгорание — тоже слепое пятно."
+    }
   }
 };
 
-export const getCharacterById = (id: string): TeamCharacter | undefined => {
-  return TEAM_CHARACTERS[id];
+// Get character with localized strings
+export const getCharacterById = (id: string, language: Language = 'en'): TeamCharacter | undefined => {
+  const data = CHARACTER_DATA[id];
+  if (!data) return undefined;
+  
+  const localized = data[language];
+  return {
+    id: data.id,
+    emoji: data.emoji,
+    color: data.color,
+    avatar: data.avatar,
+    name: localized.name,
+    role: localized.role,
+    specialty: localized.specialty,
+    personality: localized.personality,
+    signaturePhrases: localized.signaturePhrases,
+    tagline: localized.tagline
+  };
 };
+
+// Get all characters localized
+export const getAllCharacters = (language: Language = 'en'): TeamCharacter[] => {
+  return Object.keys(CHARACTER_DATA).map(id => getCharacterById(id, language)!);
+};
+
+// For backward compatibility - returns English by default
+export const TEAM_CHARACTERS: Record<string, TeamCharacter> = Object.keys(CHARACTER_DATA).reduce((acc, id) => {
+  acc[id] = getCharacterById(id, 'en')!;
+  return acc;
+}, {} as Record<string, TeamCharacter>);

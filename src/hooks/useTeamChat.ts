@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { CHARACTER_SPEECH_PROFILES } from '@/data/characterPrompts';
 import { toast } from 'sonner';
 import { getCharacterById } from '@/data/teamCharacters';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -19,7 +20,57 @@ interface UseTeamChatProps {
   cards: DeckCard[];
 }
 
+// Storage key for chat history
+const getChatStorageKey = (deckId: string, characterId: string) => 
+  `team-chat-${deckId}-${characterId}`;
+
+// Save chat history to localStorage (keep last 24 hours)
+const saveChatHistory = (deckId: string, characterId: string, messages: ChatMessage[]) => {
+  try {
+    const key = getChatStorageKey(deckId, characterId);
+    const data = {
+      messages: messages.map(m => ({
+        ...m,
+        timestamp: m.timestamp.toISOString()
+      })),
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to save chat history:', e);
+  }
+};
+
+// Load chat history from localStorage
+const loadChatHistory = (deckId: string, characterId: string): ChatMessage[] | null => {
+  try {
+    const key = getChatStorageKey(deckId, characterId);
+    const stored = localStorage.getItem(key);
+    if (!stored) return null;
+    
+    const data = JSON.parse(stored);
+    const savedAt = new Date(data.savedAt);
+    const now = new Date();
+    
+    // Only keep history from last 24 hours
+    const hoursDiff = (now.getTime() - savedAt.getTime()) / (1000 * 60 * 60);
+    if (hoursDiff > 24) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    
+    return data.messages.map((m: any) => ({
+      ...m,
+      timestamp: new Date(m.timestamp)
+    }));
+  } catch (e) {
+    console.error('Failed to load chat history:', e);
+    return null;
+  }
+};
+
 export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
+  const { language } = useLanguage();
   const [activeCharacter, setActiveCharacter] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -27,7 +78,14 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
   const [isCrystallizing, setIsCrystallizing] = useState(false);
   const [expandingMessageId, setExpandingMessageId] = useState<string | null>(null);
 
-  // Build deck context from cards
+  // Save messages whenever they change
+  useEffect(() => {
+    if (activeCharacter && messages.length > 0) {
+      saveChatHistory(deckId, activeCharacter, messages);
+    }
+  }, [deckId, activeCharacter, messages]);
+
+  // Build FULL deck context from cards - include ALL fields
   const buildDeckContext = useCallback(() => {
     if (!cards || cards.length === 0) {
       return 'No cards have been filled yet.';
@@ -44,25 +102,39 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
 
     return filledCards.map(card => {
       const data = card.card_data as Record<string, any>;
-      const evaluation = card.evaluation as { overall?: number } | null;
+      const evaluation = card.evaluation as Record<string, any> | null;
       
-      let summary = `**${card.card_type}** (Slot ${card.card_slot})`;
+      let summary = `=== CARD: ${card.card_type.toUpperCase()} (Slot #${card.card_slot}) ===\n`;
       
-      // Extract key content
-      const content = data.summary || data.description || data.content || data.statement || data.name;
-      if (content) {
-        summary += `\n  Content: ${content}`;
-      }
+      // Include ALL card data fields
+      Object.entries(data).forEach(([key, value]) => {
+        if (value && key !== 'completed') {
+          const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          summary += `${label}: ${value}\n`;
+        }
+      });
       
+      // Include evaluation if available
       if (evaluation?.overall) {
-        summary += `\n  Score: ${evaluation.overall}/100`;
+        summary += `\nOverall Score: ${evaluation.overall}/10`;
+        
+        // Include individual scores if they exist
+        const scoreFields = ['positioning', 'market_fit', 'credibility', 'actionability', 'messaging', 'clarity', 'impact'];
+        scoreFields.forEach(field => {
+          if (evaluation[field]?.score) {
+            summary += `\n  - ${field}: ${evaluation[field].score}/10`;
+            if (evaluation[field]?.explanation) {
+              summary += ` (${evaluation[field].explanation.substring(0, 100)}...)`;
+            }
+          }
+        });
       }
       
       return summary;
     }).join('\n\n');
   }, [cards]);
 
-  // Open chat with a character
+  // Open chat with a character - LOAD previous history
   const openChat = useCallback((characterId: string) => {
     const profile = CHARACTER_SPEECH_PROFILES[characterId];
     if (!profile) return;
@@ -70,21 +142,30 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
     setActiveCharacter(characterId);
     setIsOpen(true);
     
-    // Add greeting message
-    setMessages([{
-      id: `greeting-${Date.now()}`,
-      role: 'assistant',
-      content: profile.greeting,
-      characterId,
-      timestamp: new Date(),
-    }]);
-  }, []);
+    // Try to load previous chat history
+    const savedHistory = loadChatHistory(deckId, characterId);
+    
+    if (savedHistory && savedHistory.length > 0) {
+      // Resume previous conversation
+      setMessages(savedHistory);
+    } else {
+      // Start fresh with greeting - use localized version
+      const greetingText = profile.greeting[language] || profile.greeting.en;
+      setMessages([{
+        id: `greeting-${Date.now()}`,
+        role: 'assistant',
+        content: greetingText,
+        characterId,
+        timestamp: new Date(),
+      }]);
+    }
+  }, [deckId, language]);
 
-  // Close chat
+  // Close chat - DON'T clear messages, they're saved in localStorage
   const closeChat = useCallback(() => {
     setIsOpen(false);
     setActiveCharacter(null);
-    setMessages([]);
+    // Don't clear messages - they're persisted in localStorage
   }, []);
 
   // Send a message
@@ -123,6 +204,7 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
             messages: apiMessages,
             deckContext,
             responseMode,
+            language,
           }),
         }
       );
@@ -251,10 +333,11 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
             characterId,
             messages: [
               { role: 'assistant', content: originalContent },
-              { role: 'user', content: 'Can you expand on that with more detail?' }
+              { role: 'user', content: language === 'ru' ? 'Расскажи подробнее об этом.' : 'Can you expand on that with more detail?' }
             ],
             deckContext: buildDeckContext(),
             responseMode: 'detailed',
+            language,
           }),
         }
       );
@@ -315,14 +398,26 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
 
   // Crystallize conversation into insight
   const crystallizeConversation = useCallback(async () => {
-    if (messages.length < 3 || isCrystallizing || !activeCharacter) return;
+    if (messages.length < 3) {
+      toast.error('Need at least one exchange to crystallize');
+      return;
+    }
+    
+    if (isCrystallizing || !activeCharacter) {
+      return;
+    }
 
     setIsCrystallizing(true);
+    
+    toast.info('✨ Crystallizing insight...', {
+      description: 'Creating a crystal from this conversation'
+    });
+    
     try {
       const formattedMessages = messages.map(m => ({
         role: m.role,
         content: m.content,
-        characterName: m.characterId ? getCharacterById(m.characterId)?.name : undefined
+        characterName: m.characterId ? getCharacterById(m.characterId, language)?.name : undefined
       }));
 
       const response = await fetch(
@@ -341,17 +436,20 @@ export const useTeamChat = ({ deckId, cards }: UseTeamChatProps) => {
         }
       );
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to crystallize insight');
+        throw new Error(data.error || 'Failed to crystallize insight');
       }
 
-      const data = await response.json();
       toast.success('✨ Insight crystallized!', {
-        description: data.title
+        description: data.title || 'New insight card created'
       });
     } catch (error) {
       console.error('Crystallize error:', error);
-      toast.error('Failed to crystallize insight');
+      toast.error('Failed to crystallize', {
+        description: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
     } finally {
       setIsCrystallizing(false);
     }

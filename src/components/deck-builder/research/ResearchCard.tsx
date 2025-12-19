@@ -1,30 +1,38 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Search, CheckCircle, MessageCircle, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CardDefinition } from '@/data/cardDefinitions';
+import { motion } from 'framer-motion';
+import { Lock, CheckCircle, Loader2 } from 'lucide-react';
+import { type CardDefinition, getLocalizedText } from '@/data/cardDefinitions';
 import { ResearchResult } from '@/hooks/useResearch';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { RARITY_CONFIG, Rarity } from '@/data/rarityConfig';
-import { TeamFindings } from './TeamFindings';
 import { DiscussionDrawer } from './DiscussionDrawer';
+import { ResearchCardDetailModal } from './ResearchCardDetailModal';
+import { PhaseIcon } from '../PhaseIcon';
+import { RarityBadge } from '@/components/marketplace/RarityBadge';
 
 interface ResearchCardProps {
   definition: CardDefinition;
   result?: ResearchResult;
   isUnlocked: boolean;
   isResearching: boolean;
+  isGeneratingImages?: boolean;
   onStartResearch: () => void;
   onAccept: () => void;
   onDiscuss: (message: string, characterId: string) => Promise<string | null>;
+  onReResearch?: () => void;
   deckId: string;
+  cardImageUrl?: string;
+  isAccepting?: boolean;
 }
 
-// Default rarity scores for safe fallback
+// Default rarity scores for safe fallback - support both key formats
 const DEFAULT_RARITY_SCORES = {
   depth: 0,
+  relevance: 0,
   actionability: 0,
   uniqueness: 0,
   source_quality: 0,
+  actuality: 0,
   final_score: 0
 };
 
@@ -33,17 +41,30 @@ export function ResearchCard({
   result,
   isUnlocked,
   isResearching,
+  isGeneratingImages = false,
   onStartResearch,
   onAccept,
   onDiscuss,
-  deckId
+  onReResearch,
+  deckId,
+  cardImageUrl,
+  isAccepting = false
 }: ResearchCardProps) {
   const [showDiscussion, setShowDiscussion] = useState(false);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const { language } = useLanguage();
 
   const status = result?.status || 'locked';
   const rarity = (result?.final_rarity as Rarity) || 'common';
   const rarityConfig = RARITY_CONFIG[rarity] || RARITY_CONFIG.common;
+  
+  // Debug: log result data
+  console.log(`ResearchCard ${definition.slot}: status=${status}, hasResult=${!!result}, hasFindings=${!!result?.findings}, imageUrl=${!!cardImageUrl}`);
+  
+  // Use prop directly - parent handles realtime updates
+  const imageUrl = cardImageUrl || null;
+  // Show loading when researching OR when accepted but no image yet OR when isGeneratingImages is true and no image
+  const isLoadingImage = isResearching || (status === 'accepted' && !imageUrl) || (isGeneratingImages && !imageUrl);
 
   // Safe extraction of rarity scores
   const safeRarityScores = result?.rarity_scores 
@@ -61,11 +82,11 @@ export function ResearchCard({
     : null;
 
   const getStatusDisplay = () => {
-    if (!isUnlocked) return { icon: Lock, text: 'Locked', color: 'text-muted-foreground' };
-    if (isResearching) return { icon: Loader2, text: 'Researching...', color: 'text-primary animate-spin' };
-    if (status === 'ready') return { icon: CheckCircle, text: 'Ready', color: 'text-green-500' };
-    if (status === 'accepted') return { icon: CheckCircle, text: 'Accepted', color: 'text-primary' };
-    return { icon: Search, text: 'Start Research', color: 'text-muted-foreground' };
+    if (!isUnlocked) return { icon: Lock, text: language === 'ru' ? 'Заблокировано' : 'Locked', color: 'text-muted-foreground' };
+    if (isResearching || isLoadingImage) return { icon: Loader2, text: language === 'ru' ? 'Генерация...' : 'Generating...', color: 'text-primary animate-spin' };
+    if (status === 'ready') return { icon: CheckCircle, text: language === 'ru' ? 'Готово' : 'Ready', color: 'text-green-500' };
+    if (status === 'accepted') return { icon: CheckCircle, text: language === 'ru' ? 'Принято' : 'Accepted', color: 'text-primary' };
+    return { icon: Loader2, text: language === 'ru' ? 'Ожидание...' : 'Waiting...', color: 'text-muted-foreground' };
   };
 
   const statusDisplay = getStatusDisplay();
@@ -76,161 +97,162 @@ export function ResearchCard({
     ? definition.aiHelpers 
     : ['evergreen'];
 
+  // Handle card click - open modal when ready, accepted, or has image
+  const handleCardClick = () => {
+    if (status === 'ready' || status === 'accepted' || imageUrl) {
+      setShowDetailModal(true);
+    }
+  };
+
   return (
     <>
       <motion.div
         className={`relative w-full aspect-[3/4] rounded-xl overflow-hidden cursor-pointer
           ${!isUnlocked ? 'opacity-60' : ''}
-          ${status === 'accepted' ? `border-2 ${rarityConfig.borderStyle}` : 'border border-border'}
+          ${(status === 'accepted' || imageUrl) ? `border-2 ${rarityConfig.borderStyle}` : 'border border-border'}
         `}
         style={{
-          boxShadow: status === 'accepted' ? rarityConfig.glow : 'none'
+          boxShadow: (status === 'accepted' || imageUrl) ? rarityConfig.glow : 'none'
         }}
         whileHover={isUnlocked ? { scale: 1.02 } : {}}
-        onClick={() => {
-          if (status === 'ready' || status === 'accepted') {
-            setIsFlipped(!isFlipped);
-          }
-        }}
+        onClick={handleCardClick}
       >
-        <AnimatePresence mode="wait">
-          {!isFlipped ? (
-            <motion.div
-              key="front"
-              className={`absolute inset-0 p-4 flex flex-col bg-gradient-to-br ${rarityConfig.bgGradient}`}
-              initial={{ rotateY: 180, opacity: 0 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              exit={{ rotateY: 180, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${rarityConfig.textColor} bg-background/50`}>
-                  R-{definition.slot - 5}
-                </span>
-                <StatusIcon className={`w-4 h-4 ${statusDisplay.color}`} />
-              </div>
-
-              {/* Title */}
-              <h3 className="text-lg font-bold text-foreground mb-1">
-                {definition.title}
-              </h3>
-              <p className="text-xs text-muted-foreground mb-4">
-                {definition.coreQuestion}
-              </p>
-
-              {/* Content Area */}
-              <div className="flex-1 flex flex-col justify-center items-center">
-                {!isUnlocked && (
-                  <div className="text-center">
-                    <Lock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground">Complete previous card first</p>
-                  </div>
-                )}
-
-                {isUnlocked && status === 'locked' && !isResearching && (
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onStartResearch();
-                    }}
-                    className="gap-2"
-                  >
-                    <Search className="w-4 h-4" />
-                    Start Research
-                  </Button>
-                )}
-
-                {isResearching && (
-                  <div className="text-center">
-                    <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">Team is researching...</p>
-                    <p className="text-xs text-muted-foreground mt-1">This may take a moment</p>
-                  </div>
-                )}
-
-                {status === 'ready' && (
-                  <div className="text-center">
-                    <p className="text-sm text-foreground mb-2">Research complete!</p>
-                    <p className="text-xs text-muted-foreground">Click to view findings</p>
-                  </div>
-                )}
-
-                {status === 'accepted' && (
-                  <div className="text-center">
-                    <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                    <p className={`text-sm font-medium ${rarityConfig.textColor}`}>
-                      {rarityConfig.label} Card
-                    </p>
-                    <p className="text-xs text-muted-foreground">Click to review</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Rarity indicator for ready/accepted */}
-              {(status === 'ready' || status === 'accepted') && safeRarityScores && (
-                <div className="mt-auto pt-2 border-t border-border/50">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Quality Score</span>
-                    <span className={rarityConfig?.textColor || 'text-muted-foreground'}>
-                      {safeRarityScores.final_score?.toFixed?.(1) || '?'}/10
-                    </span>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="back"
-              className={`absolute inset-0 p-4 flex flex-col bg-gradient-to-br ${rarityConfig.bgGradient} overflow-y-auto`}
-              initial={{ rotateY: -180, opacity: 0 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              exit={{ rotateY: -180, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <TeamFindings
-                findings={safeFindings}
-                teamComments={safeTeamComments}
-                rarityScores={safeRarityScores}
-                verdict={result?.verdict || null}
+        {/* Card Front - Always visible */}
+        <div className={`absolute inset-0 flex flex-col`}>
+          {/* Background Image or Loading/Empty State */}
+          {imageUrl ? (
+            <div className="absolute inset-0">
+              <img 
+                src={imageUrl} 
+                alt={getLocalizedText(definition.title, language)}
+                className="w-full h-full object-cover"
               />
-
-              {status === 'ready' && (
-                <div className="mt-auto pt-3 flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 gap-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowDiscussion(true);
-                    }}
-                  >
-                    <MessageCircle className="w-3 h-3" />
-                    Discuss
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="flex-1 gap-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onAccept();
-                    }}
-                  >
-                    <CheckCircle className="w-3 h-3" />
-                    Take it!
-                  </Button>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            </div>
+          ) : isLoadingImage ? (
+            /* Image Generation Loading State */
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+              <div className="absolute inset-0 card-empty-grid" />
+              <div className="absolute inset-0 phase-glow-research animate-pulse" />
+              
+              <div className="relative z-10 flex flex-col items-center gap-3">
+                <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center backdrop-blur-sm">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
                 </div>
-              )}
-            </motion.div>
+                <span className="text-[10px] text-primary/80 font-mono tracking-[0.2em] uppercase animate-pulse">
+                  {isResearching 
+                    ? (language === 'ru' ? 'ИССЛЕДУЕМ...' : 'RESEARCHING...') 
+                    : (language === 'ru' ? 'ГЕНЕРАЦИЯ...' : 'GENERATING...')}
+                </span>
+              </div>
+              
+              <div className="absolute inset-0 card-empty-scanlines pointer-events-none" />
+            </div>
+          ) : (
+            /* Cyberpunk Empty Card State - same as Vision */
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              {/* Dark cyberpunk base */}
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+              
+              {/* Animated grid mesh */}
+              <div className="absolute inset-0 card-empty-grid" />
+              
+              {/* Phase-colored radial glow - research phase */}
+              <div className="absolute inset-0 phase-glow-research" />
+              
+              {/* Center orb with phase icon */}
+              <div className="relative z-10 flex flex-col items-center gap-3">
+                <div className="w-16 h-16 rounded-full bg-white/5 border border-white/20 flex items-center justify-center orb-pulse backdrop-blur-sm">
+                  <PhaseIcon phase="research" size="lg" className="opacity-60" />
+                </div>
+                <span className="text-[10px] text-white/40 font-mono tracking-[0.2em] uppercase">
+                  {language === 'ru' ? 'ОЖИДАЕТ FORGE' : 'AWAITING FORGE'}
+                </span>
+              </div>
+              
+              {/* Scanlines overlay */}
+              <div className="absolute inset-0 card-empty-scanlines pointer-events-none" />
+            </div>
           )}
-        </AnimatePresence>
+
+          {/* Content */}
+          <div className="relative z-10 flex flex-col h-full">
+            {/* Header badge - top left: #06, #07, etc. like Vision */}
+            <div className="absolute top-2 left-2 backdrop-blur-md bg-black/40 border border-white/30 rounded px-2 py-1">
+              <span className="text-xs font-mono text-white font-bold">
+                #{definition.slot.toString().padStart(2, '0')}
+              </span>
+            </div>
+            
+            {/* Rarity badge with score - top right (like Vision) */}
+            {safeRarityScores && (status === 'ready' || status === 'accepted' || imageUrl) ? (
+              <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                <div className="backdrop-blur-md bg-black/40 border border-white/30 rounded px-2 py-1">
+                  <span className="text-xs font-bold text-white">
+                    {safeRarityScores.final_score?.toFixed?.(1) || '?'}
+                  </span>
+                </div>
+                <RarityBadge rarity={rarity} />
+              </div>
+            ) : imageUrl ? (
+              /* Show rarity badge only when there's an image but no scores */
+              <div className="absolute top-2 right-2">
+                <RarityBadge rarity={rarity} />
+              </div>
+            ) : (
+              /* Status icon when not ready */
+              <div className="absolute top-2 right-2">
+                <StatusIcon className={`w-5 h-5 ${statusDisplay.color}`} />
+              </div>
+            )}
+
+            {/* Glassmorphism Card Title Overlay - bottom (simplified like Vision) */}
+            <div className="absolute bottom-0 left-0 right-0 p-3">
+              <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg px-4 py-2 shadow-lg">
+                <span className="text-white/90 text-sm font-semibold tracking-widest uppercase">
+                  {getLocalizedText(definition.title, language)}
+                </span>
+              </div>
+            </div>
+
+            {/* Center Content Area - only show lock for locked cards */}
+            {!imageUrl && !isLoadingImage && !isUnlocked && (
+              <div className="flex-1 flex flex-col justify-center items-center p-4">
+                <div className="text-center">
+                  <Lock className="w-8 h-8 text-white/40 mx-auto mb-2" />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </motion.div>
+
+      {/* Detail Modal */}
+      <ResearchCardDetailModal
+        open={showDetailModal}
+        onOpenChange={setShowDetailModal}
+        definition={definition}
+        result={result ? {
+          status: result.status,
+          final_rarity: result.final_rarity,
+          rarity_scores: safeRarityScores,
+          findings: safeFindings,
+          team_comments: safeTeamComments,
+          verdict: result.verdict
+        } : undefined}
+        imageUrl={imageUrl}
+        onAccept={onAccept}
+        onDiscuss={() => setShowDiscussion(true)}
+        onReResearch={onReResearch}
+        isAccepting={isAccepting}
+        isReResearching={isResearching}
+      />
 
       <DiscussionDrawer
         open={showDiscussion}
         onOpenChange={setShowDiscussion}
-        cardTitle={definition.title}
+        cardTitle={getLocalizedText(definition.title, language)}
         evaluators={safeAiHelpers}
         onSendMessage={onDiscuss}
       />

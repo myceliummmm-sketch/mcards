@@ -26,12 +26,12 @@ interface InsightCardData {
   archivedAt?: string;
 }
 
-const PHASES = ['all', 'vision', 'research', 'build', 'grow'] as const;
+const PHASES = ['all', 'idea', 'research', 'build', 'grow'] as const;
 type Phase = typeof PHASES[number];
 
 const PHASE_LABELS: Record<Phase, string> = {
   all: 'All',
-  vision: 'Vision',
+  idea: 'Idea',
   research: 'Research',
   build: 'Build',
   grow: 'Grow',

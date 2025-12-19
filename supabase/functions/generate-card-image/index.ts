@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,7 +10,7 @@ const corsHeaders = {
 // PHASE COLORS
 // ═══════════════════════════════════════
 const PHASE_COLORS = {
-  vision: { name: "mint green", hex: "#64FFDA" },
+  idea: { name: "mint green", hex: "#64FFDA" },
   research: { name: "deep teal", hex: "#0D4F4F" },
   build: { name: "warm coral", hex: "#FF8A80" },
   grow: { name: "electric violet", hex: "#9D4EDD" },
@@ -62,21 +63,21 @@ function selectForm(userAnswer: string): string {
 const CARD_TEMPLATES: Record<string, any> = {
   idea_seed: {
     id: 1,
-    phase: "vision",
+    phase: "idea",
     name: "IDEA SEED",
     template: `straight front view, flat mint green background #64FFDA, small glowing low-poly {FORM} floating in center with golden light pulsing inside revealing compressed potential, massive shadow projected behind it showing {FUTURE_SCALE}, single {CONNECTOR} descending toward it, the small contains the infinite, low-poly 3D style with visible facets, inner glow effect, 8k render`
   },
   
   pain_point: {
     id: 2,
-    phase: "vision",
+    phase: "idea",
     name: "PAIN POINT",
     template: `straight front view, flat mint green background #64FFDA, dark cracked low-poly {FORM} floating in center, warm golden light beam from above touching the form and illuminating cracks with gold kintsugi effect, where light touches darkness begins transforming, {PAIN_VISUAL}, the wound becomes the guide, low-poly 3D style, dramatic contrast, 8k render`
   },
   
   true_user: {
     id: 3,
-    phase: "vision",
+    phase: "idea",
     name: "TRUE USER",
     template: `straight front view, flat mint green background #64FFDA, vast field of countless dim particles fading into fog, one single {FORM} in sharp focus glowing intensely with coral inner light #FF6B9D, {PERSON_DETAILS}, in infinity one resonates, low-poly 3D style, 8k render`
   },
@@ -254,13 +255,13 @@ const SLOT_TO_TEMPLATE: Record<number, string> = {
 // ═══════════════════════════════════════
 // PROTECTION & VALIDATION
 // ═══════════════════════════════════════
-const PROTECTION_SUFFIX = `--no text, letters, numbers, words, typography, writing, human faces, human figures, people, person, character, anime, cartoon, photorealistic, lens flare, god rays, smoke swirls, generic glow orbs, floating particles cliche, purple-blue nebula, abstract swooshes, stock imagery, corporate art, gradient mesh blobs, pastel colors, blurry edges, vaporwave`;
+const PROTECTION_SUFFIX = `CRITICAL: absolutely NO text, NO letters, NO numbers, NO words, NO typography, NO writing, NO symbols, NO signs, NO labels, NO human faces, NO human figures, NO people, NO person, NO characters, NO portraits, NO anime, NO cartoon, NO photorealistic, NO lens flare, NO god rays, NO smoke swirls, NO generic glow orbs, NO floating particles cliche, NO purple-blue nebula, NO abstract swooshes, NO stock imagery, NO corporate art, NO gradient mesh blobs, NO pastel colors, NO blurry edges, NO vaporwave. Only abstract geometric low-poly 3D forms, pure shapes, no representational imagery.`;
 
 const FORBIDDEN_ELEMENTS = [
-  // People
-  "face", "person", "human", "man", "woman", "child", "figure", "portrait", "character", "people", "crowd",
-  // Text
-  "text", "letter", "word", "writing", "typography", "font", "number", "digit", "label", "sign",
+  // People - strict
+  "face", "person", "human", "man", "woman", "child", "figure", "portrait", "character", "people", "crowd", "body", "head", "eye", "hand", "silhouette",
+  // Text - strict
+  "text", "letter", "word", "writing", "typography", "font", "number", "digit", "label", "sign", "logo", "title", "caption", "symbol", "icon", "glyph", "inscription",
   // Styles
   "anime", "cartoon", "realistic", "photorealistic", "3d render smooth", "cinematic", "dramatic lighting", "lens flare",
   // AI clichés
@@ -273,14 +274,65 @@ function validatePrompt(prompt: string): { valid: boolean; violations: string[] 
   return { valid: violations.length === 0, violations };
 }
 
+// Sanitize prompt by removing/replacing forbidden elements
+function sanitizePrompt(text: string): string {
+  let sanitized = text;
+  
+  // Safe abstract replacements for common forbidden terms
+  const replacements: Record<string, string> = {
+    "man": "entity",
+    "woman": "entity",
+    "person": "form",
+    "human": "organic form",
+    "people": "forms",
+    "figure": "shape",
+    "character": "element",
+    "head": "apex",
+    "face": "surface",
+    "eye": "point",
+    "hand": "appendage",
+    "body": "structure",
+    "silhouette": "outline",
+    "sign": "marker",
+    "symbol": "glyph-shape",
+    "icon": "minimal form",
+    "label": "tag-element",
+    "text": "pattern",
+    "letter": "glyph",
+    "word": "sequence",
+    "writing": "marks",
+    "logo": "emblem-shape"
+  };
+  
+  // Replace forbidden words with safe alternatives
+  for (const [forbidden, safe] of Object.entries(replacements)) {
+    const regex = new RegExp(`\\b${forbidden}\\b`, 'gi');
+    sanitized = sanitized.replace(regex, safe);
+  }
+  
+  // Remove any remaining forbidden elements that don't have replacements
+  for (const forbidden of FORBIDDEN_ELEMENTS) {
+    if (!replacements[forbidden]) {
+      const regex = new RegExp(`\\b${forbidden}\\b`, 'gi');
+      sanitized = sanitized.replace(regex, '');
+    }
+  }
+  
+  // Clean up extra spaces
+  sanitized = sanitized.replace(/\s+/g, ' ').trim();
+  
+  return sanitized;
+}
+
 // ═══════════════════════════════════════
 // EXTRACT DETAILS FROM USER CONTENT
 // ═══════════════════════════════════════
 function extractDetails(cardContent: Record<string, any>, templateKey: string): Record<string, string> {
-  // Convert content to text for analysis
-  const contentText = Object.values(cardContent)
+  // Convert content to text for analysis and sanitize it
+  const rawText = Object.values(cardContent)
     .filter(v => v && typeof v === 'string')
     .join(' ');
+  const contentText = sanitizePrompt(rawText);
   
   // Default details with simple extraction
   const details: Record<string, string> = {
@@ -328,8 +380,9 @@ serve(async (req) => {
     const requestBody = await req.json();
     const cardSlot = requestBody.cardSlot;
     const cardContent = requestBody.cardContent || {};
+    const deckId = requestBody.deckId; // NEW: Accept deckId to save directly to DB
     
-    console.log('Mycelium System: Received request:', { cardSlot, cardContentKeys: Object.keys(cardContent) });
+    console.log('Mycelium System: Received request:', { cardSlot, deckId, cardContentKeys: Object.keys(cardContent) });
     
     // Get template key from slot
     const templateKey = SLOT_TO_TEMPLATE[cardSlot];
@@ -362,14 +415,17 @@ serve(async (req) => {
       prompt = prompt.replace(`{${key}}`, value);
     }
     
-    // Add aspect ratio and protection suffix
-    prompt += ` --ar 3:4 ${PROTECTION_SUFFIX}`;
-    
-    // Validate prompt
+    // Validate and sanitize prompt BEFORE adding protection suffix
     const validation = validatePrompt(prompt);
     if (!validation.valid) {
       console.warn('Mycelium System: Prompt contains forbidden elements:', validation.violations);
+      // Sanitize the prompt to remove forbidden elements
+      prompt = sanitizePrompt(prompt);
+      console.log('Mycelium System: Prompt sanitized, new length:', prompt.length);
     }
+    
+    // Add aspect ratio and protection suffix AFTER validation/sanitization
+    prompt += ` --ar 3:4 ${PROTECTION_SUFFIX}`;
     
     console.log('Mycelium System: Final prompt length:', prompt.length);
 
@@ -380,7 +436,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash-image-preview',
+        model: 'google/gemini-2.5-flash-image',
         messages: [
           {
             role: 'user',
@@ -421,8 +477,31 @@ serve(async (req) => {
 
     console.log('Mycelium System: Low-poly 3D card generated successfully for', template.name);
 
+    // NEW: Save image directly to database in edge function (not relying on client!)
+    if (deckId) {
+      try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        
+        const { error: updateError } = await supabase
+          .from('deck_cards')
+          .update({ card_image_url: imageUrl })
+          .eq('deck_id', deckId)
+          .eq('card_slot', cardSlot);
+        
+        if (updateError) {
+          console.error('Mycelium System: Failed to save image to DB:', updateError);
+        } else {
+          console.log('Mycelium System: Image saved to DB for slot', cardSlot);
+        }
+      } catch (dbError) {
+        console.error('Mycelium System: DB update error:', dbError);
+      }
+    }
+
     return new Response(
-      JSON.stringify({ imageUrl }),
+      JSON.stringify({ imageUrl, savedToDb: !!deckId }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {

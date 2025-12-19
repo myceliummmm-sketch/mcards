@@ -1,10 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ForgeLoadingState } from './ForgeLoadingState';
 import { CardReveal } from './CardReveal';
 import { EvaluationMatrix } from './EvaluationMatrix';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, X } from 'lucide-react';
 
 interface ForgeRevealOverlayProps {
   isActive: boolean;
@@ -41,6 +40,20 @@ export const ForgeRevealOverlay = ({
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-md"
       >
+        {/* Close button in top right corner */}
+        {forgingStage === 'complete' && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            onClick={onDismiss}
+            className="absolute top-6 right-6 z-10 p-2 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-6 h-6 text-muted-foreground" />
+          </motion.button>
+        )}
+        
         <ScrollArea className="h-full">
           <div className="min-h-full flex flex-col items-center justify-center p-6 py-12">
           {/* Forging Stage - Show loading animation */}
@@ -98,10 +111,10 @@ export const ForgeRevealOverlay = ({
               )}
 
               {/* Side-by-side layout: Card left, Evaluation right */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 {/* Left: Card Reveal */}
                 <div className="flex justify-center lg:justify-end">
-                  <div className="w-full max-w-sm">
+                  <div className="w-64 sm:w-72 md:w-80 flex-shrink-0">
                     <CardReveal
                       isRevealing={forgingStage === 'revealing' || forgingStage === 'complete'}
                       imageUrl={imageUrl}
@@ -121,31 +134,12 @@ export const ForgeRevealOverlay = ({
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 1.4 }}
-                    className="flex flex-col justify-center"
+                    className="flex flex-col justify-start max-w-md"
                   >
                     <EvaluationMatrix evaluation={evaluation} />
                   </motion.div>
                 )}
               </div>
-
-              {/* Action Button - Full width at bottom */}
-              {forgingStage === 'complete' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: evaluation ? 1.6 : 0.8 }}
-                  className="flex gap-3 justify-center pt-6 pb-4"
-                >
-                  <Button
-                    onClick={onDismiss}
-                    size="lg"
-                    className="gap-2 bg-primary hover:bg-primary/90 shadow-xl shadow-primary/30 text-base px-8 py-6"
-                  >
-                    <Sparkles className="w-5 h-5" />
-                    Craft more cards!
-                  </Button>
-                </motion.div>
-              )}
             </motion.div>
           )}
           </div>

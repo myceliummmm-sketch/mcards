@@ -10,7 +10,7 @@ interface CardBackProps {
   content?: any;
   evaluation?: any;
   isEmpty?: boolean;
-  onEdit: () => void;
+  onEdit: (e?: React.MouseEvent) => void;
 }
 
 const TeamRatingsPreview = ({ evaluation }: { evaluation: any }) => {
@@ -93,11 +93,11 @@ export const CardBack = ({
 
   const getEmptyGradient = () => {
     const phase = definition.phase?.toLowerCase();
-    if (phase === 'vision') return 'card-empty-vision';
+    if (phase === 'idea') return 'card-empty-idea';
     if (phase === 'research') return 'card-empty-research';
     if (phase === 'build') return 'card-empty-build';
     if (phase === 'grow') return 'card-empty-grow';
-    return 'card-empty-vision';
+    return 'card-empty-idea';
   };
 
   return (
@@ -123,24 +123,23 @@ export const CardBack = ({
         {/* Team Ratings Preview */}
         {evaluation && <TeamRatingsPreview evaluation={evaluation} />}
 
-        {/* Dynamic Button */}
+        {/* Dynamic Button - Always visible at bottom */}
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            onEdit();
+            onEdit(e);
           }}
-          size="lg"
-          className="gap-2 bg-gradient-to-r from-[#FF6B9D] to-[#B388FF] hover:from-[#FF6B9D]/90 hover:to-[#B388FF]/90 text-white shadow-2xl transition-all hover:scale-105 font-display uppercase tracking-wide text-sm px-8 py-6 backdrop-blur-sm border-2 border-white/20"
+          className="gap-1.5 sm:gap-2 bg-gradient-to-r from-[#FF6B9D] to-[#B388FF] hover:from-[#FF6B9D]/90 hover:to-[#B388FF]/90 text-white shadow-2xl transition-all hover:scale-105 font-display uppercase tracking-wide text-xs sm:text-sm md:text-base px-4 sm:px-6 md:px-10 py-2 sm:py-4 md:py-6 backdrop-blur-sm border border-white/20 animate-pulse w-auto max-w-[90%]"
         >
           {isEmpty ? (
             <>
-              <Zap className="w-5 h-5" />
-              {t('cardEditor.forgeCardBtn')}
+              <Zap className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0" />
+              <span className="truncate">{t('cardEditor.forgeCardBtn')}</span>
             </>
           ) : (
             <>
-              <Sparkles className="w-5 h-5" />
-              {t('cardEditor.openCardBtn')}
+              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0" />
+              <span className="truncate">{t('cardEditor.openCardBtn')}</span>
             </>
           )}
         </Button>

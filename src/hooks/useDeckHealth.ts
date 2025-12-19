@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PhaseBreakdown {
   phase: string;
@@ -54,6 +55,7 @@ export function useDeckHealth(deckId: string | null) {
   const [healthData, setHealthData] = useState<DeckHealthResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { language } = useLanguage();
 
   const analyzeHealth = useCallback(async () => {
     if (!deckId) {
@@ -66,7 +68,7 @@ export function useDeckHealth(deckId: string | null) {
 
     try {
       const { data, error: functionError } = await supabase.functions.invoke('analyze-deck-health', {
-        body: { deckId }
+        body: { deckId, language }
       });
 
       if (functionError) throw functionError;
@@ -78,7 +80,7 @@ export function useDeckHealth(deckId: string | null) {
     } finally {
       setIsLoading(false);
     }
-  }, [deckId]);
+  }, [deckId, language]);
 
   useEffect(() => {
     analyzeHealth();

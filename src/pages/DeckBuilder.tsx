@@ -3,9 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ArrowLeft, Share2, Activity, Settings } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ArrowLeft, Share2, Activity, Settings, Pencil, Check, X } from 'lucide-react';
 import { PhaseSection } from '@/components/deck-builder/PhaseSection';
 import { ResearchPhaseSection } from '@/components/deck-builder/research/ResearchPhaseSection';
+import { BuildPhaseSection } from '@/components/deck-builder/build/BuildPhaseSection';
 import { TeamPanel } from '@/components/deck-builder/TeamPanel';
 import { XPProgressBar } from '@/components/deck-builder/XPProgressBar';
 import { CardEditor } from '@/components/deck-builder/CardEditor';
@@ -25,19 +27,25 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { getCardBySlot, CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import { motion } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
+import { useAutoCompleteVision } from '@/hooks/useAutoCompleteVision';
+import { toast } from 'sonner';
 
 type Deck = Database['public']['Tables']['decks']['Row'];
 
 export default function DeckBuilder() {
   const { deckId } = useParams<{ deckId: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [loading, setLoading] = useState(true);
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
   const [healthDashboardOpen, setHealthDashboardOpen] = useState(false);
-  const { cards, saveCard, getCardBySlot: getDeckCard, getFilledCardsCount } = useDeckCards(deckId || '');
-  const { canAccessPhase } = useSubscription();
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
+  const [aiGeneratingSlots, setAiGeneratingSlots] = useState<number[]>([]);
+  const { cards, saveCard, getCardBySlot: getDeckCard, getFilledCardsCount, refetch: refetchCards, updateCardImage } = useDeckCards(deckId || '');
+  const { canAccessPhase, sporeBalance, refetch: refetchSubscription } = useSubscription();
+  const { isActive: autoCompleteActive, isComplete: autoCompleteIsComplete, cardProgress, startAutoComplete, dismiss: dismissAutoComplete } = useAutoCompleteVision(deckId || '', refetchCards);
   
   // Team chat hook (single character)
   const {
@@ -115,13 +123,121 @@ export default function DeckBuilder() {
     await saveCard(editingSlot, cardDefinition.cardType, data, imageUrl, evaluation, silent);
   };
 
-  const handleGeneratePrompt = () => {
-    // TODO: Generate prompt in Sprint 4
-    console.log('Generate prompt');
+  const handleSaveTitle = async () => {
+    if (!deck || !editedTitle.trim()) return;
+    
+    const { error } = await supabase
+      .from('decks')
+      .update({ title: editedTitle.trim() })
+      .eq('id', deck.id);
+    
+    if (error) {
+      toast.error('Ошибка сохранения');
+      return;
+    }
+    
+    setDeck({ ...deck, title: editedTitle.trim() });
+    setIsEditingTitle(false);
+    toast.success('Название обновлено');
+  };
+
+  const handleCancelEdit = () => {
+    setEditedTitle(deck?.title || '');
+    setIsEditingTitle(false);
+  };
+
+  const handleStartEdit = () => {
+    setEditedTitle(deck?.title || '');
+    setIsEditingTitle(true);
+  };
+
+  // AI single card auto-complete - uses existing auto-complete-vision with singleSlot parameter
+  const handleAISingleCard = async (slot: number) => {
+    console.log('🎯 handleAISingleCard called for slot:', slot);
+
+    if (!deckId || aiGeneratingSlots.includes(slot)) {
+      console.log('❌ Blocked: deckId missing or slot already generating');
+      return;
+    }
+
+    // Check if card 1 is filled (required for context)
+    const card1 = cards.find(c => c.card_slot === 1);
+    if (!card1?.card_data || Object.keys(card1.card_data as object).length === 0) {
+      toast.error(language === 'ru' ? 'Сначала заполните карточку #1' : 'Please fill card #1 first');
+      return;
+    }
+
+    if (sporeBalance < 10) {
+      toast.error(t('autoComplete.notEnoughSpores'));
+      return;
+    }
+
+    setAiGeneratingSlots(prev => [...prev, slot]);
+    toast.info(`✨ AI генерирует карточку #${slot}...`);
+
+    try {
+      // Call auto-complete-vision with singleSlot parameter
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/auto-complete-vision`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        },
+        body: JSON.stringify({
+          deckId,
+          singleSlot: slot,
+          language
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate');
+      }
+
+      // Handle SSE stream
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
+
+          for (const line of lines) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === 'complete' && data.slot === slot) {
+                await refetchCards();
+                await refetchSubscription();
+                toast.success(`✅ Карточка #${slot} сгенерирована!`);
+              } else if (data.type === 'error') {
+                throw new Error(data.error || 'Generation failed');
+              }
+            } catch (parseError) {
+              // Skip non-JSON lines
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('AI single card error:', error);
+      toast.error(error instanceof Error ? error.message : 'Ошибка генерации');
+    } finally {
+      setAiGeneratingSlots(prev => prev.filter(s => s !== slot));
+    }
   };
 
   const editingCardDefinition = editingSlot ? getCardBySlot(editingSlot) : null;
   const editingCardData = editingSlot ? getDeckCard(editingSlot) : null;
+
+  const filledCards = getFilledCardsCount();
+  const totalCards = 20; // Fixed: 5 Vision + 5 Research + 5 Build + 5 Grow = 20 cards
+
 
   if (loading) {
     return (
@@ -136,9 +252,6 @@ export default function DeckBuilder() {
 
   if (!deck) return null;
 
-const filledCards = getFilledCardsCount();
-  const totalCards = canAccessPhase('pivot') ? 26 : 22;
-
   return (
     <div className="min-h-screen bg-background flex">
       {/* AI Team sidebar - Left side for collaborative feel */}
@@ -148,6 +261,14 @@ const filledCards = getFilledCardsCount();
         selectedGroupCharacters={groupSelectedCharacters}
         onToggleGroupCharacter={toggleGroupCharacter}
         onStartGroupChat={openGroupChat}
+        currentPhase={filledCards < 5 ? 'idea' : filledCards < 11 ? 'research' : filledCards < 17 ? 'build' : filledCards < 22 ? 'grow' : 'pivot'}
+        filledCards={filledCards}
+        totalCards={totalCards}
+        cards={cards}
+        autoCompleteActive={autoCompleteActive}
+        autoCompleteProgress={cardProgress}
+        autoCompleteComplete={autoCompleteIsComplete}
+        onDismissAutoComplete={dismissAutoComplete}
       />
 
       {/* Main content */}
@@ -171,9 +292,40 @@ const filledCards = getFilledCardsCount();
                   {t('deckBuilder.backToDashboard')}
                 </Button>
                 <div>
-                  <h1 className="text-3xl font-display font-bold text-foreground">
-                    {deck.title}
-                  </h1>
+                  {isEditingTitle ? (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        className="text-2xl font-display font-bold h-10 w-64"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveTitle();
+                          if (e.key === 'Escape') handleCancelEdit();
+                        }}
+                      />
+                      <Button size="icon" variant="ghost" onClick={handleSaveTitle}>
+                        <Check className="w-4 h-4 text-green-500" />
+                      </Button>
+                      <Button size="icon" variant="ghost" onClick={handleCancelEdit}>
+                        <X className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 group">
+                      <h1 className="text-3xl font-display font-bold text-foreground">
+                        {deck.title}
+                      </h1>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={handleStartEdit}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                   {deck.description && (
                     <p className="text-sm text-muted-foreground mt-1">
                       {deck.description}
@@ -218,16 +370,6 @@ const filledCards = getFilledCardsCount();
                     {deckId && <CollaboratorManager deckId={deckId} />}
                   </DialogContent>
                 </Dialog>
-
-                <Button
-                  size="lg"
-                  onClick={handleGeneratePrompt}
-                  disabled={filledCards < totalCards}
-                  className="gap-2"
-                >
-                  <span>⚡</span>
-                  {t('deckBuilder.generatePrompt')}
-                </Button>
               </div>
             </div>
 
@@ -250,36 +392,57 @@ const filledCards = getFilledCardsCount();
             }}
           >
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection phase="vision" cards={cards} onEditCard={handleEditCard} deckId={deckId || ''} />
+              <PhaseSection
+                phase="idea"
+                cards={cards}
+                onEditCard={handleEditCard}
+                deckId={deckId || ''}
+                onAutoComplete={() => {
+                  const card1 = cards.find(c => c.card_slot === 1);
+                  if (card1?.card_data) startAutoComplete(card1.card_data as Record<string, any>);
+                }}
+                sporeBalance={sporeBalance}
+                generatingSlots={[...cardProgress.filter(p => p.status === 'generating').map(p => p.slot), ...aiGeneratingSlots]}
+                onUpdateCardImage={updateCardImage}
+                onAISingleCard={handleAISingleCard}
+              />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <ResearchPhaseSection deckId={deckId || ''} />
+              <ResearchPhaseSection deckId={deckId || ''} visionCards={cards.filter(c => c.card_slot >= 1 && c.card_slot <= 5)} onRefresh={refetchCards} />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection 
-                phase="build" 
+              <BuildPhaseSection 
+                deckId={deckId || ''}
                 cards={cards} 
-                onEditCard={handleEditCard} 
-                deckId={deckId || ''} 
+                onEditCard={handleEditCard}
+                onRefresh={refetchCards}
                 locked={!canAccessPhase('build')}
+                visionCards={cards.filter(c => c.card_slot >= 1 && c.card_slot <= 5)}
+                researchCards={cards.filter(c => c.card_slot >= 6 && c.card_slot <= 10)}
               />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection 
-                phase="grow" 
-                cards={cards} 
-                onEditCard={handleEditCard} 
-                deckId={deckId || ''} 
+              <PhaseSection
+                phase="grow"
+                cards={cards}
+                onEditCard={handleEditCard}
+                deckId={deckId || ''}
                 locked={!canAccessPhase('grow')}
+                sporeBalance={sporeBalance}
+                generatingSlots={aiGeneratingSlots}
+                onAISingleCard={handleAISingleCard}
               />
             </motion.div>
             <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}>
-              <PhaseSection 
-                phase="pivot" 
-                cards={cards} 
-                onEditCard={handleEditCard} 
-                deckId={deckId || ''} 
+              <PhaseSection
+                phase="pivot"
+                cards={cards}
+                onEditCard={handleEditCard}
+                deckId={deckId || ''}
                 locked={!canAccessPhase('pivot')}
+                sporeBalance={sporeBalance}
+                generatingSlots={aiGeneratingSlots}
+                onAISingleCard={handleAISingleCard}
               />
             </motion.div>
             
@@ -333,6 +496,7 @@ const filledCards = getFilledCardsCount();
           evaluation={editingCardData?.evaluation || undefined}
           cardId={editingCardData?.id}
           onSave={handleSaveCard}
+          deckId={deckId}
         />
       )}
 
@@ -345,6 +509,8 @@ const filledCards = getFilledCardsCount();
           onClose={() => setHealthDashboardOpen(false)}
         />
       )}
+
+
     </div>
   );
 }

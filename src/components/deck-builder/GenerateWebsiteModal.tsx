@@ -23,6 +23,20 @@ interface WebsiteSection {
   enabled: boolean;
 }
 
+interface RawCardData {
+  product: Record<string, any>;
+  problem: Record<string, any>;
+  audience: Record<string, any>;
+  value: Record<string, any>;
+  vision: Record<string, any>;
+}
+
+interface WebsiteMetadata {
+  product_name?: string;
+  tagline?: string;
+  primary_color_suggestion?: string;
+}
+
 interface GenerateWebsiteModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -40,6 +54,8 @@ export const GenerateWebsiteModal = ({
   const [sections, setSections] = useState<WebsiteSection[]>([]);
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [rawCardData, setRawCardData] = useState<RawCardData | null>(null);
+  const [metadata, setMetadata] = useState<WebsiteMetadata>({});
 
   useEffect(() => {
     if (open && sections.length === 0) {
@@ -64,6 +80,8 @@ export const GenerateWebsiteModal = ({
       if (error) throw error;
 
       setSections(data.sections.map((s: any) => ({ ...s, enabled: true })));
+      setRawCardData(data.rawCardData || null);
+      setMetadata(data.metadata || {});
     } catch (error) {
       console.error('Error generating brief:', error);
       toast.error('Failed to generate website brief');
@@ -102,17 +120,64 @@ export const GenerateWebsiteModal = ({
 
   const generatePrompt = () => {
     const enabledSections = sections.filter(s => s.enabled);
-    const prompt = `Create a professional website landing page with the following sections:
+    const { product, problem, audience, value, vision } = rawCardData || {};
+    
+    let prompt = `# Create a Professional Landing Page
 
-${enabledSections.map(s => `## ${s.title}
+## Product Overview
+**Name:** ${metadata.product_name || product?.product_name || 'Your Product'}
+**Tagline:** ${metadata.tagline || product?.one_liner || 'The smart solution'}
+${product?.analogy ? `**Think of it as:** ${product.analogy}` : ''}
+${product?.target_audience ? `**For:** ${product.target_audience}` : ''}
+
+## Problem We Solve
+${problem?.who_suffers ? `**Who struggles:** ${problem.who_suffers}` : ''}
+${problem?.pain_description ? `**Their pain:** ${problem.pain_description}` : ''}
+${problem?.pain_cost ? `**Cost of not solving:** ${problem.pain_cost}` : ''}
+
+## Target Audience
+${audience?.demographics ? `**Demographics:** ${audience.demographics}` : ''}
+${audience?.goals ? `**Their goals:** ${audience.goals}` : ''}
+${audience?.pain_points ? `**Pain points:** ${audience.pain_points}` : ''}
+
+## Value Proposition
+${value?.current_alternative ? `**Current alternatives:** ${value.current_alternative}` : ''}
+${value?.alternative_cost ? `**Cost of alternatives:** ${value.alternative_cost}` : ''}
+${value?.your_solution ? `**Our solution:** ${value.your_solution}` : ''}
+${value?.your_price ? `**Our price:** ${value.your_price}` : ''}
+
+## Vision
+${vision?.vision_statement ? `**Vision:** ${vision.vision_statement}` : ''}
+${vision?.what_becomes_possible ? `**What becomes possible:** ${vision.what_becomes_possible}` : ''}
+
+---
+
+## Website Sections to Create:
+
+${enabledSections.map(s => `### ${s.title}
 ${s.content}`).join('\n\n')}
 
-Design requirements:
-- Modern, clean design with smooth animations
-- Mobile-responsive layout
-- Professional color scheme
-- Clear call-to-action buttons
-- Trust indicators and social proof elements`;
+---
+
+## Design Requirements:
+- Modern, clean design with ${metadata.primary_color_suggestion || 'professional'} color scheme
+- Smooth animations and micro-interactions (use Framer Motion)
+- Fully mobile-responsive layout
+- Clear, prominent call-to-action buttons
+- Trust indicators and social proof elements
+- Fast loading with optimized images
+- Accessible design (WCAG compliant)
+- Use Tailwind CSS for styling
+- React + TypeScript
+
+## Technical Stack:
+- React with TypeScript
+- Tailwind CSS
+- Framer Motion for animations
+- Lucide React for icons
+- Shadcn/ui components
+
+Please create a complete, production-ready landing page with all sections above.`;
 
     return prompt;
   };

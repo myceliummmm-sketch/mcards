@@ -1,5 +1,28 @@
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
+// NEW RARITY THRESHOLDS:
+// LEGENDARY: 9.4-10 (Perfect, zero flaws - EXTREMELY RARE)
+// EPIC: 8.0-9.3 (Excellent, minor improvements)
+// RARE: 7.0-7.9 (Good, several improvements) ← MINIMUM TARGET
+// UNCOMMON: 6.0-6.9 (Decent, major gaps)
+// COMMON: <6.0 (Needs rework)
+
+export const RARITY_THRESHOLDS = {
+  legendary: 9.4,
+  epic: 8.0,
+  rare: 7.0,
+  uncommon: 6.0,
+  common: 0,
+} as const;
+
+export function calculateRarity(score: number): Rarity {
+  if (score >= RARITY_THRESHOLDS.legendary) return 'legendary';
+  if (score >= RARITY_THRESHOLDS.epic) return 'epic';
+  if (score >= RARITY_THRESHOLDS.rare) return 'rare';
+  if (score >= RARITY_THRESHOLDS.uncommon) return 'uncommon';
+  return 'common';
+}
+
 export const RARITY_CONFIG = {
   common: {
     color: 'hsl(0 0% 60%)',

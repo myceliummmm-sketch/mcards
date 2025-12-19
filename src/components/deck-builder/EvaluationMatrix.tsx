@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { EvaluationScore } from './EvaluationScore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Evaluation {
   depth: { score: number; explanation: string; evaluator: string };
@@ -17,6 +18,8 @@ interface EvaluationMatrixProps {
 }
 
 export const EvaluationMatrix = ({ evaluation }: EvaluationMatrixProps) => {
+  const { language } = useTranslation();
+  
   const criteria = [
     { key: 'depth', ...evaluation.depth },
     { key: 'relevance', ...evaluation.relevance },
@@ -41,10 +44,12 @@ export const EvaluationMatrix = ({ evaluation }: EvaluationMatrixProps) => {
     >
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-sm font-mono font-bold text-primary uppercase tracking-wider">
-          // EVALUATION MATRIX
+          // {language === 'ru' ? 'МАТРИЦА ОЦЕНКИ' : 'EVALUATION MATRIX'}
         </h3>
         <div className="flex items-baseline gap-2">
-          <span className="text-xs text-muted-foreground">Overall Score:</span>
+          <span className="text-xs text-muted-foreground">
+            {language === 'ru' ? 'Общий балл:' : 'Overall Score:'}
+          </span>
           <span 
             className="text-2xl font-bold font-mono"
             style={{ color: getOverallColor(evaluation.overall) }}

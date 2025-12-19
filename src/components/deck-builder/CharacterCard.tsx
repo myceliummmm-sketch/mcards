@@ -3,6 +3,7 @@ import type { TeamCharacter } from '@/data/teamCharacters';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { MessageCircle, Lock, Crown } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CharacterCardProps {
   character: TeamCharacter;
@@ -12,6 +13,8 @@ interface CharacterCardProps {
 }
 
 export const CharacterCard = ({ character, isActive = false, isLocked = false, onClick }: CharacterCardProps) => {
+  const { language } = useLanguage();
+  
   return (
     <motion.div
       className={`relative p-4 rounded-lg border-2 transition-all duration-300 cursor-pointer group ${
@@ -68,7 +71,7 @@ export const CharacterCard = ({ character, isActive = false, isLocked = false, o
       >
         {isLocked ? (
           <div className="px-2 py-1 rounded text-xs bg-primary/10 text-primary font-medium">
-            Unlock
+            {language === 'ru' ? 'Разблокировать' : 'Unlock'}
           </div>
         ) : (
           <div 

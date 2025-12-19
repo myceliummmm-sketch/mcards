@@ -22,7 +22,7 @@ export const STRIPE_CONFIG = {
 } as const;
 
 // Phase access configuration
-export const FREE_PHASES = ['vision', 'research'] as const;
+export const FREE_PHASES = ['idea', 'research'] as const;
 export const PRO_PHASES = ['build', 'grow'] as const;
 export const ULTRA_PHASES = ['pivot'] as const;
 export const ALL_PHASES = [...FREE_PHASES, ...PRO_PHASES, ...ULTRA_PHASES] as const;

@@ -4,7 +4,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Sparkles, Zap, Wand2, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Sparkles, Zap, Wand2, MessageSquare, Languages } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AIHelperHint } from './AIHelperHint';
 import { DynamicFormField } from './DynamicFormField';
 import { EvaluationMatrix } from './EvaluationMatrix';
@@ -13,7 +14,7 @@ import { triggerForgeConfetti } from './ForgeConfetti';
 import { CardCraftingWizard } from './crafting/CardCraftingWizard';
 import { CardComments } from './review/CardComments';
 import { ForgeRevealOverlay } from './ForgeRevealOverlay';
-import type { CardDefinition } from '@/data/cardDefinitions';
+import { type CardDefinition, getLocalizedText } from '@/data/cardDefinitions';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,19 +28,90 @@ interface CardEditorProps {
   cardImageUrl?: string;
   evaluation?: any;
   cardId?: string;
+  deckId?: string;
   onSave: (data: any, imageUrl?: string, evaluation?: any, silent?: boolean) => Promise<void>;
 }
 
-export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImageUrl, evaluation, cardId, onSave }: CardEditorProps) => {
+export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImageUrl, evaluation, cardId, deckId, onSave }: CardEditorProps) => {
   const [formData, setFormData] = useState<any>(initialData || {});
   const [isSaving, setIsSaving] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState(cardImageUrl);
   const [currentEvaluation, setCurrentEvaluation] = useState(evaluation);
   const [forgingStage, setForgingStage] = useState<'idle' | 'forging' | 'revealing' | 'complete'>('idle');
   const [loadingStage, setLoadingStage] = useState<'idle' | 'channeling' | 'summoning' | 'evaluating'>('idle');
+  const [isTranslating, setIsTranslating] = useState(false);
   const [wizardMode, setWizardMode] = useState(true);
   const { toast } = useToast();
   const { t, language } = useTranslation();
+
+  // Sync form data when initialData changes (e.g., after loading from database)
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
+
+  // Sync image and evaluation when props change
+  useEffect(() => {
+    setCurrentImageUrl(cardImageUrl);
+  }, [cardImageUrl]);
+
+  useEffect(() => {
+    setCurrentEvaluation(evaluation);
+  }, [evaluation]);
+
+  // Check if content appears to be in English
+  const isContentEnglish = (): boolean => {
+    const englishWords = ['the', 'and', 'is', 'are', 'this', 'that', 'with', 'for', 'they', 'their', 'have', 'has'];
+    const allText = Object.values(formData).filter(v => typeof v === 'string').join(' ').toLowerCase();
+    const matchCount = englishWords.filter(word => allText.includes(` ${word} `)).length;
+    return matchCount >= 3;
+  };
+
+  // Translate all card content to Russian
+  const handleTranslateCard = async () => {
+    if (!formData || Object.keys(formData).length === 0) return;
+    
+    setIsTranslating(true);
+    toast({
+      title: '🌐 Перевод карточки...',
+      description: 'AI переводит содержимое на русский',
+    });
+
+    try {
+      const translatedData: Record<string, any> = { ...formData };
+      const fieldsToTranslate = Object.entries(formData).filter(
+        ([_, value]) => typeof value === 'string' && value.length > 20
+      );
+
+      for (const [fieldName, fieldValue] of fieldsToTranslate) {
+        const { data, error } = await supabase.functions.invoke('translate-text', {
+          body: { text: fieldValue as string, targetLanguage: 'ru' }
+        });
+
+        if (!error && data?.translatedText) {
+          translatedData[fieldName] = data.translatedText;
+        }
+      }
+
+      setFormData(translatedData);
+      await onSave(translatedData, currentImageUrl, currentEvaluation, true);
+
+      toast({
+        title: '✅ Перевод завершён!',
+        description: 'Карточка переведена на русский язык',
+      });
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast({
+        title: 'Ошибка перевода',
+        description: 'Не удалось перевести карточку',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   useEffect(() => {
     setFormData(initialData || {});
@@ -49,16 +121,28 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
     setWizardMode(!hasExistingData);
   }, [initialData, cardImageUrl, evaluation]);
 
+  // Auto-translate on open if language is Russian and content is English
   useEffect(() => {
-    if (!formData || Object.keys(formData).length === 0) return;
-    if (forgingStage !== 'idle') return;
+    if (!isOpen || !initialData || Object.keys(initialData).length === 0) return;
+    if (language !== 'ru' || isTranslating) return;
+    
+    // Check if content is in English
+    const englishWords = ['the', 'and', 'is', 'are', 'this', 'that', 'with', 'for', 'they', 'their', 'have', 'has'];
+    const allText = Object.values(initialData).filter(v => typeof v === 'string').join(' ').toLowerCase();
+    const matchCount = englishWords.filter(word => allText.includes(` ${word} `)).length;
+    const needsTranslation = matchCount >= 3;
+    
+    if (needsTranslation) {
+      // Delay to avoid race conditions
+      const timer = setTimeout(() => {
+        handleTranslateCard();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, language, initialData]);
 
-    const timer = setTimeout(() => {
-      handleSave(true);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [formData, forgingStage]);
+  // Removed auto-save effect - it was causing infinite loops and card data corruption
+  // Cards are saved when user explicitly clicks "Forge" or when wizard calls onSave
 
   const handleFieldChange = (fieldName: string, value: any) => {
     setFormData((prev: any) => ({
@@ -130,12 +214,13 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
 
             const { data: evalData, error: evalError } = await supabase.functions.invoke('evaluate-card', {
               body: {
-                cardType: definition.title,
+                cardType: getLocalizedText(definition.title, language),
                 cardContent: dataToUse,
                 cardDefinition: {
-                  coreQuestion: definition.coreQuestion,
-                  formula: definition.formula
-                }
+                  coreQuestion: getLocalizedText(definition.coreQuestion, language),
+                  formula: getLocalizedText(definition.formula, language)
+                },
+                language
               }
             });
 
@@ -210,74 +295,61 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-3xl p-0">
+      <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none p-0">
         <SheetHeader className="px-6 py-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="gap-2 hover:bg-primary/10"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {t('cardEditor.returnToDeck')}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setWizardMode(!wizardMode)}
-                className="gap-2"
-              >
-                <Wand2 className="w-4 h-4" />
-                {wizardMode ? t('cardEditor.quickEdit') : t('cardEditor.wizardMode')}
-              </Button>
-            </div>
-            {!wizardMode && (
-              <Button
-                size="sm"
-                onClick={() => handleSave(false, true)}
-                disabled={isSaving || !requiredFieldsFilled}
-                className="gap-2 bg-primary/90 hover:bg-primary shadow-lg shadow-primary/20"
-              >
-                {isSaving ? (
-                  <>
-                    <Sparkles className="w-4 h-4 animate-spin" />
-                    {t('cardEditor.forgingMagic')}
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-4 h-4" />
-                    {t('cardEditor.forgeCard')}
-                  </>
-                )}
-              </Button>
-            )}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="gap-2 hover:bg-primary/10"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t('cardEditor.returnToDeck')}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setWizardMode(!wizardMode)}
+              className="gap-2"
+            >
+              <Wand2 className="w-4 h-4" />
+              {wizardMode ? t('cardEditor.quickEdit') : t('cardEditor.wizardMode')}
+            </Button>
           </div>
           
           <SheetTitle className="text-left mt-4">
             <div className="flex items-center gap-3">
               <Sparkles className="w-6 h-6 text-primary animate-pulse" />
               <span className="text-2xl font-display bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                {t('cardEditor.craftingCard')} #{definition.slot}: {definition.title}
+                #{definition.slot}: {getLocalizedText(definition.title, language)}
               </span>
-              {definition.cardType === 'insight' ? (
-                <span className="text-sm bg-status-insight/20 text-status-insight px-2 py-1 rounded border border-status-insight/30">
-                  🔷 {t('cardEditor.insight')}
-                </span>
-              ) : (
-                <span className="text-sm bg-muted text-muted-foreground px-2 py-1 rounded border border-border">
-                  🔲 {t('cardEditor.template')}
-                </span>
-              )}
             </div>
             <div className="text-sm text-muted-foreground mt-2 font-normal">
-              {definition.coreQuestion}
+              {getLocalizedText(definition.coreQuestion, language)}
             </div>
           </SheetTitle>
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100vh-120px)]">
+          {/* Card Image at Top - Same as Research stage */}
+          {currentImageUrl && forgingStage === 'idle' && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative aspect-video overflow-hidden border-b border-primary/20"
+            >
+              <img 
+                src={currentImageUrl} 
+                alt="Card artwork"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-3 left-3 text-xs font-bold text-primary backdrop-blur-sm bg-background/50 px-2 py-1 rounded">
+                ✨ {t('cardEditor.cardVisual')}
+              </div>
+            </motion.div>
+          )}
+
           <Tabs defaultValue="edit" className="w-full">
             <div className="px-6 pt-4">
               <TabsList className="grid w-full grid-cols-2">
@@ -293,53 +365,19 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             </div>
 
             <TabsContent value="edit" className="px-6 py-6 space-y-6">
-              {initialData && Object.keys(initialData).length > 0 && (
+              {/* Score Display - Only when evaluation exists */}
+              {currentEvaluation?.overall && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="grid grid-cols-2 gap-3 p-4 bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-lg"
+                  className="flex items-center gap-3 p-4 bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-lg"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">⭐</span>
-                    <div>
-                      <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.xpEarned')}</div>
-                      <div className="text-sm font-bold text-foreground">
-                        {(() => {
-                          let xp = 10;
-                          if (currentEvaluation?.overall) xp += Math.round(currentEvaluation.overall);
-                          return `${xp}/20`;
-                        })()}
-                      </div>
+                  <span className="text-3xl">📊</span>
+                  <div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {currentEvaluation.overall.toFixed(1)}/10
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">📊</span>
-                    <div>
-                      <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.score')}</div>
-                      <div className="text-sm font-bold text-foreground">
-                        {currentEvaluation?.overall ? `${currentEvaluation.overall.toFixed(1)}/10` : t('cardEditor.notEvaluated')}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">📅</span>
-                    <div>
-                      <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.updated')}</div>
-                      <div className="text-sm font-bold text-foreground">
-                        {initialData?.updated_at ? format(new Date(initialData.updated_at), 'MMM d, yyyy') : t('cardEditor.never')}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">
-                      {initialData?.completed === true ? '✅' : Object.keys(initialData).length > 0 ? '⏳' : '⭕'}
-                    </span>
-                    <div>
-                      <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.status')}</div>
-                      <div className="text-sm font-bold text-foreground">
-                        {initialData?.completed === true ? t('cardEditor.complete') : Object.keys(initialData).length > 0 ? t('cardEditor.inProgress') : t('cardEditor.empty')}
-                      </div>
-                    </div>
+                    <div className="text-xs text-muted-foreground uppercase font-mono">{t('cardEditor.score')}</div>
                   </div>
                 </motion.div>
               )}
@@ -350,6 +388,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   onChange={setFormData}
                   onForge={(wizardFormData) => handleSave(false, true, wizardFormData)}
                   isForging={isSaving}
+                  deckId={deckId}
                 />
               ) : (
                 <>
@@ -359,44 +398,28 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                     className="p-4 bg-primary/5 border border-primary/20 rounded-lg"
                   >
                     <div className="text-xs font-bold text-primary mb-1">{t('cardEditor.formula')}</div>
-                    <div className="text-sm text-foreground font-mono">{definition.formula}</div>
+                    <div className="text-sm text-foreground font-mono">{getLocalizedText(definition.formula, language)}</div>
                     {definition.example && (
                       <>
                         <div className="text-xs font-bold text-secondary mt-3 mb-1">{t('cardEditor.example')}</div>
-                        <div className="text-sm text-muted-foreground italic">{definition.example}</div>
+                        <div className="text-sm text-muted-foreground italic">{getLocalizedText(definition.example, language)}</div>
                       </>
                     )}
                   </motion.div>
 
                   <AIHelperHint characterId={primaryHelper} type="encouraging" />
 
-                  {forgingStage !== 'idle' ? (
+                  {forgingStage !== 'idle' && (
                     <CardReveal
                       isRevealing={forgingStage === 'revealing' || forgingStage === 'complete'}
                       imageUrl={currentImageUrl}
                       evaluation={currentEvaluation}
                       loadingStage={loadingStage}
-                      cardTitle={definition.title}
+                      cardTitle={getLocalizedText(definition.title, language)}
                       cardType={definition.cardType === 'insight' ? t('cardEditor.insight') : t('cardEditor.template')}
                       cardData={formData}
                     />
-                  ) : currentImageUrl ? (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5"
-                    >
-                      <img 
-                        src={currentImageUrl} 
-                        alt="Card artwork"
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <div className="absolute bottom-3 left-3 text-xs font-bold text-primary">
-                        ✨ {t('cardEditor.cardVisual')}
-                      </div>
-                    </motion.div>
-                  ) : null}
+                  )}
 
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -422,6 +445,18 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
 
                   {currentEvaluation && (
                     <EvaluationMatrix evaluation={currentEvaluation} />
+                  )}
+
+                  {/* Auto-translation indicator */}
+                  {isTranslating && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center gap-2"
+                    >
+                      <Languages className="w-4 h-4 animate-spin text-primary" />
+                      <span className="text-sm text-primary">Автоматический перевод на русский...</span>
+                    </motion.div>
                   )}
 
                   {secondaryHelper && (
@@ -457,6 +492,44 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                       {language === 'ru' ? 'Заполните все обязательные поля (отмечены *)' : 'Please fill in all required fields (marked with *)'}
                     </div>
                   )}
+
+                  {/* Forge Card Button at bottom */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="pt-6"
+                  >
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="lg"
+                            onClick={() => handleSave(false, true)}
+                            disabled={isSaving || !requiredFieldsFilled}
+                            className="w-full gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg shadow-primary/30 text-lg py-6"
+                          >
+                            {isSaving ? (
+                              <>
+                                <Sparkles className="w-5 h-5 animate-spin" />
+                                {t('cardEditor.forgingMagic')}
+                              </>
+                            ) : (
+                              <>
+                                <Zap className="w-5 h-5" />
+                                {(cardImageUrl || evaluation) ? t('cardEditor.reforgeCard') : t('cardEditor.forgeCard')}
+                              </>
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        {(cardImageUrl || evaluation) && (
+                          <TooltipContent side="top" className="max-w-xs text-center">
+                            <p>{t('cardEditor.reforgeCardTooltip')}</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
+                  </motion.div>
                 </>
               )}
             </TabsContent>
@@ -479,7 +552,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
           loadingStage={loadingStage}
           imageUrl={currentImageUrl}
           evaluation={currentEvaluation}
-          cardTitle={definition.title}
+          cardTitle={getLocalizedText(definition.title, language)}
           cardType={definition.cardType === 'insight' ? t('cardEditor.insight') : t('cardEditor.template')}
           cardData={formData}
           slot={definition.slot}

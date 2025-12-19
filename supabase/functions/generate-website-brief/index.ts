@@ -25,7 +25,7 @@ serve(async (req) => {
     const value = cardData?.slot_4 || {};
     const vision = cardData?.slot_5 || {};
 
-    const prompt = `Based on the following product information, generate website landing page sections. Be specific and compelling.
+    const prompt = `Based on the following product information, generate DETAILED and COMPELLING website landing page sections. Be specific, use the actual data provided, and create persuasive copy.
 
 PRODUCT INFO:
 - Product Name: ${product.product_name || 'Not specified'}
@@ -36,7 +36,7 @@ PRODUCT INFO:
 PROBLEM:
 - Who suffers: ${problem.who_suffers || 'Not specified'}
 - Pain: ${problem.pain_description || 'Not specified'}
-- Cost: ${problem.pain_cost || 'Not specified'}
+- Cost of inaction: ${problem.pain_cost || 'Not specified'}
 
 AUDIENCE:
 - Demographics: ${audience.demographics || 'Not specified'}
@@ -53,7 +53,7 @@ VISION:
 - Vision statement: ${vision.vision_statement || 'Not specified'}
 - What becomes possible: ${vision.what_becomes_possible || 'Not specified'}
 
-Generate 5 website sections in this exact JSON format. Make the content compelling and specific to the product:`;
+Generate 6 website sections with RICH, DETAILED content. Each section should be 2-4 sentences of compelling copy:`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -66,23 +66,29 @@ Generate 5 website sections in this exact JSON format. Make the content compelli
         messages: [
           {
             role: 'system',
-            content: `You are a website copywriter. Generate compelling landing page content.
+            content: `You are an expert website copywriter and conversion specialist. Generate compelling landing page content that converts visitors into customers.
 Always respond with valid JSON in this exact format:
 {
   "sections": [
-    {"id": "hero", "title": "Hero Section", "content": "headline and subheadline"},
-    {"id": "problem", "title": "Problem Statement", "content": "pain point description"},
-    {"id": "solution", "title": "Solution", "content": "how the product solves the problem"},
-    {"id": "benefits", "title": "Key Benefits", "content": "3-4 key benefits"},
-    {"id": "cta", "title": "Call to Action", "content": "compelling CTA text"}
-  ]
+    {"id": "hero", "title": "Hero Section", "content": "Powerful headline and subheadline that captures attention and communicates the core value proposition in 2-3 sentences"},
+    {"id": "problem", "title": "The Problem", "content": "Describe the pain point your audience faces. Make them feel understood. 2-3 sentences."},
+    {"id": "solution", "title": "The Solution", "content": "How your product solves the problem. Be specific about the transformation. 2-3 sentences."},
+    {"id": "benefits", "title": "Key Benefits", "content": "List 3-4 specific benefits with brief explanations. Use bullet-point style text."},
+    {"id": "social_proof", "title": "Social Proof", "content": "Trust indicators, testimonial-style text, or credibility markers. 2-3 sentences."},
+    {"id": "cta", "title": "Call to Action", "content": "Compelling CTA with urgency and clear next step. Include pricing if available. 2-3 sentences."}
+  ],
+  "metadata": {
+    "product_name": "extracted product name",
+    "tagline": "short catchy tagline",
+    "primary_color_suggestion": "color name based on product personality"
+  }
 }
-Keep each content field under 200 characters. Be specific and compelling.`
+Be specific and compelling. Use the actual product details provided. Create copy that sells.`
           },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 2000,
       }),
     });
 
@@ -95,14 +101,18 @@ Keep each content field under 200 characters. Be specific and compelling.`
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || '';
     
+    console.log('AI Response:', content.substring(0, 500));
+    
     // Parse JSON from response
     let sections;
+    let metadata = {};
     try {
       // Try to extract JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
         sections = parsed.sections;
+        metadata = parsed.metadata || {};
       }
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
@@ -114,32 +124,64 @@ Keep each content field under 200 characters. Be specific and compelling.`
         { 
           id: 'hero', 
           title: 'Hero Section', 
-          content: product.one_liner || `${product.product_name || 'Our Product'} - The smart solution for ${product.target_audience || 'you'}` 
+          content: product.one_liner 
+            ? `${product.product_name || 'Our Product'}: ${product.one_liner}. ${product.analogy || ''}`
+            : `${product.product_name || 'Our Product'} - Transforming how ${product.target_audience || 'you'} achieve success.`
         },
         { 
           id: 'problem', 
-          title: 'Problem Statement', 
-          content: problem.pain_description || `${problem.who_suffers || 'People'} struggle with common challenges that cost them ${problem.pain_cost || 'time and money'}` 
+          title: 'The Problem', 
+          content: problem.pain_description 
+            ? `${problem.who_suffers || 'Many people'} face a real challenge: ${problem.pain_description}. The cost? ${problem.pain_cost || 'Wasted time, money, and opportunity'}.`
+            : `Traditional solutions aren't cutting it. You deserve better.`
         },
         { 
           id: 'solution', 
-          title: 'Solution', 
-          content: value.your_solution || `Instead of ${value.current_alternative || 'expensive alternatives'}, get better results at a fraction of the cost` 
+          title: 'The Solution', 
+          content: value.your_solution 
+            ? `${value.your_solution}. Unlike ${value.current_alternative || 'existing solutions'}, we deliver real results.`
+            : `A smarter approach that actually works.`
         },
         { 
           id: 'benefits', 
           title: 'Key Benefits', 
-          content: `Save time, reduce costs, and achieve ${audience.goals || 'your goals'} faster than ever before` 
+          content: audience.goals 
+            ? `• Achieve ${audience.goals}\n• Save time and resources\n• Get results faster\n• Expert support included`
+            : `• Save time and money\n• Easy to use\n• Proven results\n• Expert support`
+        },
+        { 
+          id: 'social_proof', 
+          title: 'Social Proof', 
+          content: `Trusted by ${product.target_audience || 'thousands of users'} worldwide. Join the community transforming their results.`
         },
         { 
           id: 'cta', 
           title: 'Call to Action', 
-          content: `Start your journey today for just ${value.your_price || 'an affordable price'}. Join thousands of satisfied users!` 
+          content: value.your_price 
+            ? `Get started today for just ${value.your_price}. Transform your results in minutes, not months.`
+            : `Start your free trial today. No credit card required. See the difference for yourself.`
         },
       ];
+      
+      metadata = {
+        product_name: product.product_name || 'Your Product',
+        tagline: product.one_liner || 'The smarter solution',
+        primary_color_suggestion: 'blue'
+      };
     }
 
-    return new Response(JSON.stringify({ sections }), {
+    // Return sections along with raw card data for richer prompt generation
+    return new Response(JSON.stringify({ 
+      sections, 
+      metadata,
+      rawCardData: {
+        product,
+        problem,
+        audience,
+        value,
+        vision
+      }
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

@@ -8,7 +8,7 @@ import growIcon from '@/assets/icons/grow.png';
 import pivotIcon from '@/assets/icons/pivot.png';
 
 const PHASE_ICONS: Record<CardPhase, string> = {
-  vision: visionIcon,
+  idea: visionIcon,
   research: researchIcon,
   build: buildIcon,
   grow: growIcon,

@@ -57,16 +57,29 @@ serve(async (req) => {
     switch (action) {
       case 'check_readiness': {
         // Check if all 5 vision cards are complete
-        const { data: visionCards } = await supabase
+        const { data: visionCards, error: visionError } = await supabase
           .from('deck_cards')
-          .select('*')
+          .select('card_slot, card_data, card_image_url')
           .eq('deck_id', deckId)
-          .in('card_slot', [1, 2, 3, 4, 5]);
+          .gte('card_slot', 1)
+          .lte('card_slot', 5);
 
+        console.log('Vision cards query result:', { 
+          count: visionCards?.length, 
+          error: visionError,
+          slots: visionCards?.map(c => c.card_slot)
+        });
+
+        // Count cards that have actual content
         const completedVisionCards = (visionCards || []).filter(card => {
           const data = card.card_data as Record<string, any>;
-          return data && Object.keys(data).length > 0;
+          // Card is complete if it has card_data with content OR has an image
+          const hasData = data && Object.keys(data).length > 0;
+          const hasImage = !!card.card_image_url;
+          return hasData || hasImage;
         });
+
+        console.log('Completed vision cards:', completedVisionCards.length);
 
         const isReady = completedVisionCards.length >= 5;
 

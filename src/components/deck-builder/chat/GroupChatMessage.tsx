@@ -3,6 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import { getCharacterById } from '@/data/teamCharacters';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 
 interface GroupChatMessageProps {
@@ -12,6 +13,7 @@ interface GroupChatMessageProps {
   isStreaming?: boolean;
   onExpand?: () => void;
   isExpanding?: boolean;
+  onAvatarClick?: (characterId: string) => void;
 }
 
 export const GroupChatMessage = ({
@@ -21,8 +23,10 @@ export const GroupChatMessage = ({
   isStreaming,
   onExpand,
   isExpanding,
+  onAvatarClick,
 }: GroupChatMessageProps) => {
-  const character = characterId ? getCharacterById(characterId) : null;
+  const { language } = useLanguage();
+  const character = characterId ? getCharacterById(characterId, language) : null;
 
   // Show expand button on ALL AI messages (not already expanded)
   const isAlreadyExpanded = content?.includes('---') || content?.length > 500;
@@ -41,10 +45,14 @@ export const GroupChatMessage = ({
   return (
     <div className="flex gap-3 group">
       <Avatar 
-        className="h-8 w-8 shrink-0" 
+        className={cn(
+          "h-8 w-8 shrink-0",
+          characterId && onAvatarClick && "cursor-pointer hover:scale-110 transition-transform"
+        )}
         style={{ 
           boxShadow: `0 0 0 2px ${character?.color || 'hsl(var(--border))'}`
         }}
+        onClick={() => characterId && onAvatarClick?.(characterId)}
       >
         {character?.avatar ? (
           <AvatarImage src={character.avatar} alt={character.name} />
@@ -57,8 +65,12 @@ export const GroupChatMessage = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span 
-            className="text-xs font-semibold"
+            className={cn(
+              "text-xs font-semibold",
+              characterId && onAvatarClick && "cursor-pointer hover:underline"
+            )}
             style={{ color: character?.color }}
+            onClick={() => characterId && onAvatarClick?.(characterId)}
           >
             {character?.name || 'AI'}
           </span>
@@ -91,11 +103,11 @@ export const GroupChatMessage = ({
               )}
             >
               {isExpanding ? (
-                <span className="animate-pulse">Expanding...</span>
+                <span className="animate-pulse">{language === 'ru' ? 'Раскрываю...' : 'Expanding...'}</span>
               ) : (
                 <>
                   <ChevronDown className="w-3 h-3" />
-                  Expand
+                  {language === 'ru' ? 'Подробнее' : 'Expand'}
                 </>
               )}
             </Button>
