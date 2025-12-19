@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  ArrowLeft, 
-  Crown, 
-  User, 
-  LogOut, 
-  CreditCard, 
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import {
+  ArrowLeft,
+  Crown,
+  User,
+  LogOut,
+  CreditCard,
   Coins,
   Calendar,
   Sparkles,
@@ -31,7 +31,7 @@ export default function Settings() {
   const [user, setUser] = useState<any>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
-  const { t, language, setLanguage } = useTranslation();
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     const getUser = async () => {
@@ -135,28 +135,7 @@ export default function Settings() {
             <CardDescription>{t('settings.language.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Select value={language} onValueChange={(value: 'en' | 'ru' | 'es') => setLanguage(value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">
-                  <span className="flex items-center gap-2">
-                    🇬🇧 {t('settings.language.english')}
-                  </span>
-                </SelectItem>
-                <SelectItem value="ru">
-                  <span className="flex items-center gap-2">
-                    🇷🇺 {t('settings.language.russian')}
-                  </span>
-                </SelectItem>
-                <SelectItem value="es">
-                  <span className="flex items-center gap-2">
-                    🇪🇸 {t('settings.language.spanish')}
-                  </span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <LanguageSwitcher />
           </CardContent>
         </Card>
 
