@@ -12,7 +12,6 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 // Auto-detect browser language
 const getBrowserLanguage = (): Language => {
   const browserLang = navigator.language.toLowerCase();
-  if (browserLang.startsWith('es')) return 'es';
   if (browserLang.startsWith('ru')) return 'ru';
   return 'en';
 };
@@ -21,7 +20,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app-language');
     // Use saved preference if valid, otherwise auto-detect from browser
-    return (saved === 'ru' || saved === 'en' || saved === 'es') ? saved : getBrowserLanguage();
+    return (saved === 'ru' || saved === 'en') ? saved : getBrowserLanguage();
   });
 
   const setLanguage = (lang: Language) => {

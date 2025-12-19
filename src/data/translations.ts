@@ -1,4 +1,4 @@
-export type Language = 'en' | 'ru' | 'es';
+export type Language = 'en' | 'ru';
 
 export const translations = {
   en: {
