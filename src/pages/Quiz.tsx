@@ -224,7 +224,6 @@ const Quiz = () => {
         onClose={() => setShowEmailModal(false)}
         quizScore={results?.totalScore}
         quizBlocker={results?.blocker}
-        onSuccess={() => setShowEmailModal(false)}
       />
     </div>
   );
