@@ -17,32 +17,14 @@ export const PostQuizFork = ({ onGetPlaybook, onStartBuilding, results }: PostQu
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="space-y-4"
     >
-      {/* Video Result Section */}
+      {/* Video Result Section (includes video, score, blocker) */}
       {results && (
         <VideoQuizResult results={results} />
       )}
 
-      <div className="text-center mb-4">
-        <motion.h2
-          className="text-xl font-display text-foreground mb-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          {t("landing.mobile.postQuiz.title")}
-        </motion.h2>
-        <motion.p
-          className="text-sm text-muted-foreground font-body"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-        >
-          {t("landing.mobile.postQuiz.subtitle")}
-        </motion.p>
-      </div>
-
+      {/* CTA Buttons - MOVED UP, right after VideoQuizResult */}
       <div className="space-y-3">
         {/* Get Playbook Card */}
         <motion.button
@@ -51,7 +33,7 @@ export const PostQuizFork = ({ onGetPlaybook, onStartBuilding, results }: PostQu
                      hover:border-primary/60 transition-all duration-300 text-left group"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.3 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -81,7 +63,7 @@ export const PostQuizFork = ({ onGetPlaybook, onStartBuilding, results }: PostQu
                      hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-left group"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.9 }}
+          transition={{ delay: 0.4 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -108,6 +90,26 @@ export const PostQuizFork = ({ onGetPlaybook, onStartBuilding, results }: PostQu
             </div>
           </div>
         </motion.button>
+      </div>
+
+      {/* Title/Subtitle - MOVED DOWN */}
+      <div className="text-center">
+        <motion.h2
+          className="text-lg font-display text-foreground mb-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {t("landing.mobile.postQuiz.title")}
+        </motion.h2>
+        <motion.p
+          className="text-sm text-muted-foreground font-body"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          {t("landing.mobile.postQuiz.subtitle")}
+        </motion.p>
       </div>
     </motion.div>
   );

@@ -118,104 +118,12 @@ export const QuizResult = ({ results, answers, onGetPlaybook, onStartBuilding, o
         </motion.div>
       </motion.div>
 
-      {/* Time to First $1000 */}
-      <motion.div
-        className="flex items-center justify-center gap-3 p-4 rounded-lg bg-card border border-primary/30"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
-        <Clock className="w-6 h-6 text-primary" />
-        <div>
-          <p className="text-sm text-muted-foreground font-body">{t("quiz.result.timeToFirst1000")}</p>
-          <p className="text-2xl font-display text-foreground">
-            {results.daysToFirst100} {getDaysText(results.daysToFirst100)}
-          </p>
-        </div>
-      </motion.div>
-
-      {/* Team Avatars & Mycelium Value */}
-      <motion.div
-        className="p-4 rounded-lg bg-gradient-to-br from-card to-muted border border-border"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <Users className="w-5 h-5 text-primary" />
-          <h4 className="font-display text-foreground text-sm">{t("quiz.result.meetYourTeam")}</h4>
-        </div>
-        
-        {/* Avatar Stack */}
-        <div className="flex items-center mb-3">
-          <div className="flex -space-x-3">
-            {Object.values(TEAM_CHARACTERS).slice(0, 7).map((char, idx) => (
-              <motion.img
-                key={char.id}
-                src={char.avatar}
-                alt={char.name}
-                className="w-10 h-10 rounded-full border-2 border-card object-cover"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + idx * 0.05 }}
-              />
-            ))}
-          </div>
-          <span className="ml-3 text-sm font-display text-primary">7 AI Advisors</span>
-        </div>
-        
-        <p className="text-xs text-muted-foreground font-body leading-relaxed">
-          {t("quiz.result.myceliumValue")}
-        </p>
-      </motion.div>
-
-      {/* Roadmap */}
-      <motion.div
-        className="space-y-3"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
-        <h3 className="text-lg font-display text-foreground">{t("quiz.result.yourRoadmap")}</h3>
-        <div className="relative">
-          <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-secondary via-primary to-accent" />
-          {roadmapPhases.map((phase, idx) => (
-            <motion.div
-              key={phase.nameKey}
-              className="relative flex items-center gap-4 py-3 pl-10"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.7 + idx * 0.15 }}
-            >
-              <div className={`absolute left-2 w-5 h-5 rounded-full bg-card border-2 border-current ${phase.color} flex items-center justify-center`}>
-                <phase.icon className="w-3 h-3" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-body text-foreground">{t(phase.nameKey)}</span>
-                  {phase.badge && (
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-status-complete/20 text-status-complete font-body">
-                      {phase.badge}
-                    </span>
-                  )}
-                </div>
-                {phase.days && (
-                  <span className="text-sm text-muted-foreground font-body">
-                    {phase.days} {getDaysText(phase.days)}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Blocker Analysis with Character */}
+      {/* Blocker Analysis with Character - MOVED UP */}
       <motion.div
         className="p-4 rounded-lg bg-destructive/10 border border-destructive/30"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.9 }}
+        transition={{ delay: 0.3 }}
       >
         <div className="flex items-start gap-3">
           {character && (
@@ -232,12 +140,12 @@ export const QuizResult = ({ results, answers, onGetPlaybook, onStartBuilding, o
         </div>
       </motion.div>
 
-      {/* Action Cards - Mobile Style */}
+      {/* Action Cards - MOVED UP */}
       <motion.div
         className="space-y-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.0 }}
+        transition={{ delay: 0.4 }}
       >
         <div className="text-center mb-2">
           <h3 className="text-lg font-display text-foreground">
@@ -308,12 +216,104 @@ export const QuizResult = ({ results, answers, onGetPlaybook, onStartBuilding, o
         </motion.button>
       </motion.div>
 
+      {/* Time to First $1000 - MOVED DOWN */}
+      <motion.div
+        className="flex items-center justify-center gap-3 p-4 rounded-lg bg-card border border-primary/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <Clock className="w-6 h-6 text-primary" />
+        <div>
+          <p className="text-sm text-muted-foreground font-body">{t("quiz.result.timeToFirst1000")}</p>
+          <p className="text-2xl font-display text-foreground">
+            {results.daysToFirst100} {getDaysText(results.daysToFirst100)}
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Team Avatars & Mycelium Value - MOVED DOWN */}
+      <motion.div
+        className="p-4 rounded-lg bg-gradient-to-br from-card to-muted border border-border"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <Users className="w-5 h-5 text-primary" />
+          <h4 className="font-display text-foreground text-sm">{t("quiz.result.meetYourTeam")}</h4>
+        </div>
+        
+        {/* Avatar Stack */}
+        <div className="flex items-center mb-3">
+          <div className="flex -space-x-3">
+            {Object.values(TEAM_CHARACTERS).slice(0, 7).map((char, idx) => (
+              <motion.img
+                key={char.id}
+                src={char.avatar}
+                alt={char.name}
+                className="w-10 h-10 rounded-full border-2 border-card object-cover"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 + idx * 0.05 }}
+              />
+            ))}
+          </div>
+          <span className="ml-3 text-sm font-display text-primary">7 AI Advisors</span>
+        </div>
+        
+        <p className="text-xs text-muted-foreground font-body leading-relaxed">
+          {t("quiz.result.myceliumValue")}
+        </p>
+      </motion.div>
+
+      {/* Roadmap - MOVED DOWN */}
+      <motion.div
+        className="space-y-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+      >
+        <h3 className="text-lg font-display text-foreground">{t("quiz.result.yourRoadmap")}</h3>
+        <div className="relative">
+          <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-secondary via-primary to-accent" />
+          {roadmapPhases.map((phase, idx) => (
+            <motion.div
+              key={phase.nameKey}
+              className="relative flex items-center gap-4 py-3 pl-10"
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.8 + idx * 0.15 }}
+            >
+              <div className={`absolute left-2 w-5 h-5 rounded-full bg-card border-2 border-current ${phase.color} flex items-center justify-center`}>
+                <phase.icon className="w-3 h-3" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-body text-foreground">{t(phase.nameKey)}</span>
+                  {phase.badge && (
+                    <span className="px-2 py-0.5 text-xs rounded-full bg-status-complete/20 text-status-complete font-body">
+                      {phase.badge}
+                    </span>
+                  )}
+                </div>
+                {phase.days && (
+                  <span className="text-sm text-muted-foreground font-body">
+                    {phase.days} {getDaysText(phase.days)}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
       {/* Share Section */}
       <motion.div
         className="text-center p-4 rounded-lg bg-card border border-border"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
+        transition={{ delay: 1.0 }}
       >
         <p className="text-sm text-muted-foreground font-body mb-3">
           {t("quiz.result.shareBonus")}
