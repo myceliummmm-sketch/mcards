@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { QuizProgress } from "@/components/quiz/QuizProgress";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { QuizResult } from "@/components/quiz/QuizResult";
+import { EmailCaptureModal } from "@/components/landing/EmailCaptureModal";
 import { QUIZ_QUESTIONS, calculateResults, type QuizResults } from "@/data/quizData";
 import { Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -17,6 +18,7 @@ const Quiz = () => {
   const [showResult, setShowResult] = useState(false);
   const [results, setResults] = useState<QuizResults | null>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   useEffect(() => {
     // Initialize Telegram Web App
@@ -45,8 +47,7 @@ const Quiz = () => {
   };
 
   const handleGetPlaybook = () => {
-    // For the original Quiz page, navigate to auth
-    navigate("/auth");
+    setShowEmailModal(true);
   };
 
   const handleStartBuilding = () => {
@@ -216,6 +217,15 @@ const Quiz = () => {
           {t("quiz.poweredBy")}
         </p>
       </motion.footer>
+
+      {/* Email Capture Modal */}
+      <EmailCaptureModal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        quizScore={results?.totalScore}
+        quizBlocker={results?.blocker}
+        onSuccess={() => setShowEmailModal(false)}
+      />
     </div>
   );
 };
