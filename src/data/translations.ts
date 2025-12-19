@@ -97,6 +97,41 @@ export const translations = {
         hasAccount: "Already have an account?",
         signIn: "Sign In",
       },
+      mobile: {
+        hero: {
+          headline1: "Stop Building.",
+          headline2: "Start Validating.",
+          subline: "Find your idea → Validate demand → Land first clients. All before writing a single line of code.",
+          cta: "Start Free → Find Your First Client",
+          time: "⏱️ 5 min to first card",
+        },
+        postQuiz: {
+          title: "Your path forward",
+          subtitle: "Choose how to proceed with your idea",
+          playbook: {
+            title: "Get the Validation Playbook",
+            description: "Free PDF guide with step-by-step validation framework",
+          },
+          build: {
+            title: "Start Building Now",
+            description: "Jump into the deck builder and start validating immediately",
+          },
+        },
+        email: {
+          title: "Get Your Free Playbook",
+          subtitle: "Enter your email to receive the validation guide",
+          placeholder: "your@email.com",
+          cta: "Send me the playbook",
+          privacy: "No spam. Unsubscribe anytime.",
+          invalidEmail: "Please enter a valid email",
+          alreadySubscribed: "Welcome back! Check your inbox.",
+          success: "Playbook sent! Check your inbox.",
+          error: "Something went wrong. Please try again.",
+          successTitle: "Check your inbox!",
+          successMessage: "The validation playbook is on its way to your email.",
+          close: "Got it",
+        },
+      },
     },
     painPoints: {
       title: "Does This Sound Familiar?",
@@ -691,6 +726,41 @@ export const translations = {
         free: "⏱️ 5 мин до первой карты • 🎯 7 дней до валидации • 💰 21 день до первого клиента",
         hasAccount: "Уже есть аккаунт?",
         signIn: "Войти",
+      },
+      mobile: {
+        hero: {
+          headline1: "Хватит строить.",
+          headline2: "Пора проверять.",
+          subline: "Найди идею → Проверь спрос → Найди первых клиентов. Всё до того, как напишешь строчку кода.",
+          cta: "Начни бесплатно → Найди первого клиента",
+          time: "⏱️ 5 мин до первой карты",
+        },
+        postQuiz: {
+          title: "Твой путь вперёд",
+          subtitle: "Выбери, как продолжить с твоей идеей",
+          playbook: {
+            title: "Получи Playbook валидации",
+            description: "Бесплатный PDF-гайд с пошаговой системой валидации",
+          },
+          build: {
+            title: "Начать строить сейчас",
+            description: "Перейди в конструктор колод и начни валидацию немедленно",
+          },
+        },
+        email: {
+          title: "Получи бесплатный Playbook",
+          subtitle: "Введи email, чтобы получить гайд по валидации",
+          placeholder: "твой@email.com",
+          cta: "Отправь мне playbook",
+          privacy: "Без спама. Отписаться можно в любой момент.",
+          invalidEmail: "Введи корректный email",
+          alreadySubscribed: "С возвращением! Проверь почту.",
+          success: "Playbook отправлен! Проверь почту.",
+          error: "Что-то пошло не так. Попробуй ещё раз.",
+          successTitle: "Проверь почту!",
+          successMessage: "Playbook валидации уже в пути к твоему email.",
+          close: "Понял",
+        },
       },
     },
     painPoints: {
