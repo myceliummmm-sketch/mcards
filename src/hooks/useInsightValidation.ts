@@ -513,13 +513,8 @@ export function useInsightValidation(deckId: string): UseInsightValidationReturn
     localStorage.removeItem(`research_session_${deckId}`);
     localStorage.removeItem(`research_insights_${deckId}`);
     
-    // Delete old research report so it regenerates with fresh data
-    try {
-      await supabase.from('research_reports').delete().eq('deck_id', deckId);
-      console.log('Deleted old research report for deck:', deckId);
-    } catch (err) {
-      console.error('Failed to delete research report:', err);
-    }
+    // Research report deletion disabled until table exists
+    console.log('Research reset for deck:', deckId);
   }, [deckId]);
 
   // Start research for a specific slot only (re-research a card)

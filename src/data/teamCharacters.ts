@@ -6,7 +6,7 @@ import toxicAvatar from '@/assets/avatars/toxic.png';
 import virgiliaAvatar from '@/assets/avatars/virgilia.png';
 import zenAvatar from '@/assets/avatars/zen.png';
 
-export type Language = 'en' | 'ru';
+export type Language = 'en' | 'ru' | 'es';
 
 // Simple interface for UI components (already localized)
 export interface TeamCharacter {

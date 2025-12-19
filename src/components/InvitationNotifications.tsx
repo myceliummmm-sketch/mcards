@@ -50,9 +50,6 @@ export const InvitationNotifications = () => {
         *,
         decks:deck_id (
           title
-        ),
-        profiles:inviter_id (
-          username
         )
       `)
       .eq('invitee_email', user.email.toLowerCase())
@@ -65,7 +62,21 @@ export const InvitationNotifications = () => {
     }
 
     if (data && data.length > 0) {
-      setInvitations(data);
+      // Fetch inviter profiles separately
+      const inviterIds = [...new Set(data.map(d => d.inviter_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', inviterIds);
+      
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      
+      const enrichedData = data.map(inv => ({
+        ...inv,
+        profiles: profileMap.get(inv.inviter_id) || { username: null }
+      }));
+      
+      setInvitations(enrichedData as Invitation[]);
       setIsOpen(true);
     }
   };

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ChevronRight, Lock, Unlock, AlertTriangle } from "lucide-react";
-import { PHASE_CONFIG } from "@/data/cardDefinitions";
+import { PHASE_CONFIG, getLocalizedText, type Language } from "@/data/cardDefinitions";
 import { useTranslation } from "@/hooks/useTranslation";
 
 import visionIcon from "@/assets/icons/vision.png";
@@ -10,7 +10,7 @@ import growIcon from "@/assets/icons/grow.png";
 import pivotIcon from "@/assets/icons/pivot.png";
 
 const PHASE_ICONS: Record<string, string> = {
-  vision: visionIcon,
+  idea: visionIcon,
   research: researchIcon,
   build: buildIcon,
   grow: growIcon,
@@ -19,7 +19,9 @@ const PHASE_ICONS: Record<string, string> = {
 
 export const FogOfWarJourney = () => {
   const phases = Object.entries(PHASE_CONFIG);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  // Fallback 'es' to 'en' for LocalizedString which only has en/ru
+  const localizedLang: Language = language === 'es' ? 'en' : language;
 
   return (
     <section className="relative z-10 py-24 px-4 bg-gradient-to-b from-background via-muted/20 to-background overflow-hidden">
@@ -113,7 +115,7 @@ export const FogOfWarJourney = () => {
                     <div className={`w-16 h-16 mb-4 ${!isUnlocked ? "opacity-30" : ""}`}>
                       <img
                         src={PHASE_ICONS[key]}
-                        alt={phase.name}
+                        alt={getLocalizedText(phase.name, localizedLang)}
                         className="w-full h-full object-contain"
                       />
                     </div>
@@ -132,7 +134,7 @@ export const FogOfWarJourney = () => {
                         isUnlocked ? "text-muted-foreground" : "text-muted-foreground/30"
                       }`}
                     >
-                      {phase.description}
+                      {getLocalizedText(phase.description, localizedLang)}
                     </p>
 
                     <p
