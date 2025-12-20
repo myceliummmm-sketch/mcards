@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MobileHero } from "./MobileHero";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LazySection } from "@/components/ui/lazy-section";
+import LegalFooter from "@/components/landing/LegalFooter";
 import { 
   MobileTeamSection, 
   MobileHowItWorks, 
@@ -53,6 +54,8 @@ export const MobileLanding = () => {
       <LazySection minHeight="200px">
         <MobileBottomCTA />
       </LazySection>
+
+      <LegalFooter />
     </div>
   );
 };

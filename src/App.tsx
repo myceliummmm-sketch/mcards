@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import CookieConsent from "@/components/CookieConsent";
 
 // Eager load the landing page for fast initial render
 import Index from "./pages/Index";
@@ -20,6 +21,9 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Quiz2 = lazy(() => import("./pages/Quiz2"));
 const AdminEmails = lazy(() => import("./pages/AdminEmails"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
+const Terms = lazy(() => import("./pages/Terms"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -36,6 +40,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <CookieConsent />
         <BrowserRouter>
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
@@ -50,6 +55,9 @@ const App = () => (
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/quiz2" element={<Quiz2 />} />
               <Route path="/admin/emails" element={<AdminEmails />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/cookies" element={<CookiePolicy />} />
+              <Route path="/terms" element={<Terms />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
