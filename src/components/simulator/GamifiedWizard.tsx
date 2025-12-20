@@ -135,7 +135,7 @@ const FlipCard = ({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <div className="perspective-1000 w-72 h-96 mx-auto">
+    <div className="perspective-1000 w-56 h-72 sm:w-72 sm:h-96 mx-auto">
       <motion.div
         className="relative w-full h-full"
         initial={false}
@@ -391,7 +391,7 @@ export const GamifiedWizard = () => {
   const hackingText = hackingLines.join("\n");
   const { displayedText, isComplete } = useTypewriter(
     hackingText, 
-    35, // Slightly slower to sync with API (~8 lines × ~20 chars × 35ms ≈ 5.6s)
+    70, // Slow enough for card image to load (~8 lines × ~30 chars × 70ms ≈ 16s)
     state.step === "hacking"
   );
 
@@ -410,26 +410,26 @@ export const GamifiedWizard = () => {
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
+    <div className="fixed inset-0 overflow-y-auto">
       {/* Background image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/beach-background.png')" }}
       />
       
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="fixed inset-0 bg-black/50" />
       
       {/* Scanlines effect */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-10"
+        className="fixed inset-0 pointer-events-none opacity-10"
         style={{
           backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)"
         }}
       />
 
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-center p-6">
+      <div className="relative z-10 min-h-full flex flex-col items-center justify-center p-4 sm:p-6 py-8">
         <AnimatePresence mode="wait">
           {/* HERO SCREEN */}
           {state.step === "hero" && (
@@ -562,9 +562,9 @@ export const GamifiedWizard = () => {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="w-full max-w-md text-center"
+              className="w-full max-w-md text-center pb-8"
             >
-              <h2 className="font-pixel text-lg text-[#39FF14] mb-6">
+              <h2 className="font-pixel text-base sm:text-lg text-[#39FF14] mb-4 sm:mb-6">
                 {t('simulator.yourStartup')}
               </h2>
               
@@ -580,9 +580,9 @@ export const GamifiedWizard = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
-                  className="mt-6"
+                  className="mt-4 sm:mt-6"
                 >
-                  <GlassPanel className="p-4 text-left text-sm">
+                  <GlassPanel className="p-3 sm:p-4 text-left text-xs sm:text-sm">
                     <p className="text-[#39FF14]/90 mb-2">
                       <span className="text-white/40 text-xs uppercase">Vision: </span>
                       {state.result.cardContent.vision_statement}
@@ -599,13 +599,14 @@ export const GamifiedWizard = () => {
                 </motion.div>
               )}
               
+              {/* CTA Button - always visible */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: cardFlipped ? 1 : 0 }}
                 transition={{ delay: 0.8 }}
-                className="mt-6"
+                className="mt-4 sm:mt-6 pb-4"
               >
-                <NeonButton onClick={() => setShowEmailModal(true)}>
+                <NeonButton onClick={() => setShowEmailModal(true)} className="text-xs sm:text-sm px-4 sm:px-8 py-3 sm:py-4">
                   {t('simulator.unlockFullDeck')}
                 </NeonButton>
               </motion.div>
