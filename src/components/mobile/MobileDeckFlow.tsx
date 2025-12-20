@@ -20,6 +20,7 @@ interface MobileDeckFlowProps {
   onCardUpdate: (cardId: string, data: Record<string, any>) => Promise<void>;
   onForgeCard: (cardId: string) => Promise<void>;
   onRenameDeck: (newTitle: string) => Promise<void>;
+  onRefetchCards?: () => Promise<void>;
 }
 
 type FlowStep = 'editing' | 'choose-path' | 'auto-complete' | 'chat';
@@ -31,6 +32,7 @@ export function MobileDeckFlow({
   onCardUpdate,
   onForgeCard,
   onRenameDeck,
+  onRefetchCards,
 }: MobileDeckFlowProps) {
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -39,47 +41,56 @@ export function MobileDeckFlow({
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [flowStep, setFlowStep] = useState<FlowStep>('editing');
   const [showChat, setShowChat] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  // Initialize vision cards if none exist
-  useEffect(() => {
-    const initializeCards = async () => {
-      const visionCardsExist = cards.some(c => c.card_slot >= 1 && c.card_slot <= 5);
-
-      if (!visionCardsExist && !isInitializing) {
-        setIsInitializing(true);
-
-        // Get vision card definitions (slots 1-5)
-        const visionDefs = CARD_DEFINITIONS.filter(d => d.slot >= 1 && d.slot <= 5);
-
-        // Create empty cards for each vision slot
-        for (const def of visionDefs) {
-          await supabase
-            .from('deck_cards')
-            .upsert({
-              deck_id: deckId,
-              card_slot: def.slot,
-              card_type: def.cardType,
-              card_data: {},
-            }, {
-              onConflict: 'deck_id,card_slot'
-            });
-        }
-
-        setIsInitializing(false);
-        // Cards will be refetched via realtime subscription
-      }
-    };
-
-    initializeCards();
-  }, [deckId, cards, isInitializing]);
-
-  // Get vision cards only (slots 1-5, regardless of card_type)
+  // Get vision cards by slot range (1-5), not by card_type
   const visionCards = cards
     .filter(c => c.card_slot >= 1 && c.card_slot <= 5)
     .sort((a, b) => a.card_slot - b.card_slot);
 
   const currentCard = visionCards[currentCardIndex];
+
+  // Create vision cards on mount if they don't exist
+  useEffect(() => {
+    const ensureVisionCardsExist = async () => {
+      if (!deckId) {
+        setIsInitializing(false);
+        return;
+      }
+
+      const existingVisionCards = cards.filter(c => c.card_slot >= 1 && c.card_slot <= 5);
+      
+      if (existingVisionCards.length < 5) {
+        console.log('📦 Creating missing vision cards for mobile flow...');
+        
+        // Get vision card definitions (slots 1-5)
+        const visionCardDefs = CARD_DEFINITIONS.filter(def => def.slot >= 1 && def.slot <= 5);
+        
+        // Create missing cards
+        for (const def of visionCardDefs) {
+          const exists = existingVisionCards.some(c => c.card_slot === def.slot);
+          if (!exists) {
+            console.log(`  Creating card for slot ${def.slot} (${def.id})`);
+            await supabase.from('deck_cards').upsert({
+              deck_id: deckId,
+              card_slot: def.slot,
+              card_type: def.id, // 'product', 'problem', 'audience', 'value', 'vision'
+              card_data: {}
+            }, { onConflict: 'deck_id,card_slot' });
+          }
+        }
+        
+        // Refetch cards after creation
+        if (onRefetchCards) {
+          await onRefetchCards();
+        }
+      }
+      
+      setIsInitializing(false);
+    };
+    
+    ensureVisionCardsExist();
+  }, [deckId, cards.length, onRefetchCards]);
 
   // Count completed cards
   const completedCards = visionCards.filter(card => {
@@ -97,7 +108,6 @@ export function MobileDeckFlow({
   // Auto-rename deck after first card
   const handleFirstCardComplete = async (content: string) => {
     if (deckTitle === 'New Idea' || deckTitle === 'Untitled') {
-      // Extract a title from the first ~50 chars
       const shortTitle = content.slice(0, 50).split('\n')[0] || 'My Idea';
       await onRenameDeck(shortTitle);
     }
@@ -107,8 +117,11 @@ export function MobileDeckFlow({
     await onCardUpdate(cardId, data);
 
     // If first card, maybe rename deck
-    if (currentCardIndex === 0 && data.problem) {
-      await handleFirstCardComplete(data.problem);
+    if (currentCardIndex === 0) {
+      const firstValue = Object.values(data).find(v => typeof v === 'string' && v.trim());
+      if (firstValue) {
+        await handleFirstCardComplete(firstValue as string);
+      }
     }
   };
 
@@ -172,6 +185,18 @@ export function MobileDeckFlow({
       })}
     </div>
   );
+
+  // Loading state while initializing cards
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-muted-foreground">
+          {t('mobileFlow.preparing') || 'Preparing your deck...'}
+        </p>
+      </div>
+    );
+  }
 
   // Choose path screen
   if (flowStep === 'choose-path') {
@@ -253,12 +278,14 @@ export function MobileDeckFlow({
     );
   }
 
-  // Loading state while initializing cards or if no vision cards exist
-  if (isInitializing || visionCards.length === 0) {
+  // No cards yet - show loading
+  if (!currentCard) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        <p className="text-muted-foreground">Setting up your deck...</p>
+        <p className="text-muted-foreground">
+          {t('mobileFlow.loading') || 'Loading cards...'}
+        </p>
       </div>
     );
   }
@@ -281,18 +308,16 @@ export function MobileDeckFlow({
       <ProgressDots />
 
       {/* Card Editor */}
-      {currentCard && (
-        <MobileCardEditor
-          card={currentCard}
-          cardIndex={currentCardIndex}
-          totalCards={visionCards.length}
-          onSave={(data) => handleCardSave(currentCard.id, data)}
-          onNext={handleNextCard}
-          onPrevious={() => setCurrentCardIndex(prev => Math.max(0, prev - 1))}
-          isFirst={currentCardIndex === 0}
-          isLast={currentCardIndex === visionCards.length - 1}
-        />
-      )}
+      <MobileCardEditor
+        card={currentCard}
+        cardIndex={currentCardIndex}
+        totalCards={visionCards.length}
+        onSave={(data) => handleCardSave(currentCard.id, data)}
+        onNext={handleNextCard}
+        onPrevious={() => setCurrentCardIndex(prev => Math.max(0, prev - 1))}
+        isFirst={currentCardIndex === 0}
+        isLast={currentCardIndex === visionCards.length - 1}
+      />
 
       {/* Floating chat button */}
       <FloatingChatButton />
