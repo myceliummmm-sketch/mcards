@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { WizardProgress } from './WizardProgress';
 import { WizardStep } from './WizardStep';
@@ -9,8 +9,8 @@ import { getFieldGuidance, getFieldAIHelper } from '@/data/fieldHints';
 import type { CardDefinition } from '@/data/cardDefinitions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useCardCrafting } from '@/hooks/useCardCrafting';
 
 interface CardCraftingWizardProps {
   definition: CardDefinition;
@@ -29,55 +29,45 @@ export const CardCraftingWizard = ({
   isForging,
   deckId
 }: CardCraftingWizardProps) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<Record<string, any>>(initialData);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
-  const [isReviewMode, setIsReviewMode] = useState(false);
-  const [isAIGenerating, setIsAIGenerating] = useState(false);
   const { t, language } = useTranslation();
   const { toast } = useToast();
   const { refetch: refetchSubscription, sporeBalance } = useSubscription();
-  const isInitialMount = useRef(true);
-  const lastSyncedData = useRef<string>(JSON.stringify(initialData));
-  const lastInitialData = useRef<string>(JSON.stringify(initialData));
 
-  // Sync internal state when initialData prop changes (e.g., opening a different card)
-  // Only reset if the new data is NOT from our own onChange call (avoids infinite loop)
-  useEffect(() => {
-    const newInitialDataStr = JSON.stringify(initialData);
-    // If this data matches what we just synced to parent, ignore it (it's our own data coming back)
-    if (newInitialDataStr === lastSyncedData.current) {
-      return;
-    }
-    // Only reset if it's truly different initial data (opening a different card)
-    if (newInitialDataStr !== lastInitialData.current) {
-      lastInitialData.current = newInitialDataStr;
-      lastSyncedData.current = newInitialDataStr;
-      setFormData(initialData);
-      setCurrentStep(1);
-      setCompletedSteps(new Set());
-      setIsReviewMode(false);
-      isInitialMount.current = true;
-    }
-  }, [initialData]);
-  const totalSteps = definition.fields.length;
-  const currentFieldIndex = currentStep - 1;
-  const currentField = definition.fields[currentFieldIndex];
-  const currentValue = formData[currentField?.name];
+  // Use the crafting hook for all state and actions
+  const {
+    state,
+    currentField,
+    currentValue,
+    isCurrentStepComplete,
+    totalSteps,
+    refs,
+    actions
+  } = useCardCrafting(definition, initialData, deckId);
+
+  const { currentStep, formData, completedSteps, isReviewMode, isAIGenerating } = state;
+  const { lastSyncedData, isInitialMount } = refs;
 
   // Get guidance for current field
   const guidance = currentField ? getFieldGuidance(currentField.name) : null;
   const aiHelper = currentField ? getFieldAIHelper(currentField.name, definition) : definition.aiHelpers[0];
 
-  // Check if current field is complete
-  const isCurrentStepComplete = currentValue !== undefined && currentValue !== null && currentValue !== '';
+  // Sync internal state when initialData prop changes (e.g., opening a different card)
+  useEffect(() => {
+    const newInitialDataStr = JSON.stringify(initialData);
+    // If this data matches what we just synced to parent, ignore it
+    if (newInitialDataStr === lastSyncedData.current) {
+      return;
+    }
+    // Only reset if it's truly different initial data (opening a different card)
+    actions.resetState(initialData);
+  }, [initialData, actions]);
 
-  // Update completed steps
+  // Update completed steps when current field is filled
   useEffect(() => {
     if (isCurrentStepComplete && !completedSteps.has(currentStep)) {
-      setCompletedSteps(prev => new Set([...prev, currentStep]));
+      actions.markStepComplete(currentStep);
     }
-  }, [isCurrentStepComplete, currentStep]);
+  }, [isCurrentStepComplete, currentStep, completedSteps, actions]);
 
   // Sync with parent only when user makes changes (not on mount or parent updates)
   useEffect(() => {
@@ -91,7 +81,7 @@ export const CardCraftingWizard = ({
       lastSyncedData.current = currentDataStr;
       onChange(formData);
     }
-  }, [formData]);
+  }, [formData, onChange, lastSyncedData, isInitialMount]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -101,54 +91,27 @@ export const CardCraftingWizard = ({
       if (target.tagName === 'TEXTAREA') return;
 
       if (e.key === 'Enter' && !e.shiftKey && !isReviewMode) {
-        if (isCurrentStepComplete || !currentField.required) {
-          handleNext();
+        if (isCurrentStepComplete || !currentField?.required) {
+          actions.goNext();
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentStep, isCurrentStepComplete, currentField, isReviewMode]);
+  }, [currentStep, isCurrentStepComplete, currentField, isReviewMode, actions]);
 
   const handleFieldChange = (value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [currentField.name]: value
-    }));
-  };
-
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      setIsReviewMode(true);
+    if (currentField) {
+      actions.updateField(currentField.name, value);
     }
-  };
-
-  const handlePrevious = () => {
-    if (isReviewMode) {
-      setIsReviewMode(false);
-    } else if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
-
-  const handleSkip = () => {
-    handleNext();
-  };
-
-  const handleStepClick = (step: number) => {
-    setCurrentStep(step);
-    setIsReviewMode(false);
   };
 
   const handleEditFromReview = (fieldIndex: number) => {
-    setCurrentStep(fieldIndex + 1);
-    setIsReviewMode(false);
+    actions.goToStep(fieldIndex + 1);
   };
 
-  // AI Auto-complete entire card
+  // AI Auto-complete entire card with toast notifications
   const handleAIAutoComplete = async () => {
     if (!deckId || isAIGenerating) return;
 
@@ -161,33 +124,18 @@ export const CardCraftingWizard = ({
       return;
     }
 
-    setIsAIGenerating(true);
     toast({
       title: language === 'ru' ? '✨ AI генерирует карточку...' : '✨ AI generating card...',
       description: language === 'ru' ? 'Подождите несколько секунд' : 'Please wait a few seconds'
     });
 
     try {
-      const { data, error } = await supabase.functions.invoke('auto-complete-single-card', {
-        body: {
-          deckId,
-          slot: definition.slot,
-          language
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.success && data.cardData) {
-        // Merge AI generated data with existing form data
-        const newFormData = { ...formData, ...data.cardData };
-        setFormData(newFormData);
-        lastSyncedData.current = JSON.stringify(newFormData);
+      const result = await actions.autoGenerateCard(language, sporeBalance);
+      
+      if (result?.success) {
+        // Sync to parent
+        const newFormData = { ...formData, ...result.cardData };
         onChange(newFormData);
-
-        // Mark all steps as completed
-        const allSteps = new Set(definition.fields.map((_, i) => i + 1));
-        setCompletedSteps(allSteps);
 
         toast({
           title: language === 'ru' ? '✅ Карточка сгенерирована!' : '✅ Card generated!',
@@ -196,18 +144,22 @@ export const CardCraftingWizard = ({
 
         // Refresh subscription to update SPORE balance
         refetchSubscription();
-      } else {
-        throw new Error(data.error || 'Failed to generate');
       }
     } catch (error) {
       console.error('AI auto-complete error:', error);
-      toast({
-        title: language === 'ru' ? '❌ Ошибка генерации' : '❌ Generation failed',
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsAIGenerating(false);
+      if (error instanceof Error && error.message === 'INSUFFICIENT_SPORES') {
+        toast({
+          title: language === 'ru' ? '❌ Недостаточно SPORE' : '❌ Not enough SPORE',
+          description: language === 'ru' ? 'Нужно 10 SPORE для AI генерации' : 'Need 10 SPORE for AI generation',
+          variant: 'destructive'
+        });
+      } else {
+        toast({
+          title: language === 'ru' ? '❌ Ошибка генерации' : '❌ Generation failed',
+          description: error instanceof Error ? error.message : 'Unknown error',
+          variant: 'destructive'
+        });
+      }
     }
   };
 
@@ -218,7 +170,7 @@ export const CardCraftingWizard = ({
           currentStep={totalSteps}
           totalSteps={totalSteps}
           completedSteps={completedSteps}
-          onStepClick={handleStepClick}
+          onStepClick={actions.goToStep}
         />
         
         <SummaryReview
@@ -232,7 +184,7 @@ export const CardCraftingWizard = ({
 
         <div className="flex justify-start">
           <button
-            onClick={handlePrevious}
+            onClick={actions.goBack}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {t('wizard.backToEditing')}
@@ -249,7 +201,7 @@ export const CardCraftingWizard = ({
         currentStep={currentStep}
         totalSteps={totalSteps}
         completedSteps={completedSteps}
-        onStepClick={handleStepClick}
+        onStepClick={actions.goToStep}
       />
 
       {/* AI Guide */}
@@ -280,9 +232,9 @@ export const CardCraftingWizard = ({
         totalSteps={totalSteps}
         canGoNext={isCurrentStepComplete}
         isOptionalField={!currentField?.required}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-        onSkip={handleSkip}
+        onPrevious={actions.goBack}
+        onNext={actions.goNext}
+        onSkip={actions.goNext}
       />
     </div>
   );
