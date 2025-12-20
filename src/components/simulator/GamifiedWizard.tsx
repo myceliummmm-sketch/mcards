@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Briefcase, Skull, Flame, Mail, X } from "lucide-react";
+import { Code, Briefcase, Skull, Flame, Mail, X, Gamepad2, Landmark, Heart, Bot, Check, Rocket } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useStartupSimulator } from "@/hooks/useStartupSimulator";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { InterestArena } from "@/services/simulatorService";
 
 // Typewriter effect hook
 const useTypewriter = (text: string, speed: number = 50, startTyping: boolean = true) => {
@@ -33,19 +36,21 @@ const useTypewriter = (text: string, speed: number = 50, startTyping: boolean = 
 };
 
 // Neon button component
-const NeonButton = ({ children, onClick, className = "" }: { children: React.ReactNode; onClick: () => void; className?: string }) => (
+const NeonButton = ({ children, onClick, disabled, className = "" }: { children: React.ReactNode; onClick: () => void; disabled?: boolean; className?: string }) => (
   <motion.button
     onClick={onClick}
+    disabled={disabled}
     className={`
       relative px-8 py-4 font-pixel text-sm uppercase tracking-wider
       bg-black/60 border-2 border-[#39FF14] text-[#39FF14]
       shadow-[0_0_20px_rgba(57,255,20,0.3),inset_0_0_20px_rgba(57,255,20,0.1)]
       hover:shadow-[0_0_40px_rgba(57,255,20,0.6),inset_0_0_30px_rgba(57,255,20,0.2)]
       hover:bg-[#39FF14]/10 transition-all duration-300
+      disabled:opacity-50 disabled:cursor-not-allowed
       ${className}
     `}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
+    whileHover={disabled ? {} : { scale: 1.05 }}
+    whileTap={disabled ? {} : { scale: 0.95 }}
   >
     {children}
   </motion.button>
@@ -88,6 +93,32 @@ const SelectionCard = ({
     <Icon className="w-16 h-16 mx-auto mb-4 text-[#39FF14]" />
     <h3 className="font-pixel text-lg text-[#39FF14] mb-2 text-center">{title}</h3>
     <p className="text-white/60 text-sm text-center">{subtitle}</p>
+  </motion.div>
+);
+
+// Mini selection card for interests (4 in a grid)
+const InterestCard = ({ 
+  icon: Icon, 
+  label, 
+  onClick 
+}: { 
+  icon: React.ElementType; 
+  label: string; 
+  onClick: () => void;
+}) => (
+  <motion.div
+    onClick={onClick}
+    className="
+      cursor-pointer p-4 bg-black/50 backdrop-blur-xl
+      border-2 border-[#39FF14]/40 rounded-lg
+      hover:border-[#39FF14] hover:shadow-[0_0_30px_rgba(57,255,20,0.4)]
+      transition-all duration-300 flex flex-col items-center gap-2
+    "
+    whileHover={{ scale: 1.08 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    <Icon className="w-10 h-10 text-[#39FF14]" />
+    <span className="font-pixel text-xs text-[#39FF14] text-center">{label}</span>
   </motion.div>
 );
 
@@ -173,9 +204,56 @@ const FlipCard = ({
   );
 };
 
-// Email capture modal
-const EmailModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+// Email capture modal with working logic
+const EmailModal = ({ 
+  isOpen, 
+  onClose,
+  simulatorContext
+}: { 
+  isOpen: boolean; 
+  onClose: () => void;
+  simulatorContext?: { userClass?: string; interest?: string };
+}) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async () => {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError("Please enter a valid email");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await supabase.from("leads").insert({
+        email: normalizedEmail,
+        source: "simulator_game",
+        quiz_blocker: `${simulatorContext?.userClass || 'unknown'}_${simulatorContext?.interest || 'unknown'}`
+      });
+      setIsSuccess(true);
+    } catch {
+      setError("Something went wrong. Try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleStartBuilding = () => {
+    // Save context for after auth
+    if (simulatorContext) {
+      localStorage.setItem('simulator_context', JSON.stringify({
+        ...simulatorContext,
+        timestamp: Date.now()
+      }));
+    }
+    navigate('/auth');
+  };
 
   if (!isOpen) return null;
 
@@ -195,26 +273,66 @@ const EmailModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
           <X className="w-6 h-6" />
         </button>
         
-        <Mail className="w-12 h-12 mx-auto mb-4 text-[#39FF14]" />
-        <h3 className="font-pixel text-xl text-[#39FF14] text-center mb-2">
-          UNLOCK FULL DECK
-        </h3>
-        <p className="text-white/60 text-center mb-6 text-sm">
-          Get 26 strategy cards for your startup
-        </p>
-        
-        <Input
-          type="email"
-          placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="bg-black/50 border-[#39FF14]/50 text-white mb-4
-            focus:border-[#39FF14] focus:ring-[#39FF14]/20"
-        />
-        
-        <NeonButton onClick={() => {}} className="w-full">
-          SEND MY DECK
-        </NeonButton>
+        {!isSuccess ? (
+          <>
+            <Mail className="w-12 h-12 mx-auto mb-4 text-[#39FF14]" />
+            <h3 className="font-pixel text-xl text-[#39FF14] text-center mb-2">
+              UNLOCK FULL DECK
+            </h3>
+            <p className="text-white/60 text-center mb-6 text-sm">
+              Get 26 strategy cards for your startup
+            </p>
+            
+            <Input
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-black/50 border-[#39FF14]/50 text-white mb-2
+                focus:border-[#39FF14] focus:ring-[#39FF14]/20"
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+            />
+            
+            {error && <p className="text-red-400 text-xs mb-4">{error}</p>}
+            
+            <NeonButton onClick={handleSubmit} disabled={isLoading} className="w-full">
+              {isLoading ? "SENDING..." : "SEND MY DECK"}
+            </NeonButton>
+          </>
+        ) : (
+          <>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#39FF14]/20 border-2 border-[#39FF14] flex items-center justify-center">
+              <Check className="w-8 h-8 text-[#39FF14]" />
+            </div>
+            <h3 className="font-pixel text-xl text-[#39FF14] text-center mb-2">
+              DECK SENT!
+            </h3>
+            <p className="text-white/60 text-center mb-6 text-sm">
+              Check your inbox for the strategy deck
+            </p>
+            
+            <div className="border-t border-[#39FF14]/30 pt-6 mt-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Rocket className="w-5 h-5 text-[#39FF14]" />
+                <span className="font-pixel text-sm text-[#39FF14]">BUILD IT NOW?</span>
+              </div>
+              <p className="text-white/60 text-xs mb-4">
+                Create your account and get AI team of 6 advisors + personal launch roadmap
+              </p>
+              
+              <NeonButton onClick={handleStartBuilding} className="w-full mb-3">
+                START BUILDING — FREE
+              </NeonButton>
+              
+              <button 
+                onClick={onClose}
+                className="w-full text-white/40 hover:text-white/60 text-xs py-2 transition-colors"
+              >
+                Maybe later
+              </button>
+            </div>
+          </>
+        )}
       </GlassPanel>
     </motion.div>
   );
@@ -331,6 +449,45 @@ export const GamifiedWizard = () => {
                   title="FOUNDER"
                   subtitle="Vision drives execution"
                   onClick={() => actions.selectClass("founder")}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {/* INTEREST SELECTION - NEW STEP */}
+          {state.step === "interest" && (
+            <motion.div
+              key="interest"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="w-full max-w-md"
+            >
+              <h2 className="font-pixel text-lg text-[#39FF14] text-center mb-6">
+                YOUR ARENA
+              </h2>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <InterestCard
+                  icon={Gamepad2}
+                  label="GAMING"
+                  onClick={() => actions.selectInterest("gaming")}
+                />
+                <InterestCard
+                  icon={Landmark}
+                  label="FINTECH"
+                  onClick={() => actions.selectInterest("fintech")}
+                />
+                <InterestCard
+                  icon={Heart}
+                  label="HEALTH"
+                  onClick={() => actions.selectInterest("health")}
+                />
+                <InterestCard
+                  icon={Bot}
+                  label="AI/PROD"
+                  onClick={() => actions.selectInterest("ai")}
                 />
               </div>
             </motion.div>
@@ -456,7 +613,14 @@ export const GamifiedWizard = () => {
       {/* Email Modal */}
       <AnimatePresence>
         {showEmailModal && (
-          <EmailModal isOpen={showEmailModal} onClose={() => setShowEmailModal(false)} />
+          <EmailModal 
+            isOpen={showEmailModal} 
+            onClose={() => setShowEmailModal(false)}
+            simulatorContext={{
+              userClass: state.selections.userClass,
+              interest: state.selections.interest
+            }}
+          />
         )}
       </AnimatePresence>
     </div>
