@@ -1,9 +1,10 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export type InterestArena = 'gaming' | 'fintech' | 'health' | 'ai';
+export type UserClass = 'coder' | 'founder' | 'designer' | 'marketer' | 'hustler' | 'dreamer';
 
 export interface SimulatorParams {
-  userClass: 'coder' | 'founder';
+  userClass: UserClass;
   interest: InterestArena;
   difficulty: 'hard' | 'god';
   language: string;
@@ -35,32 +36,33 @@ const arenaContent: Record<InterestArena, { domain: string; audience: string; pr
   ai: { domain: 'AI & Productivity', audience: 'knowledge workers', problem: 'repetitive manual tasks' }
 };
 
+// Class-specific content generation
+const classContent: Record<UserClass, { titleSuffix: string; visionPrefix: string; approach: string }> = {
+  coder: { titleSuffix: 'AI Platform', visionPrefix: 'harness AI to transform', approach: 'intelligent automation' },
+  founder: { titleSuffix: 'Marketplace', visionPrefix: 'create a borderless economy in', approach: 'strategic vision' },
+  designer: { titleSuffix: 'Experience', visionPrefix: 'reimagine the beauty of', approach: 'design-driven innovation' },
+  marketer: { titleSuffix: 'Growth Engine', visionPrefix: 'amplify the reach of', approach: 'viral growth strategies' },
+  hustler: { titleSuffix: 'Empire', visionPrefix: 'disrupt and dominate', approach: 'relentless execution' },
+  dreamer: { titleSuffix: 'Revolution', visionPrefix: 'imagine a world transformed by', approach: 'visionary thinking' }
+};
+
 export const simulatorService = {
   async generateStartup(params: SimulatorParams): Promise<SimulationResult> {
     const arena = arenaContent[params.interest];
+    const classInfo = classContent[params.userClass];
     
-    // 1. Generate personalized text content
-    const title = params.userClass === 'coder' 
-      ? `${arena.domain} AI Platform` 
-      : `${arena.domain} Marketplace`;
+    // 1. Generate personalized text content based on class
+    const title = `${arena.domain} ${classInfo.titleSuffix}`;
     
     const description = params.difficulty === 'hard' 
       ? `Disrupting ${arena.domain.toLowerCase()} against all odds.` 
       : `Viral growth in ${arena.domain.toLowerCase()} achieved.`;
 
     const cardContent: CardContent = {
-      vision_statement: params.userClass === 'coder'
-        ? `A world where ${arena.audience} harness AI to transform ${arena.domain.toLowerCase()}`
-        : `A borderless ${arena.domain.toLowerCase()} economy where talent meets opportunity`,
-      what_becomes_possible: params.userClass === 'coder'
-        ? `10x faster innovation in ${arena.domain.toLowerCase()} through intelligent automation`
-        : `Breaking the boundaries of ${arena.domain.toLowerCase()} markets globally`,
-      barrier_removed: params.userClass === 'coder'
-        ? `Eliminating ${arena.problem} forever`
-        : `Removing middlemen and ${arena.problem}`,
-      who_benefits: params.userClass === 'coder'
-        ? `Developers and ${arena.audience} worldwide`
-        : `${arena.audience.charAt(0).toUpperCase() + arena.audience.slice(1)} and entrepreneurs`
+      vision_statement: `A world where ${arena.audience} ${classInfo.visionPrefix} ${arena.domain.toLowerCase()}`,
+      what_becomes_possible: `10x faster innovation in ${arena.domain.toLowerCase()} through ${classInfo.approach}`,
+      barrier_removed: `Eliminating ${arena.problem} forever`,
+      who_benefits: `${arena.audience.charAt(0).toUpperCase() + arena.audience.slice(1)} and entrepreneurs`
     };
 
     // 2. Call the REAL AI Image Generator

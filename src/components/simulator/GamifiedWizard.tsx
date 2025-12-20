@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Briefcase, Skull, Flame, Mail, X, Gamepad2, Landmark, Heart, Bot, Check, Rocket } from "lucide-react";
+import { Code, Briefcase, Skull, Flame, Mail, X, Gamepad2, Landmark, Heart, Bot, Check, Rocket, Palette, Megaphone, Zap, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useStartupSimulator } from "@/hooks/useStartupSimulator";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { InterestArena } from "@/services/simulatorService";
+import { InterestArena, UserClass } from "@/services/simulatorService";
 
 // Typewriter effect hook
 const useTypewriter = (text: string, speed: number = 50, startTyping: boolean = true) => {
@@ -208,11 +208,13 @@ const FlipCard = ({
 const EmailModal = ({ 
   isOpen, 
   onClose,
-  simulatorContext
+  simulatorContext,
+  t
 }: { 
   isOpen: boolean; 
   onClose: () => void;
   simulatorContext?: { userClass?: string; interest?: string };
+  t: (key: string) => string;
 }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -277,10 +279,10 @@ const EmailModal = ({
           <>
             <Mail className="w-12 h-12 mx-auto mb-4 text-[#39FF14]" />
             <h3 className="font-pixel text-xl text-[#39FF14] text-center mb-2">
-              UNLOCK FULL DECK
+              {t('simulator.unlockFullDeck')}
             </h3>
             <p className="text-white/60 text-center mb-6 text-sm">
-              Get 26 strategy cards for your startup
+              {t('simulator.getCards')}
             </p>
             
             <Input
@@ -296,7 +298,7 @@ const EmailModal = ({
             {error && <p className="text-red-400 text-xs mb-4">{error}</p>}
             
             <NeonButton onClick={handleSubmit} disabled={isLoading} className="w-full">
-              {isLoading ? "SENDING..." : "SEND MY DECK"}
+              {isLoading ? t('simulator.sending') : t('simulator.sendMyDeck')}
             </NeonButton>
           </>
         ) : (
@@ -305,30 +307,30 @@ const EmailModal = ({
               <Check className="w-8 h-8 text-[#39FF14]" />
             </div>
             <h3 className="font-pixel text-xl text-[#39FF14] text-center mb-2">
-              DECK SENT!
+              {t('simulator.deckSent')}
             </h3>
             <p className="text-white/60 text-center mb-6 text-sm">
-              Check your inbox for the strategy deck
+              {t('simulator.checkInbox')}
             </p>
             
             <div className="border-t border-[#39FF14]/30 pt-6 mt-4">
               <div className="flex items-center gap-2 mb-4">
                 <Rocket className="w-5 h-5 text-[#39FF14]" />
-                <span className="font-pixel text-sm text-[#39FF14]">BUILD IT NOW?</span>
+                <span className="font-pixel text-sm text-[#39FF14]">{t('simulator.buildItNow')}</span>
               </div>
               <p className="text-white/60 text-xs mb-4">
-                Create your account and get AI team of 6 advisors + personal launch roadmap
+                {t('simulator.createAccount')}
               </p>
               
               <NeonButton onClick={handleStartBuilding} className="w-full mb-3">
-                START BUILDING — FREE
+                {t('simulator.startBuildingFree')}
               </NeonButton>
               
               <button 
                 onClick={onClose}
                 className="w-full text-white/40 hover:text-white/60 text-xs py-2 transition-colors"
               >
-                Maybe later
+                {t('simulator.maybeLater')}
               </button>
             </div>
           </>
@@ -418,7 +420,7 @@ export const GamifiedWizard = () => {
               </GlassPanel>
               
               <NeonButton onClick={() => actions.nextStep("class")}>
-                PRESS START
+                {t('simulator.pressStart')}
               </NeonButton>
             </motion.div>
           )}
@@ -434,22 +436,16 @@ export const GamifiedWizard = () => {
               className="w-full max-w-md"
             >
               <h2 className="font-pixel text-lg text-[#39FF14] text-center mb-6">
-                CHOOSE YOUR CLASS
+                {t('simulator.chooseClass')}
               </h2>
               
-              <div className="grid grid-cols-2 gap-4">
-                <SelectionCard
-                  icon={Code}
-                  title="CODER"
-                  subtitle="Build first, ask later"
-                  onClick={() => actions.selectClass("coder")}
-                />
-                <SelectionCard
-                  icon={Briefcase}
-                  title="FOUNDER"
-                  subtitle="Vision drives execution"
-                  onClick={() => actions.selectClass("founder")}
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <SelectionCard icon={Code} title={t('simulator.coder')} subtitle={t('simulator.coderSub')} onClick={() => actions.selectClass("coder")} />
+                <SelectionCard icon={Briefcase} title={t('simulator.founder')} subtitle={t('simulator.founderSub')} onClick={() => actions.selectClass("founder")} />
+                <SelectionCard icon={Palette} title={t('simulator.designer')} subtitle={t('simulator.designerSub')} onClick={() => actions.selectClass("designer")} />
+                <SelectionCard icon={Megaphone} title={t('simulator.marketer')} subtitle={t('simulator.marketerSub')} onClick={() => actions.selectClass("marketer")} />
+                <SelectionCard icon={Zap} title={t('simulator.hustler')} subtitle={t('simulator.hustlerSub')} onClick={() => actions.selectClass("hustler")} />
+                <SelectionCard icon={Sparkles} title={t('simulator.dreamer')} subtitle={t('simulator.dreamerSub')} onClick={() => actions.selectClass("dreamer")} />
               </div>
             </motion.div>
           )}
@@ -465,30 +461,14 @@ export const GamifiedWizard = () => {
               className="w-full max-w-md"
             >
               <h2 className="font-pixel text-lg text-[#39FF14] text-center mb-6">
-                YOUR ARENA
+                {t('simulator.yourArena')}
               </h2>
               
               <div className="grid grid-cols-2 gap-3">
-                <InterestCard
-                  icon={Gamepad2}
-                  label="GAMING"
-                  onClick={() => actions.selectInterest("gaming")}
-                />
-                <InterestCard
-                  icon={Landmark}
-                  label="FINTECH"
-                  onClick={() => actions.selectInterest("fintech")}
-                />
-                <InterestCard
-                  icon={Heart}
-                  label="HEALTH"
-                  onClick={() => actions.selectInterest("health")}
-                />
-                <InterestCard
-                  icon={Bot}
-                  label="AI/PROD"
-                  onClick={() => actions.selectInterest("ai")}
-                />
+                <InterestCard icon={Gamepad2} label={t('simulator.gaming')} onClick={() => actions.selectInterest("gaming")} />
+                <InterestCard icon={Landmark} label={t('simulator.fintech')} onClick={() => actions.selectInterest("fintech")} />
+                <InterestCard icon={Heart} label={t('simulator.health')} onClick={() => actions.selectInterest("health")} />
+                <InterestCard icon={Bot} label={t('simulator.ai')} onClick={() => actions.selectInterest("ai")} />
               </div>
             </motion.div>
           )}
@@ -504,22 +484,12 @@ export const GamifiedWizard = () => {
               className="w-full max-w-md"
             >
               <h2 className="font-pixel text-lg text-[#39FF14] text-center mb-6">
-                SELECT DIFFICULTY
+                {t('simulator.selectDifficulty')}
               </h2>
               
               <div className="grid grid-cols-2 gap-4">
-                <SelectionCard
-                  icon={Skull}
-                  title="HARD"
-                  subtitle="Bootstrap mode"
-                  onClick={() => actions.selectDifficulty("hard")}
-                />
-                <SelectionCard
-                  icon={Flame}
-                  title="GOD MODE"
-                  subtitle="Unlimited resources"
-                  onClick={() => actions.selectDifficulty("god")}
-                />
+                <SelectionCard icon={Skull} title={t('simulator.hard')} subtitle={t('simulator.hardSub')} onClick={() => actions.selectDifficulty("hard")} />
+                <SelectionCard icon={Flame} title={t('simulator.godMode')} subtitle={t('simulator.godModeSub')} onClick={() => actions.selectDifficulty("god")} />
               </div>
             </motion.div>
           )}
@@ -561,7 +531,7 @@ export const GamifiedWizard = () => {
               className="w-full max-w-md text-center"
             >
               <h2 className="font-pixel text-lg text-[#39FF14] mb-6">
-                YOUR STARTUP
+                {t('simulator.yourStartup')}
               </h2>
               
               <FlipCard 
@@ -602,7 +572,7 @@ export const GamifiedWizard = () => {
                 className="mt-6"
               >
                 <NeonButton onClick={() => setShowEmailModal(true)}>
-                  UNLOCK FULL DECK
+                  {t('simulator.unlockFullDeck')}
                 </NeonButton>
               </motion.div>
             </motion.div>
@@ -620,6 +590,7 @@ export const GamifiedWizard = () => {
               userClass: state.selections.userClass,
               interest: state.selections.interest
             }}
+            t={t}
           />
         )}
       </AnimatePresence>
