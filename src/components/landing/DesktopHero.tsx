@@ -98,6 +98,9 @@ export const DesktopHero = ({ onOpenChat }: DesktopHeroProps) => {
                         src={char.avatar}
                         alt={char.name}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        width={48}
+                        height={48}
                       />
                     </div>
                     {/* Tooltip on hover */}
@@ -135,7 +138,7 @@ export const DesktopHero = ({ onOpenChat }: DesktopHeroProps) => {
                         boxShadow: `0 0 20px ${phase.color.replace(')', ' / 0.1)')}` 
                       }}
                     >
-                      <img src={phase.icon} alt={phase.label} className="w-6 h-6" />
+                      <img src={phase.icon} alt={phase.label} className="w-6 h-6" loading="lazy" width={24} height={24} />
                       <span className="text-sm font-medium text-foreground">{phase.label}</span>
                     </div>
                     {index < ROADMAP_PHASES.length - 1 && (
@@ -198,6 +201,9 @@ export const DesktopHero = ({ onOpenChat }: DesktopHeroProps) => {
                 src={heroAiTeamPanel} 
                 alt="AI Team Panel" 
                 className="w-[420px] drop-shadow-2xl"
+                loading="lazy"
+                width={420}
+                height={296}
                 style={{
                   filter: 'drop-shadow(0 20px 40px hsl(var(--primary) / 0.3))'
                 }}
@@ -224,6 +230,10 @@ export const DesktopHero = ({ onOpenChat }: DesktopHeroProps) => {
                 src={heroMainCards} 
                 alt="Deck Cards" 
                 className="w-[980px] drop-shadow-2xl"
+                // @ts-ignore - fetchpriority is valid HTML attribute
+                fetchpriority="high"
+                width={980}
+                height={711}
                 style={{
                   filter: 'drop-shadow(0 30px 60px hsl(var(--primary) / 0.4))'
                 }}
@@ -259,6 +269,9 @@ export const DesktopHero = ({ onOpenChat }: DesktopHeroProps) => {
                 src={heroGenerateButton} 
                 alt="Generate Website" 
                 className="w-[330px]"
+                loading="lazy"
+                width={330}
+                height={182}
               />
             </motion.div>
           </div>
