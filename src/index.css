@@ -613,3 +613,20 @@
     min-width: 50px;
   }
 }
+
+/* Utility: Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area padding for mobile */
+.pt-safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
