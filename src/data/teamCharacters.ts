@@ -23,27 +23,23 @@ export interface TeamCharacter {
 }
 
 // Internal data with localization
+interface LocalizedStrings {
+  name: string;
+  role: string;
+  specialty: string;
+  personality: string;
+  signaturePhrases: string[];
+  tagline: string;
+}
+
 interface CharacterData {
   id: string;
   emoji: string;
   color: string;
   avatar: string;
-  en: {
-    name: string;
-    role: string;
-    specialty: string;
-    personality: string;
-    signaturePhrases: string[];
-    tagline: string;
-  };
-  ru: {
-    name: string;
-    role: string;
-    specialty: string;
-    personality: string;
-    signaturePhrases: string[];
-    tagline: string;
-  };
+  en: LocalizedStrings;
+  ru: LocalizedStrings;
+  es: LocalizedStrings;
 }
 
 const CHARACTER_DATA: Record<string, CharacterData> = {
@@ -75,6 +71,18 @@ const CHARACTER_DATA: Record<string, CharacterData> = {
         "Как это меняет правила игры?"
       ],
       tagline: "Соединяет точки, о которых ты и не подозревал."
+    },
+    es: {
+      name: 'Ever Green',
+      role: 'CEO / Visionario',
+      specialty: 'Visión estratégica e innovación',
+      personality: 'Arquitecto del futuro. Transforma visiones en realidad, toma decisiones estratégicas finales, mantiene límites éticos. El pegamento que conecta genios en un equipo.',
+      signaturePhrases: [
+        "No construyo empresas. Creo movimientos.",
+        "¿Cuál es la visión más grande aquí?",
+        "¿Cómo cambia esto el juego?"
+      ],
+      tagline: "Conecta puntos que no sabías que existían."
     }
   },
   prisma: {
@@ -105,6 +113,18 @@ const CHARACTER_DATA: Record<string, CharacterData> = {
         "Давай проверим это предположение"
       ],
       tagline: "Зациклена на том, что реально нужно пользователям, а не на том, что ты думаешь они хотят."
+    },
+    es: {
+      name: 'Prisma',
+      role: 'Product Manager',
+      specialty: 'Necesidades del usuario y estrategia de producto',
+      personality: 'Voz del usuario y puente entre negocio y tecnología. Traduce visión en roadmaps, protege el tiempo de los desarrolladores, aporta perspectiva del usuario a cada decisión. Obsesionada con resolver problemas humanos reales.',
+      signaturePhrases: [
+        "Enamórate del problema, no de la solución.",
+        "¿Qué necesita realmente el usuario?",
+        "Validemos esa suposición"
+      ],
+      tagline: "Se obsesiona con lo que los usuarios realmente necesitan, no lo que crees que quieren."
     }
   },
   toxic: {
@@ -135,6 +155,18 @@ const CHARACTER_DATA: Record<string, CharacterData> = {
         "Давай думать как атакующий"
       ],
       tagline: "Находит дыры в безопасности, которые ты пропустил."
+    },
+    es: {
+      name: 'Toxic',
+      role: 'Líder Red Team / Seguridad',
+      specialty: 'Seguridad y evaluación de vulnerabilidades',
+      personality: 'Pensador adversarial que rompe ilusiones de seguridad. Piensa como un atacante para encontrar vulnerabilidades. Paranoico de forma saludable — directo, sin compromisos, pero constructivo. Solo sombrero blanco.',
+      signaturePhrases: [
+        "No soy paranoico. Solo sé de lo que la gente es capaz.",
+        "¿Qué podría salir mal aquí?",
+        "Pensemos como un atacante"
+      ],
+      tagline: "Encuentra los agujeros de seguridad que pasaste por alto."
     }
   },
   phoenix: {
@@ -165,6 +197,18 @@ const CHARACTER_DATA: Record<string, CharacterData> = {
         "Какая тут эмоциональная история?"
       ],
       tagline: "Спрашивает 'Кто за это платит?' пока не получит ответ."
+    },
+    es: {
+      name: 'Phoenix',
+      role: 'CMO / Director de Marketing',
+      specialty: 'Crecimiento y storytelling de marca',
+      personality: 'Arquitecto de crecimiento y narrador de marca. Crea movimientos, no campañas de marketing. Convierte productos en narrativas emocionales, encuentra caminos de crecimiento no convencionales, construye comunidad auténtica.',
+      signaturePhrases: [
+        "El mejor marketing no parece marketing.",
+        "¿Cómo hacemos esto compartible?",
+        "¿Cuál es la historia emocional aquí?"
+      ],
+      tagline: "Pregunta '¿Quién paga por esto?' hasta que tengas respuesta."
     }
   },
   techpriest: {
@@ -195,6 +239,18 @@ const CHARACTER_DATA: Record<string, CharacterData> = {
         "Давай строить умно, а не просто быстро"
       ],
       tagline: "Не даёт выбрать неправильный технологический стек."
+    },
+    es: {
+      name: 'Tech Priest',
+      role: 'CTO / Director Técnico',
+      specialty: 'Arquitectura y excelencia técnica',
+      personality: 'Constructor de mundos digitales y traductor entre código y negocio. Diseña arquitecturas escalables, explica conceptos complejos con analogías, asegura que la tecnología sea invisible para los usuarios. Enseña principios, no código.',
+      signaturePhrases: [
+        "La mejor tecnología es la que no notas.",
+        "¿Es esto técnicamente factible?",
+        "Construyamos esto inteligente, no solo rápido"
+      ],
+      tagline: "Te impide elegir el stack tecnológico equivocado."
     }
   },
   virgilia: {
@@ -225,6 +281,18 @@ const CHARACTER_DATA: Record<string, CharacterData> = {
         "Какая тут эмоциональная температура?"
       ],
       tagline: "Переводит твоё видение в истории, которые люди чувствуют."
+    },
+    es: {
+      name: 'Virgilia',
+      role: 'Narradora Visual',
+      specialty: 'Diseño visual y storytelling emocional',
+      personality: 'Traductora de emociones al lenguaje visual. Transforma conceptos abstractos en historias visuales cautivadoras. Cada frame debe funcionar como fotografía, cada color lleva temperatura emocional. Crea experiencias, no contenido.',
+      signaturePhrases: [
+        "No grabo videos. Creo mantras visuales que cambian estados internos.",
+        "¿Cómo se siente esto?",
+        "¿Cuál es la temperatura emocional aquí?"
+      ],
+      tagline: "Traduce tu visión en historias que la gente siente."
     }
   },
   zen: {
@@ -255,6 +323,18 @@ const CHARACTER_DATA: Record<string, CharacterData> = {
         "Что нам нужно, чтобы процветать?"
       ],
       tagline: "Напоминает, что выгорание — тоже слепое пятно."
+    },
+    es: {
+      name: 'Zen',
+      role: 'RRHH / Bienestar',
+      specialty: 'Cultura y potencial humano',
+      personality: 'Guardián de la cultura y catalizador del potencial humano. Crea seguridad psicológica, previene el burnout, recuerda a todos que detrás de cada KPI hay un ser humano. Mantiene el mapa emocional del equipo.',
+      signaturePhrases: [
+        "Las personas felices construyen grandes empresas.",
+        "¿Cómo nos sentimos realmente?",
+        "¿Qué necesitamos para prosperar?"
+      ],
+      tagline: "Te recuerda que el burnout también es un punto ciego."
     }
   }
 };
@@ -264,7 +344,8 @@ export const getCharacterById = (id: string, language: Language = 'en'): TeamCha
   const data = CHARACTER_DATA[id];
   if (!data) return undefined;
   
-  const localized = data[language];
+  // Fallback to English if language not found
+  const localized = data[language] || data['en'];
   return {
     id: data.id,
     emoji: data.emoji,
