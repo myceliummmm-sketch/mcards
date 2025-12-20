@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  ArrowLeft, 
-  Crown, 
-  User, 
-  LogOut, 
-  CreditCard, 
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import {
+  ArrowLeft,
+  Crown,
+  User,
+  LogOut,
+  CreditCard,
   Coins,
   Calendar,
   Sparkles,
@@ -30,7 +31,7 @@ export default function Settings() {
   const [user, setUser] = useState<any>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
-  const { t, language, setLanguage } = useTranslation();
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     const getUser = async () => {
@@ -134,29 +135,7 @@ export default function Settings() {
             <CardDescription>{t('settings.language.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-3 flex-wrap">
-              <Button
-                variant={language === 'en' ? 'default' : 'outline'}
-                onClick={() => setLanguage('en')}
-                className="flex-1 gap-2 min-w-[100px]"
-              >
-                🇬🇧 {t('settings.language.english')}
-              </Button>
-              <Button
-                variant={language === 'es' ? 'default' : 'outline'}
-                onClick={() => setLanguage('es')}
-                className="flex-1 gap-2 min-w-[100px]"
-              >
-                🇪🇸 {t('settings.language.spanish')}
-              </Button>
-              <Button
-                variant={language === 'ru' ? 'default' : 'outline'}
-                onClick={() => setLanguage('ru')}
-                className="flex-1 gap-2 min-w-[100px]"
-              >
-                🇷🇺 {t('settings.language.russian')}
-              </Button>
-            </div>
+            <LanguageSwitcher />
           </CardContent>
         </Card>
 
