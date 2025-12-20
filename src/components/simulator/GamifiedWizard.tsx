@@ -82,7 +82,7 @@ const SelectionCard = ({
   <motion.div
     onClick={onClick}
     className="
-      cursor-pointer p-6 bg-black/50 backdrop-blur-xl
+      cursor-pointer p-3 bg-black/50 backdrop-blur-xl
       border-2 border-[#39FF14]/40 rounded-xl
       hover:border-[#39FF14] hover:shadow-[0_0_40px_rgba(57,255,20,0.4)]
       transition-all duration-300
@@ -90,9 +90,9 @@ const SelectionCard = ({
     whileHover={{ scale: 1.05, y: -5 }}
     whileTap={{ scale: 0.98 }}
   >
-    <Icon className="w-16 h-16 mx-auto mb-4 text-[#39FF14]" />
-    <h3 className="font-pixel text-lg text-[#39FF14] mb-2 text-center">{title}</h3>
-    <p className="text-white/60 text-sm text-center">{subtitle}</p>
+    <Icon className="w-10 h-10 mx-auto mb-2 text-[#39FF14]" />
+    <h3 className="font-pixel text-xs text-[#39FF14] mb-1 text-center">{title}</h3>
+    <p className="text-white/60 text-[10px] text-center line-clamp-2">{subtitle}</p>
   </motion.div>
 );
 
@@ -109,16 +109,16 @@ const InterestCard = ({
   <motion.div
     onClick={onClick}
     className="
-      cursor-pointer p-4 bg-black/50 backdrop-blur-xl
+      cursor-pointer p-2 bg-black/50 backdrop-blur-xl
       border-2 border-[#39FF14]/40 rounded-lg
       hover:border-[#39FF14] hover:shadow-[0_0_30px_rgba(57,255,20,0.4)]
-      transition-all duration-300 flex flex-col items-center gap-2
+      transition-all duration-300 flex flex-col items-center gap-1
     "
     whileHover={{ scale: 1.08 }}
     whileTap={{ scale: 0.95 }}
   >
-    <Icon className="w-10 h-10 text-[#39FF14]" />
-    <span className="font-pixel text-xs text-[#39FF14] text-center">{label}</span>
+    <Icon className="w-6 h-6 text-[#39FF14]" />
+    <span className="font-pixel text-[8px] text-[#39FF14] text-center leading-tight">{label}</span>
   </motion.div>
 );
 
@@ -135,7 +135,7 @@ const FlipCard = ({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <div className="perspective-1000 w-56 h-72 sm:w-72 sm:h-96 mx-auto">
+    <div className="perspective-1000 w-56 h-72 mx-auto">
       <motion.div
         className="relative w-full h-full"
         initial={false}
@@ -391,7 +391,7 @@ export const GamifiedWizard = () => {
   const hackingText = hackingLines.join("\n");
   const { displayedText, isComplete } = useTypewriter(
     hackingText, 
-    70, // Slow enough for card image to load (~8 lines × ~30 chars × 70ms ≈ 16s)
+    35, // Fast terminal (~8 lines × ~30 chars × 35ms ≈ 8s)
     state.step === "hacking"
   );
 
@@ -465,7 +465,7 @@ export const GamifiedWizard = () => {
               exit="exit"
               className="w-full max-w-md"
             >
-              <h2 className="font-pixel text-lg text-[#39FF14] text-center mb-6">
+              <h2 className="font-pixel text-sm text-[#39FF14] text-center mb-4">
                 {t('simulator.chooseClass')}
               </h2>
               
@@ -490,11 +490,11 @@ export const GamifiedWizard = () => {
               exit="exit"
               className="w-full max-w-md"
             >
-              <h2 className="font-pixel text-lg text-[#39FF14] text-center mb-6">
+              <h2 className="font-pixel text-sm text-[#39FF14] text-center mb-4">
                 {t('simulator.yourArena')}
               </h2>
               
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <InterestCard icon={Gamepad2} label={t('simulator.gaming')} onClick={() => actions.selectInterest("gaming")} />
                 <InterestCard icon={Landmark} label={t('simulator.fintech')} onClick={() => actions.selectInterest("fintech")} />
                 <InterestCard icon={Heart} label={t('simulator.health')} onClick={() => actions.selectInterest("health")} />
@@ -517,7 +517,7 @@ export const GamifiedWizard = () => {
               exit="exit"
               className="w-full max-w-md"
             >
-              <h2 className="font-pixel text-lg text-[#39FF14] text-center mb-6">
+              <h2 className="font-pixel text-sm text-[#39FF14] text-center mb-4">
                 {t('simulator.selectDifficulty')}
               </h2>
               
