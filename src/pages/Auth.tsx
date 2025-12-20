@@ -45,6 +45,15 @@ const Auth = () => {
 
   useEffect(() => {
     const checkOnboardingAndRedirect = async (userId: string) => {
+      // Check if user came from simulator game
+      const simulatorContext = localStorage.getItem('simulator_context');
+      
+      if (simulatorContext) {
+        // User came from simulator - skip onboarding, go straight to dashboard
+        navigate("/dashboard?from=simulator");
+        return;
+      }
+
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarding_completed")

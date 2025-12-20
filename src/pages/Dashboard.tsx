@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, LogOut, Loader2, Sparkles, Settings } from "lucide-react";
+import { Plus, LogOut, Loader2, Sparkles, Settings, Rocket } from "lucide-react";
 import { DeckCard } from "@/components/DeckCard";
 import { CreateDeckDialog } from "@/components/CreateDeckDialog";
 import { SporeWallet } from "@/components/paywall/SporeWallet";
@@ -16,6 +16,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDistanceToNow } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Deck {
   id: string;
@@ -29,6 +30,7 @@ interface Deck {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
@@ -40,7 +42,29 @@ const Dashboard = () => {
   const [username, setUsername] = useState("");
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [lastDeckInfo, setLastDeckInfo] = useState<{ name: string; activity: string } | null>(null);
+  const [showSimulatorWelcome, setShowSimulatorWelcome] = useState(false);
+  const [simulatorArena, setSimulatorArena] = useState<string | null>(null);
   const { projectLimit, isPro } = useSubscription();
+
+  // Check for simulator context on mount
+  useEffect(() => {
+    if (searchParams.get('from') === 'simulator') {
+      const contextStr = localStorage.getItem('simulator_context');
+      if (contextStr) {
+        try {
+          const context = JSON.parse(contextStr);
+          setSimulatorArena(context.interest || null);
+          setShowSimulatorWelcome(true);
+          localStorage.removeItem('simulator_context');
+          
+          // Auto-dismiss after 4 seconds
+          setTimeout(() => setShowSimulatorWelcome(false), 4000);
+        } catch {
+          localStorage.removeItem('simulator_context');
+        }
+      }
+    }
+  }, [searchParams]);
 
   // Auto-create deck for mobile first-time users
   useEffect(() => {
@@ -384,6 +408,25 @@ const Dashboard = () => {
         isVisible={showWelcomeBack}
         onDismiss={() => setShowWelcomeBack(false)}
       />
+
+      {/* Simulator Welcome Banner */}
+      <AnimatePresence>
+        {showSimulatorWelcome && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
+          >
+            <div className="bg-primary/90 text-primary-foreground px-6 py-3 rounded-xl shadow-lg flex items-center gap-3">
+              <Rocket className="w-5 h-5" />
+              <span className="font-medium">
+                Your {simulatorArena ? `${simulatorArena.toUpperCase()} ` : ''}vision is ready! Let's build it.
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

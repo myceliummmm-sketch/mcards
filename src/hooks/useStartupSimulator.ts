@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { simulatorService, SimulatorParams, SimulationResult } from '@/services/simulatorService';
+import { simulatorService, SimulatorParams, SimulationResult, InterestArena } from '@/services/simulatorService';
 import { useToast } from '@/hooks/use-toast';
 
-export type GameStep = 'hero' | 'class' | 'difficulty' | 'hacking' | 'result';
+export type GameStep = 'hero' | 'class' | 'interest' | 'difficulty' | 'hacking' | 'result';
 
 export const useStartupSimulator = (language: string = 'en') => {
   const [step, setStep] = useState<GameStep>('hero');
@@ -15,6 +15,11 @@ export const useStartupSimulator = (language: string = 'en') => {
 
   const selectClass = (c: 'coder' | 'founder') => {
     setSelections(p => ({ ...p, userClass: c }));
+    nextStep('interest');
+  };
+
+  const selectInterest = (i: InterestArena) => {
+    setSelections(p => ({ ...p, interest: i }));
     nextStep('difficulty');
   };
 
@@ -40,6 +45,6 @@ export const useStartupSimulator = (language: string = 'en') => {
 
   return {
     state: { step, selections, result, isLoading },
-    actions: { nextStep, selectClass, selectDifficulty }
+    actions: { nextStep, selectClass, selectInterest, selectDifficulty }
   };
 };

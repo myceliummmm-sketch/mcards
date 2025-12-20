@@ -1,7 +1,10 @@
 import { supabase } from '@/integrations/supabase/client';
 
+export type InterestArena = 'gaming' | 'fintech' | 'health' | 'ai';
+
 export interface SimulatorParams {
   userClass: 'coder' | 'founder';
+  interest: InterestArena;
   difficulty: 'hard' | 'god';
   language: string;
 }
@@ -24,30 +27,40 @@ export interface SimulationResult {
   cardContent: CardContent;
 }
 
+// Arena-specific content templates
+const arenaContent: Record<InterestArena, { domain: string; audience: string; problem: string }> = {
+  gaming: { domain: 'Gaming & Entertainment', audience: 'gamers and content creators', problem: 'fragmented gaming experiences' },
+  fintech: { domain: 'Finance & Commerce', audience: 'businesses and consumers', problem: 'financial friction and barriers' },
+  health: { domain: 'Health & Wellness', audience: 'health-conscious individuals', problem: 'disconnected health data' },
+  ai: { domain: 'AI & Productivity', audience: 'knowledge workers', problem: 'repetitive manual tasks' }
+};
+
 export const simulatorService = {
   async generateStartup(params: SimulatorParams): Promise<SimulationResult> {
-    // 1. Generate text content instantly (mocked)
+    const arena = arenaContent[params.interest];
+    
+    // 1. Generate personalized text content
     const title = params.userClass === 'coder' 
-      ? "AI Code Assistant" 
-      : "Global Marketplace";
+      ? `${arena.domain} AI Platform` 
+      : `${arena.domain} Marketplace`;
     
     const description = params.difficulty === 'hard' 
-      ? "Survival mode activated." 
-      : "Viral growth achieved.";
+      ? `Disrupting ${arena.domain.toLowerCase()} against all odds.` 
+      : `Viral growth in ${arena.domain.toLowerCase()} achieved.`;
 
     const cardContent: CardContent = {
       vision_statement: params.userClass === 'coder'
-        ? "A world where developers focus on creativity, not boilerplate"
-        : "A borderless economy where talent meets opportunity",
+        ? `A world where ${arena.audience} harness AI to transform ${arena.domain.toLowerCase()}`
+        : `A borderless ${arena.domain.toLowerCase()} economy where talent meets opportunity`,
       what_becomes_possible: params.userClass === 'coder'
-        ? "10x faster development cycles through intelligent automation"
-        : "Breaking the boundaries of global markets",
+        ? `10x faster innovation in ${arena.domain.toLowerCase()} through intelligent automation`
+        : `Breaking the boundaries of ${arena.domain.toLowerCase()} markets globally`,
       barrier_removed: params.userClass === 'coder'
-        ? "Eliminating repetitive coding tasks forever"
-        : "Eliminating middlemen and geographical barriers",
+        ? `Eliminating ${arena.problem} forever`
+        : `Removing middlemen and ${arena.problem}`,
       who_benefits: params.userClass === 'coder'
-        ? "Developers worldwide seeking creative freedom"
-        : "Global creators and entrepreneurs"
+        ? `Developers and ${arena.audience} worldwide`
+        : `${arena.audience.charAt(0).toUpperCase() + arena.audience.slice(1)} and entrepreneurs`
     };
 
     // 2. Call the REAL AI Image Generator
