@@ -9,6 +9,7 @@ export default {
       'display': ['Orbitron', 'sans-serif'],
       'body': ['Rajdhani', 'sans-serif'],
       'handwritten': ['Caveat', 'cursive'],
+      'pixel': ['"Press Start 2P"', 'cursive'],
     },
     container: {
       center: true,
