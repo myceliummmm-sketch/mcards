@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code, Briefcase, Skull, Flame, Mail, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useStartupSimulator } from "@/hooks/useStartupSimulator";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -92,53 +91,87 @@ const SelectionCard = ({
   </motion.div>
 );
 
-// 3D Flip card for result
-const FlipCard = ({ title, isFlipped }: { title: string; isFlipped: boolean }) => (
-  <div className="perspective-1000 w-72 h-96 mx-auto">
-    <motion.div
-      className="relative w-full h-full"
-      initial={false}
-      animate={{ rotateY: isFlipped ? 180 : 0 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
-      style={{ transformStyle: "preserve-3d" }}
-    >
-      {/* Front */}
-      <div 
-        className="absolute inset-0 bg-gradient-to-br from-[#39FF14]/20 to-black/80 
-        border-2 border-[#39FF14] rounded-xl flex items-center justify-center
-        backface-hidden"
-        style={{ backfaceVisibility: "hidden" }}
+// 3D Flip card for result with AI-generated image
+const FlipCard = ({ 
+  title, 
+  imageUrl,
+  isFlipped 
+}: { 
+  title: string; 
+  imageUrl?: string;
+  isFlipped: boolean; 
+}) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  return (
+    <div className="perspective-1000 w-72 h-96 mx-auto">
+      <motion.div
+        className="relative w-full h-full"
+        initial={false}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        style={{ transformStyle: "preserve-3d" }}
       >
-        <div className="text-center p-6">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[#39FF14]/20 
-            border-2 border-[#39FF14] flex items-center justify-center">
-            <span className="font-pixel text-3xl text-[#39FF14]">?</span>
-          </div>
-          <p className="font-pixel text-[#39FF14] text-sm">GENERATING...</p>
-        </div>
-      </div>
-      
-      {/* Back */}
-      <div 
-        className="absolute inset-0 bg-gradient-to-br from-[#39FF14]/30 to-black/90 
-        border-2 border-[#39FF14] rounded-xl flex items-center justify-center p-6
-        shadow-[0_0_60px_rgba(57,255,20,0.5)]"
-        style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-      >
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#39FF14] 
-            flex items-center justify-center">
-            <Flame className="w-8 h-8 text-black" />
-          </div>
-          <h2 className="font-pixel text-xl text-[#39FF14] mb-4 leading-relaxed">{title}</h2>
-          <div className="mt-4 pt-4 border-t border-[#39FF14]/30">
-            <p className="text-white/60 text-xs">YOUR STARTUP IDEA</p>
+        {/* Front - Loading */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-[#39FF14]/20 to-black/80 
+          border-2 border-[#39FF14] rounded-xl flex items-center justify-center"
+          style={{ backfaceVisibility: "hidden" }}
+        >
+          <div className="text-center p-6">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[#39FF14]/20 
+              border-2 border-[#39FF14] flex items-center justify-center">
+              <span className="font-pixel text-3xl text-[#39FF14]">?</span>
+            </div>
+            <p className="font-pixel text-[#39FF14] text-sm">GENERATING...</p>
           </div>
         </div>
-      </div>
-    </motion.div>
-  </div>
-);
+        
+        {/* Back - Result with AI Image */}
+        <div 
+          className="absolute inset-0 rounded-xl overflow-hidden
+          border-2 border-[#39FF14] 
+          shadow-[0_0_60px_rgba(57,255,20,0.5)]"
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+        >
+          {/* AI Generated Image or Loading State */}
+          {imageUrl ? (
+            <>
+              <img 
+                src={imageUrl} 
+                alt={title}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                onLoad={() => setImageLoaded(true)}
+              />
+              {!imageLoaded && (
+                <div className="absolute inset-0 bg-gradient-to-br from-[#39FF14]/20 to-black/80 animate-pulse" />
+              )}
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-[#39FF14]/20 to-black/80 animate-pulse" />
+          )}
+          
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          
+          {/* Title overlay at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
+            <h2 className="font-pixel text-lg text-[#39FF14] mb-2 leading-relaxed 
+              drop-shadow-[0_0_10px_rgba(0,0,0,0.9)]">
+              {title}
+            </h2>
+            <p className="text-white/60 text-xs uppercase tracking-wider">Your Vision Card</p>
+          </div>
+          
+          {/* Glow effect on top-left */}
+          <div className="absolute top-4 left-4">
+            <Flame className="w-6 h-6 text-[#39FF14] drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]" />
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 // Email capture modal
 const EmailModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
@@ -193,27 +226,29 @@ export const GamifiedWizard = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [cardFlipped, setCardFlipped] = useState(false);
 
-  // Hacking terminal text
+  // Hacking terminal text - extended to match image generation time
   const hackingLines = [
     "> Initializing neural network...",
     "> Scanning market trends...",
     "> Analyzing competitor data...",
     "> Generating unique value proposition...",
+    "> Hacking visual cortex...",
+    "> Rendering low-poly universe...",
     "> Compiling startup DNA...",
-    "> SUCCESS: Idea generated!"
+    "> SUCCESS: Vision generated!"
   ];
   
   const hackingText = hackingLines.join("\n");
   const { displayedText, isComplete } = useTypewriter(
     hackingText, 
-    30, 
+    35, // Slightly slower to sync with API (~8 lines × ~20 chars × 35ms ≈ 5.6s)
     state.step === "hacking"
   );
 
   // Auto-flip card when result is ready
   useEffect(() => {
     if (state.step === "result" && state.result) {
-      const timer = setTimeout(() => setCardFlipped(true), 500);
+      const timer = setTimeout(() => setCardFlipped(true), 800);
       return () => clearTimeout(timer);
     }
   }, [state.step, state.result]);
@@ -372,13 +407,42 @@ export const GamifiedWizard = () => {
                 YOUR STARTUP
               </h2>
               
-              <FlipCard title={state.result.title} isFlipped={cardFlipped} />
+              <FlipCard 
+                title={state.result.title} 
+                imageUrl={state.result.imageUrl}
+                isFlipped={cardFlipped} 
+              />
+              
+              {/* Card content details */}
+              {cardFlipped && state.result.cardContent && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="mt-6"
+                >
+                  <GlassPanel className="p-4 text-left text-sm">
+                    <p className="text-[#39FF14]/90 mb-2">
+                      <span className="text-white/40 text-xs uppercase">Vision: </span>
+                      {state.result.cardContent.vision_statement}
+                    </p>
+                    <p className="text-[#39FF14]/90 mb-2">
+                      <span className="text-white/40 text-xs uppercase">Unlocks: </span>
+                      {state.result.cardContent.what_becomes_possible}
+                    </p>
+                    <p className="text-[#39FF14]/90">
+                      <span className="text-white/40 text-xs uppercase">For: </span>
+                      {state.result.cardContent.who_benefits}
+                    </p>
+                  </GlassPanel>
+                </motion.div>
+              )}
               
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: cardFlipped ? 1 : 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-8"
+                transition={{ delay: 0.8 }}
+                className="mt-6"
               >
                 <NeonButton onClick={() => setShowEmailModal(true)}>
                   UNLOCK FULL DECK
