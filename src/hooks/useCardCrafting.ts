@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { CardDefinition } from '@/data/cardDefinitions';
-import { supabase } from '@/integrations/supabase/client';
+import { aiService } from '@/services/aiService';
 
 export interface CardCraftingState {
   currentStep: number;
@@ -94,14 +94,13 @@ export const useCardCrafting = (
 
     setIsAIGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('auto-complete-single-card', {
-        body: { deckId, slot: definition.slot, language }
+      const cardData = await aiService.generateCard({
+        deckId,
+        slot: definition.slot,
+        language
       });
 
-      if (error) throw error;
-      if (!data.success) throw new Error(data.error || 'Failed to generate');
-
-      const newFormData = { ...formData, ...data.cardData };
+      const newFormData = { ...formData, ...cardData };
       setFormData(newFormData);
       lastSyncedData.current = JSON.stringify(newFormData);
 
@@ -109,7 +108,7 @@ export const useCardCrafting = (
       const allSteps = new Set(definition.fields.map((_, i) => i + 1));
       setCompletedSteps(allSteps);
 
-      return { success: true, cardData: data.cardData };
+      return { success: true, cardData };
     } finally {
       setIsAIGenerating(false);
     }
