@@ -134,18 +134,25 @@ export default function Settings() {
             <CardDescription>{t('settings.language.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <Button
                 variant={language === 'en' ? 'default' : 'outline'}
                 onClick={() => setLanguage('en')}
-                className="flex-1 gap-2"
+                className="flex-1 gap-2 min-w-[100px]"
               >
                 🇬🇧 {t('settings.language.english')}
               </Button>
               <Button
+                variant={language === 'es' ? 'default' : 'outline'}
+                onClick={() => setLanguage('es')}
+                className="flex-1 gap-2 min-w-[100px]"
+              >
+                🇪🇸 {t('settings.language.spanish')}
+              </Button>
+              <Button
                 variant={language === 'ru' ? 'default' : 'outline'}
                 onClick={() => setLanguage('ru')}
-                className="flex-1 gap-2"
+                className="flex-1 gap-2 min-w-[100px]"
               >
                 🇷🇺 {t('settings.language.russian')}
               </Button>

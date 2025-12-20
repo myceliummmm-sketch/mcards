@@ -228,6 +228,21 @@ export const translations = {
         pain: "I have no portfolio and no real experience for employers...",
         solution: "Validate a real business idea. That IS the portfolio.",
       },
+      techFounder: {
+        label: "Technical Founder",
+        pain: "I'm so deep in code I've forgotten why I'm building this...",
+        solution: "Cards force you to zoom out. Business clarity, not just code clarity.",
+      },
+      freelancer: {
+        label: "Freelancer",
+        pain: "I'm trading time for money. I can't scale and I'm burning out...",
+        solution: "Turn your expertise into a product. Stop selling hours.",
+      },
+      secondTimeFounder: {
+        label: "Second-Time Founder",
+        pain: "Last time I built for 2 years before realizing nobody wanted it...",
+        solution: "This time, validate first. Your deck is your insurance policy.",
+      },
     },
     whyCards: {
       title: "Why Ideas Die in Notebooks",
@@ -318,6 +333,7 @@ export const translations = {
         subtitle: "Choose your preferred language",
         english: "English",
         russian: "Русский",
+        spanish: "Español",
       },
       subscription: {
         title: "Subscription",
@@ -931,6 +947,21 @@ export const translations = {
         pain: "Нет портфолио и реального опыта для работодателя...",
         solution: "Провалидируй реальную бизнес-идею. Это И ЕСТЬ портфолио.",
       },
+      techFounder: {
+        label: "Технический фаундер",
+        pain: "Так глубоко в коде, что забыл, зачем это строю...",
+        solution: "Карты заставляют поднять голову. Ясность бизнеса, не только кода.",
+      },
+      freelancer: {
+        label: "Фрилансер",
+        pain: "Меняю время на деньги. Не могу масштабироваться и выгораю...",
+        solution: "Преврати экспертизу в продукт. Перестань продавать часы.",
+      },
+      secondTimeFounder: {
+        label: "Второй раз фаундер",
+        pain: "В прошлый раз строил 2 года, пока не понял, что никому не нужно...",
+        solution: "В этот раз сначала проверь. Твоя колода — твоя страховка.",
+      },
     },
     whyCards: {
       title: "Почему идеи умирают в блокнотах",
@@ -1021,6 +1052,7 @@ export const translations = {
         subtitle: "Выбери предпочитаемый язык",
         english: "English",
         russian: "Русский",
+        spanish: "Español",
       },
       subscription: {
         title: "Подписка",
@@ -1633,6 +1665,21 @@ export const translations = {
         label: "Estudiante",
         pain: "No tengo portafolio ni experiencia real para empleadores...",
         solution: "Valida una idea de negocio real. ESO ES el portafolio.",
+      },
+      techFounder: {
+        label: "Fundador técnico",
+        pain: "Estoy tan metido en el código que olvidé por qué lo estoy construyendo...",
+        solution: "Las cartas te obligan a ver el panorama. Claridad de negocio, no solo de código.",
+      },
+      freelancer: {
+        label: "Freelancer",
+        pain: "Intercambio tiempo por dinero. No puedo escalar y me estoy quemando...",
+        solution: "Convierte tu experiencia en producto. Deja de vender horas.",
+      },
+      secondTimeFounder: {
+        label: "Fundador de segunda vez",
+        pain: "La última vez construí 2 años antes de darme cuenta que nadie lo quería...",
+        solution: "Esta vez, valida primero. Tu mazo es tu póliza de seguro.",
       },
     },
     whyCards: {
