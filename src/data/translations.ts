@@ -130,6 +130,12 @@ export const translations = {
           successTitle: "Check your inbox!",
           successMessage: "The validation playbook is on its way to your email.",
           close: "Got it",
+          upsell: {
+            title: "Want an AI team?",
+            description: "Create an account in 30 sec and get a personalized launch plan + 100 free spores",
+            cta: "Create account — it's free",
+            later: "Later",
+          },
         },
       },
       quizTeaser: {
@@ -902,6 +908,12 @@ export const translations = {
           successTitle: "Проверь почту!",
           successMessage: "Playbook валидации уже в пути к твоему email.",
           close: "Понял",
+          upsell: {
+            title: "Хочешь AI-команду?",
+            description: "Создай аккаунт за 30 сек и получи персональный план запуска + 100 бесплатных спор",
+            cta: "Создать аккаунт — это бесплатно",
+            later: "Позже",
+          },
         },
       },
       quizTeaser: {
@@ -1674,6 +1686,12 @@ export const translations = {
           successTitle: "¡Revisa tu bandeja!",
           successMessage: "El playbook de validación está en camino a tu email.",
           close: "Entendido",
+          upsell: {
+            title: "¿Quieres un equipo de IA?",
+            description: "Crea una cuenta en 30 seg y obtén un plan de lanzamiento personalizado + 100 esporas gratis",
+            cta: "Crear cuenta — es gratis",
+            later: "Más tarde",
+          },
         },
       },
       quizTeaser: {
