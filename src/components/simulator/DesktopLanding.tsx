@@ -15,6 +15,7 @@ import { PainPointsCarousel } from "@/components/landing/PainPointsCarousel";
 import { EverChatWidget } from "@/components/landing/EverChatWidget";
 import { QuizTeaser } from "@/components/landing/QuizTeaser";
 import { DesktopHero } from "@/components/landing/DesktopHero";
+import LegalFooter from "@/components/landing/LegalFooter";
 import { useTranslation } from "@/hooks/useTranslation";
 
 export const DesktopLanding = () => {
@@ -216,7 +217,7 @@ export const DesktopLanding = () => {
         </section>
       </LazySection>
 
-      <div className="h-32 bg-gradient-to-t from-muted/30 to-transparent" />
+      <LegalFooter />
       <EverChatWidget externalOpen={isChatOpen} onExternalOpenChange={setIsChatOpen} />
     </div>
   );
