@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 
-export type InterestArena = 'gaming' | 'fintech' | 'health' | 'ai';
+export type InterestArena = 'gaming' | 'fintech' | 'health' | 'ai' | 'crypto' | 'ecommerce' | 'education' | 'saas';
 export type UserClass = 'coder' | 'founder' | 'designer' | 'marketer' | 'hustler' | 'dreamer';
 
 export interface SimulatorParams {
@@ -33,7 +33,11 @@ const arenaContent: Record<InterestArena, { domain: string; audience: string; pr
   gaming: { domain: 'Gaming & Entertainment', audience: 'gamers and content creators', problem: 'fragmented gaming experiences' },
   fintech: { domain: 'Finance & Commerce', audience: 'businesses and consumers', problem: 'financial friction and barriers' },
   health: { domain: 'Health & Wellness', audience: 'health-conscious individuals', problem: 'disconnected health data' },
-  ai: { domain: 'AI & Productivity', audience: 'knowledge workers', problem: 'repetitive manual tasks' }
+  ai: { domain: 'AI & Productivity', audience: 'knowledge workers', problem: 'repetitive manual tasks' },
+  crypto: { domain: 'Crypto & Web3', audience: 'traders and builders', problem: 'complex onboarding and trust issues' },
+  ecommerce: { domain: 'E-commerce & Retail', audience: 'merchants and shoppers', problem: 'customer acquisition costs' },
+  education: { domain: 'Education & Learning', audience: 'students and professionals', problem: 'engagement and skill gaps' },
+  saas: { domain: 'SaaS & Productivity', audience: 'teams and businesses', problem: 'workflow inefficiencies' }
 };
 
 // Class-specific content generation
