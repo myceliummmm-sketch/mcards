@@ -209,12 +209,14 @@ const EmailModal = ({
   isOpen, 
   onClose,
   simulatorContext,
+  cardTitle,
   t,
   language
 }: { 
   isOpen: boolean; 
   onClose: () => void;
   simulatorContext?: { userClass?: string; interest?: string; difficulty?: string };
+  cardTitle?: string;
   t: (key: string) => string;
   language: string;
 }) => {
@@ -235,35 +237,22 @@ const EmailModal = ({
     setError("");
 
     try {
-      // Map arena to blocker for personalized email
-      const blockerMap: Record<string, string> = {
-        'gaming': 'start_paralysis',
-        'fintech': 'resource_anxiety',
-        'health': 'perfectionism',
-        'ai': 'fear_of_choice',
-        'crypto': 'fear_of_repeat',
-        'ecommerce': 'impostor_syndrome',
-        'education': 'perfectionism',
-        'saas': 'fear_of_choice',
-      };
-      
-      const blocker = blockerMap[simulatorContext?.interest || 'gaming'] || 'start_paralysis';
-      const score = simulatorContext?.difficulty === 'god' ? 85 : 65;
-
       // Save lead to database
       await supabase.from("leads").insert({
         email: normalizedEmail,
         source: "simulator_game",
-        quiz_blocker: blocker,
-        quiz_score: score
+        quiz_blocker: simulatorContext?.userClass || 'coder',
+        quiz_score: simulatorContext?.difficulty === 'god' ? 85 : 65
       });
 
-      // Send personalized email
-      await supabase.functions.invoke('send-playbook-email', {
+      // Send personalized simulator email
+      await supabase.functions.invoke('send-simulator-email', {
         body: {
           email: normalizedEmail,
-          blocker: blocker,
-          score: score,
+          userClass: simulatorContext?.userClass || 'coder',
+          interest: simulatorContext?.interest || 'ai',
+          difficulty: simulatorContext?.difficulty || 'hard',
+          cardTitle: cardTitle || 'Your Startup Vision',
           language: language
         }
       });
@@ -626,6 +615,7 @@ export const GamifiedWizard = () => {
               interest: state.selections.interest,
               difficulty: state.selections.difficulty
             }}
+            cardTitle={state.result?.title}
             t={t}
             language={language}
           />
