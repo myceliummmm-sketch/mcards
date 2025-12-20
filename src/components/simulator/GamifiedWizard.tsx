@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Briefcase, Skull, Flame, Mail, X, Gamepad2, Landmark, Heart, Bot, Check, Rocket, Palette, Megaphone, Zap, Sparkles } from "lucide-react";
+import { Code, Briefcase, Skull, Flame, Mail, X, Gamepad2, Landmark, Heart, Bot, Check, Rocket, Palette, Megaphone, Zap, Sparkles, Bitcoin, ShoppingCart, GraduationCap, Cloud } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useStartupSimulator } from "@/hooks/useStartupSimulator";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -209,12 +209,14 @@ const EmailModal = ({
   isOpen, 
   onClose,
   simulatorContext,
-  t
+  t,
+  language
 }: { 
   isOpen: boolean; 
   onClose: () => void;
-  simulatorContext?: { userClass?: string; interest?: string };
+  simulatorContext?: { userClass?: string; interest?: string; difficulty?: string };
   t: (key: string) => string;
+  language: string;
 }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -233,11 +235,39 @@ const EmailModal = ({
     setError("");
 
     try {
+      // Map arena to blocker for personalized email
+      const blockerMap: Record<string, string> = {
+        'gaming': 'start_paralysis',
+        'fintech': 'resource_anxiety',
+        'health': 'perfectionism',
+        'ai': 'fear_of_choice',
+        'crypto': 'fear_of_repeat',
+        'ecommerce': 'impostor_syndrome',
+        'education': 'perfectionism',
+        'saas': 'fear_of_choice',
+      };
+      
+      const blocker = blockerMap[simulatorContext?.interest || 'gaming'] || 'start_paralysis';
+      const score = simulatorContext?.difficulty === 'god' ? 85 : 65;
+
+      // Save lead to database
       await supabase.from("leads").insert({
         email: normalizedEmail,
         source: "simulator_game",
-        quiz_blocker: `${simulatorContext?.userClass || 'unknown'}_${simulatorContext?.interest || 'unknown'}`
+        quiz_blocker: blocker,
+        quiz_score: score
       });
+
+      // Send personalized email
+      await supabase.functions.invoke('send-playbook-email', {
+        body: {
+          email: normalizedEmail,
+          blocker: blocker,
+          score: score,
+          language: language
+        }
+      });
+
       setIsSuccess(true);
     } catch {
       setError("Something went wrong. Try again.");
@@ -464,11 +494,15 @@ export const GamifiedWizard = () => {
                 {t('simulator.yourArena')}
               </h2>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-4 gap-3">
                 <InterestCard icon={Gamepad2} label={t('simulator.gaming')} onClick={() => actions.selectInterest("gaming")} />
                 <InterestCard icon={Landmark} label={t('simulator.fintech')} onClick={() => actions.selectInterest("fintech")} />
                 <InterestCard icon={Heart} label={t('simulator.health')} onClick={() => actions.selectInterest("health")} />
                 <InterestCard icon={Bot} label={t('simulator.ai')} onClick={() => actions.selectInterest("ai")} />
+                <InterestCard icon={Bitcoin} label={t('simulator.crypto')} onClick={() => actions.selectInterest("crypto")} />
+                <InterestCard icon={ShoppingCart} label={t('simulator.ecommerce')} onClick={() => actions.selectInterest("ecommerce")} />
+                <InterestCard icon={GraduationCap} label={t('simulator.education')} onClick={() => actions.selectInterest("education")} />
+                <InterestCard icon={Cloud} label={t('simulator.saas')} onClick={() => actions.selectInterest("saas")} />
               </div>
             </motion.div>
           )}
@@ -588,9 +622,11 @@ export const GamifiedWizard = () => {
             onClose={() => setShowEmailModal(false)}
             simulatorContext={{
               userClass: state.selections.userClass,
-              interest: state.selections.interest
+              interest: state.selections.interest,
+              difficulty: state.selections.difficulty
             }}
             t={t}
+            language={language}
           />
         )}
       </AnimatePresence>
