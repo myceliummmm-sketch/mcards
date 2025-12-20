@@ -301,8 +301,8 @@ function generatePlaybookEmail(
   // Calculate projected days to first $1000 (inverse relationship with score)
   const daysTo1000 = Math.max(7, Math.round(60 - (score * 0.4)));
   
-  const baseUrl = "https://mycelium.gg";
-  const avatarBaseUrl = "https://mycelium.gg/avatars";
+  const baseUrl = "https://cards.mycelium.gg";
+  const avatarBaseUrl = "https://cards.mycelium.gg/avatars";
 
   return `
 <!DOCTYPE html>

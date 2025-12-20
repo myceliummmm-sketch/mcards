@@ -6,6 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Base URL for assets (avatars, images)
+const BASE_URL = "https://cards.mycelium.gg";
+
 interface BroadcastRequest {
   subject: string;
   htmlContent: string;
