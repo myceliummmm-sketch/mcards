@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { LazySection } from "@/components/ui/lazy-section";
 import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Target, Search, DollarSign } from "lucide-react";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import { motion } from "framer-motion";
@@ -73,125 +74,147 @@ export const DesktopLanding = () => {
       </div>
 
       <DesktopHero onOpenChat={() => setIsChatOpen(true)} />
-      <PainPointsCarousel />
+      <LazySection minHeight="300px">
+        <PainPointsCarousel />
+      </LazySection>
 
-      <section className="relative z-10 py-24 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('landing.howItWorks.title')}</h2>
-            <p className="text-muted-foreground text-lg">{t('landing.howItWorks.subtitle')}</p>
-          </motion.div>
+      <LazySection minHeight="400px">
+        <section className="relative z-10 py-24 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('landing.howItWorks.title')}</h2>
+              <p className="text-muted-foreground text-lg">{t('landing.howItWorks.subtitle')}</p>
+            </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {howItWorks.map((item, index) => (
-              <motion.div key={item.step} className="relative text-center" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.15 }}>
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-${item.color}/20 border-2 border-${item.color} flex items-center justify-center`}>
-                  <item.icon className={`w-8 h-8 text-${item.color}`} />
-                </div>
-                <span className="inline-block px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground mb-2">{t(item.weekKey)}</span>
-                <h3 className={`text-xl font-display font-bold mb-2 text-${item.color}`}>{t(item.titleKey)}</h3>
-                <p className="text-muted-foreground text-sm">{t(item.descriptionKey)}</p>
-                {index < 2 && <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-border to-transparent" />}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <QuizTeaser />
-      <WhyCardsSection />
-      <InteractiveCardDemo />
-      <FogOfWarJourney />
-
-      <section className="relative z-10 py-24 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              {t('landing.aiTeam.title')} <span className="text-destructive">{t('landing.aiTeam.noYesMen')}</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">{t('landing.aiTeam.description')}</p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
-            {characters.map((character, index) => (
-              <motion.div key={character.id} className="group relative" initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: index * 0.05 }}>
-                <div className="p-4 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 text-center">
-                  <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border-2 group-hover:scale-110 transition-transform" style={{ borderColor: character.color }}>
-                    <img src={character.avatar} alt={character.name} className="w-full h-full object-cover" />
+            <div className="grid md:grid-cols-3 gap-8">
+              {howItWorks.map((item, index) => (
+                <motion.div key={item.step} className="relative text-center" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.15 }}>
+                  <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-${item.color}/20 border-2 border-${item.color} flex items-center justify-center`}>
+                    <item.icon className={`w-8 h-8 text-${item.color}`} />
                   </div>
-                  <h4 className="font-display font-semibold text-sm mb-1">{character.name}</h4>
-                  <p className="text-xs text-muted-foreground">{character.role}</p>
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
-                    <div className="bg-popover border border-border rounded-lg p-3 shadow-lg max-w-xs">
-                      <p className="text-xs italic text-muted-foreground">"{character.tagline}"</p>
+                  <span className="inline-block px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground mb-2">{t(item.weekKey)}</span>
+                  <h3 className={`text-xl font-display font-bold mb-2 text-${item.color}`}>{t(item.titleKey)}</h3>
+                  <p className="text-muted-foreground text-sm">{t(item.descriptionKey)}</p>
+                  {index < 2 && <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-border to-transparent" />}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </LazySection>
+
+      <LazySection minHeight="500px">
+        <QuizTeaser />
+      </LazySection>
+      <LazySection minHeight="400px">
+        <WhyCardsSection />
+      </LazySection>
+      <LazySection minHeight="500px">
+        <InteractiveCardDemo />
+      </LazySection>
+      <LazySection minHeight="600px">
+        <FogOfWarJourney />
+      </LazySection>
+
+      <LazySection minHeight="400px">
+        <section className="relative z-10 py-24 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+                {t('landing.aiTeam.title')} <span className="text-destructive">{t('landing.aiTeam.noYesMen')}</span>
+              </h2>
+              <p className="text-muted-foreground text-lg">{t('landing.aiTeam.description')}</p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
+              {characters.map((character, index) => (
+                <motion.div key={character.id} className="group relative" initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: index * 0.05 }}>
+                  <div className="p-4 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 text-center">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border-2 group-hover:scale-110 transition-transform" style={{ borderColor: character.color }}>
+                      <img src={character.avatar} alt={character.name} className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
+                    </div>
+                    <h4 className="font-display font-semibold text-sm mb-1">{character.name}</h4>
+                    <p className="text-xs text-muted-foreground">{character.role}</p>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+                      <div className="bg-popover border border-border rounded-lg p-3 shadow-lg max-w-xs">
+                        <p className="text-xs italic text-muted-foreground">"{character.tagline}"</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </LazySection>
 
-      <section className="relative z-10 py-24 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
-        <div className="container mx-auto max-w-6xl">
-          <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('landing.features.title')}</h2>
-            <p className="text-muted-foreground text-lg">{t('landing.features.subtitle')}</p>
-          </motion.div>
+      <LazySection minHeight="500px">
+        <section className="relative z-10 py-24 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
+          <div className="container mx-auto max-w-6xl">
+            <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('landing.features.title')}</h2>
+              <p className="text-muted-foreground text-lg">{t('landing.features.subtitle')}</p>
+            </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div key={feature.titleKey} className="p-6 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm card-shine hover:border-primary/50 transition-all duration-300" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}>
-                <div className={`w-12 h-12 rounded-lg bg-muted/50 flex items-center justify-center mb-4 ${feature.color}`}>
-                  <feature.icon className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-display font-semibold mb-2">{t(feature.titleKey)}</h3>
-                <p className="text-muted-foreground">{t(feature.descriptionKey)}</p>
-              </motion.div>
-            ))}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {features.map((feature, index) => (
+                <motion.div key={feature.titleKey} className="p-6 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm card-shine hover:border-primary/50 transition-all duration-300" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}>
+                  <div className={`w-12 h-12 rounded-lg bg-muted/50 flex items-center justify-center mb-4 ${feature.color}`}>
+                    <feature.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-display font-semibold mb-2">{t(feature.titleKey)}</h3>
+                  <p className="text-muted-foreground">{t(feature.descriptionKey)}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </LazySection>
 
-      <SocialProofSection />
+      <LazySection minHeight="300px">
+        <SocialProofSection />
+      </LazySection>
 
-      <section className="relative z-10 py-16 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
-        <div className="container mx-auto max-w-4xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { value: "21", labelKey: "landing.stats.cards" },
-              { value: "7", labelKey: "landing.stats.advisors" },
-              { value: "4", labelKey: "landing.stats.phases" },
-              { value: "∞", labelKey: "landing.stats.possibilities" }
-            ].map((stat, index) => (
-              <motion.div key={stat.labelKey} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}>
-                <p className="text-4xl md:text-5xl font-display font-bold text-primary text-glow mb-2">{stat.value}</p>
-                <p className="text-muted-foreground">{t(stat.labelKey)}</p>
-              </motion.div>
-            ))}
+      <LazySection minHeight="200px">
+        <section className="relative z-10 py-16 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
+          <div className="container mx-auto max-w-4xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              {[
+                { value: "21", labelKey: "landing.stats.cards" },
+                { value: "7", labelKey: "landing.stats.advisors" },
+                { value: "4", labelKey: "landing.stats.phases" },
+                { value: "∞", labelKey: "landing.stats.possibilities" }
+              ].map((stat, index) => (
+                <motion.div key={stat.labelKey} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}>
+                  <p className="text-4xl md:text-5xl font-display font-bold text-primary text-glow mb-2">{stat.value}</p>
+                  <p className="text-muted-foreground">{t(stat.labelKey)}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </LazySection>
 
-      <section className="relative z-10 py-24 px-4">
-        <div className="container mx-auto max-w-3xl text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">{t('landing.finalCta.title')}</h2>
-            <p className="text-muted-foreground text-lg mb-8">{t('landing.finalCta.subtitle')}</p>
-            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg gap-2 hover:scale-105 transition-transform card-glow px-10 py-6">
-              <Zap className="h-6 w-6" />
-              {t('landing.finalCta.cta')}
-              <ArrowRight className="h-6 w-6" />
-            </Button>
-            <p className="mt-6 text-sm text-muted-foreground">{t('landing.finalCta.free')}</p>
-            <p className="mt-4 text-muted-foreground">
-              {t('landing.finalCta.hasAccount')}{" "}
-              <button onClick={() => navigate("/auth")} className="text-primary hover:underline">{t('landing.finalCta.signIn')}</button>
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <LazySection minHeight="300px">
+        <section className="relative z-10 py-24 px-4">
+          <div className="container mx-auto max-w-3xl text-center">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">{t('landing.finalCta.title')}</h2>
+              <p className="text-muted-foreground text-lg mb-8">{t('landing.finalCta.subtitle')}</p>
+              <Button size="lg" onClick={() => navigate("/auth")} className="text-lg gap-2 hover:scale-105 transition-transform card-glow px-10 py-6">
+                <Zap className="h-6 w-6" />
+                {t('landing.finalCta.cta')}
+                <ArrowRight className="h-6 w-6" />
+              </Button>
+              <p className="mt-6 text-sm text-muted-foreground">{t('landing.finalCta.free')}</p>
+              <p className="mt-4 text-muted-foreground">
+                {t('landing.finalCta.hasAccount')}{" "}
+                <button onClick={() => navigate("/auth")} className="text-primary hover:underline">{t('landing.finalCta.signIn')}</button>
+              </p>
+            </motion.div>
+          </div>
+        </section>
+      </LazySection>
 
       <div className="h-32 bg-gradient-to-t from-muted/30 to-transparent" />
       <EverChatWidget externalOpen={isChatOpen} onExternalOpenChange={setIsChatOpen} />

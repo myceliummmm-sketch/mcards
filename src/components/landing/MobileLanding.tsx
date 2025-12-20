@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { MobileHero } from "./MobileHero";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { LazySection } from "@/components/ui/lazy-section";
 import { 
   MobileTeamSection, 
   MobileHowItWorks, 
@@ -14,14 +15,12 @@ export const MobileLanding = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate("/dashboard");
       }
     });
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         navigate("/dashboard");
@@ -33,25 +32,27 @@ export const MobileLanding = () => {
 
   return (
     <div className="min-h-[100dvh] bg-background relative overflow-y-auto">
-      {/* Language Dropdown */}
       <div className="absolute top-4 right-4 z-50">
         <LanguageSwitcher />
       </div>
 
-      {/* Hero Section */}
       <MobileHero />
 
-      {/* Team Section */}
-      <MobileTeamSection />
+      <LazySection minHeight="300px">
+        <MobileTeamSection />
+      </LazySection>
 
-      {/* How It Works */}
-      <MobileHowItWorks />
+      <LazySection minHeight="400px">
+        <MobileHowItWorks />
+      </LazySection>
 
-      {/* Social Proof */}
-      <MobileSocialProof />
+      <LazySection minHeight="200px">
+        <MobileSocialProof />
+      </LazySection>
 
-      {/* Bottom CTA */}
-      <MobileBottomCTA />
+      <LazySection minHeight="200px">
+        <MobileBottomCTA />
+      </LazySection>
     </div>
   );
 };
