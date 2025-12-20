@@ -11,6 +11,7 @@ import { SubscriptionBadge } from "@/components/paywall/SubscriptionBadge";
 import { UpgradeModal } from "@/components/paywall/UpgradeModal";
 import { WelcomeBackOverlay } from "@/components/dashboard/WelcomeBackOverlay";
 import { InvitationNotifications } from "@/components/InvitationNotifications";
+import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useTranslation } from "@/hooks/useTranslation";
 import { formatDistanceToNow } from "date-fns";
@@ -255,6 +256,7 @@ const Dashboard = () => {
             <p className="text-sm text-muted-foreground">{t('dashboard.welcomeBack')}, {username}!</p>
           </div>
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <SporeWallet />
             <SubscriptionBadge />
             <Button variant="outline" onClick={() => navigate('/marketplace')}>
