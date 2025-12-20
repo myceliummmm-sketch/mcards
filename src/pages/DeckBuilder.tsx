@@ -16,6 +16,8 @@ import { DeckHealthDashboard } from '@/components/deck-builder/health/DeckHealth
 import { TeamChatDrawer } from '@/components/deck-builder/chat/TeamChatDrawer';
 import { GroupChatDrawer } from '@/components/deck-builder/chat/GroupChatDrawer';
 import { InsightsSection } from '@/components/deck-builder/InsightsSection';
+import { MobileDeckFlow } from '@/components/mobile/MobileDeckFlow';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 import { SporeWallet } from '@/components/paywall/SporeWallet';
 import { SubscriptionBadge } from '@/components/paywall/SubscriptionBadge';
@@ -36,6 +38,7 @@ export default function DeckBuilder() {
   const { deckId } = useParams<{ deckId: string }>();
   const navigate = useNavigate();
   const { t, language } = useTranslation();
+  const isMobile = useIsMobile();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [loading, setLoading] = useState(true);
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
@@ -251,6 +254,47 @@ export default function DeckBuilder() {
   }
 
   if (!deck) return null;
+
+  // Функция для обновления данных карты
+  const handleMobileCardUpdate = async (cardId: string, data: Record<string, any>) => {
+    const card = cards.find(c => c.id === cardId);
+    if (!card) return;
+    await saveCard(card.card_slot, card.card_type, data);
+  };
+
+  // Функция для ковки карты (мобильная версия)
+  const handleMobileForgeCard = async (cardId: string) => {
+    const card = cards.find(c => c.id === cardId);
+    if (!card) return;
+    // Trigger forge via existing mechanism
+    setEditingSlot(card.card_slot);
+  };
+
+  // Функция для переименования колоды
+  const handleRenameDeck = async (newTitle: string) => {
+    const { error } = await supabase
+      .from('decks')
+      .update({ title: newTitle })
+      .eq('id', deck.id);
+
+    if (!error) {
+      setDeck({ ...deck, title: newTitle });
+    }
+  };
+
+  // Mobile version
+  if (isMobile) {
+    return (
+      <MobileDeckFlow
+        deckId={deck.id}
+        deckTitle={deck.title}
+        cards={cards}
+        onCardUpdate={handleMobileCardUpdate}
+        onForgeCard={handleMobileForgeCard}
+        onRenameDeck={handleRenameDeck}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex">
