@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { simulatorService, SimulatorParams, SimulationResult, InterestArena } from '@/services/simulatorService';
+import { simulatorService, SimulatorParams, SimulationResult, InterestArena, UserClass } from '@/services/simulatorService';
 import { useToast } from '@/hooks/use-toast';
 
 export type GameStep = 'hero' | 'class' | 'interest' | 'difficulty' | 'hacking' | 'result';
@@ -13,7 +13,7 @@ export const useStartupSimulator = (language: string = 'en') => {
 
   const nextStep = (next: GameStep) => setStep(next);
 
-  const selectClass = (c: 'coder' | 'founder') => {
+  const selectClass = (c: UserClass) => {
     setSelections(p => ({ ...p, userClass: c }));
     nextStep('interest');
   };

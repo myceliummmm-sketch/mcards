@@ -7,6 +7,7 @@ import { DesktopLanding } from "./DesktopLanding";
 export const LandingPageSplitter = () => {
   const isMobile = useIsMobile();
   const { variant, resetTest } = useABTest();
+  const isDev = import.meta.env.DEV;
 
   // 1. DESKTOP GUARD: Always show old landing on desktop
   if (!isMobile) {
@@ -19,14 +20,15 @@ export const LandingPageSplitter = () => {
     return (
       <>
         <GamifiedWizard />
-        {/* Debug button - remove later */}
-        <button
-          onClick={resetTest}
-          className="fixed bottom-4 right-4 z-50 px-3 py-1 text-xs 
-            bg-black/50 text-white/60 rounded-full border border-white/20"
-        >
-          Reset A/B
-        </button>
+        {isDev && (
+          <button
+            onClick={resetTest}
+            className="fixed bottom-4 right-4 z-50 px-3 py-1 text-xs 
+              bg-black/50 text-white/60 rounded-full border border-white/20"
+          >
+            Reset A/B
+          </button>
+        )}
       </>
     );
   }
@@ -35,13 +37,15 @@ export const LandingPageSplitter = () => {
   return (
     <>
       <MobileLanding />
-      <button
-        onClick={resetTest}
-        className="fixed bottom-4 right-4 z-50 px-3 py-1 text-xs 
-          bg-black/50 text-white/60 rounded-full border border-white/20"
-      >
-        Reset A/B
-      </button>
+      {isDev && (
+        <button
+          onClick={resetTest}
+          className="fixed bottom-4 right-4 z-50 px-3 py-1 text-xs 
+            bg-black/50 text-white/60 rounded-full border border-white/20"
+        >
+          Reset A/B
+        </button>
+      )}
     </>
   );
 };
