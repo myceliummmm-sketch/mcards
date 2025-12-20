@@ -46,7 +46,7 @@ export function MobileDeckFlow({
     const initializeCards = async () => {
       const visionCardsExist = cards.some(c => c.card_slot >= 1 && c.card_slot <= 5);
 
-      if (!visionCardsExist && cards.length === 0 && !isInitializing) {
+      if (!visionCardsExist && !isInitializing) {
         setIsInitializing(true);
 
         // Get vision card definitions (slots 1-5)
@@ -253,8 +253,8 @@ export function MobileDeckFlow({
     );
   }
 
-  // Loading state while initializing cards
-  if (isInitializing || (cards.length === 0 && !visionCards.length)) {
+  // Loading state while initializing cards or if no vision cards exist
+  if (isInitializing || visionCards.length === 0) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
