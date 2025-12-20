@@ -292,6 +292,7 @@ export default function DeckBuilder() {
         onCardUpdate={handleMobileCardUpdate}
         onForgeCard={handleMobileForgeCard}
         onRenameDeck={handleRenameDeck}
+        onRefetchCards={refetchCards}
       />
     );
   }
