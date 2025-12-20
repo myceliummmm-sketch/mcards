@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, CheckCircle, Loader2 } from "lucide-react";
+import { X, Mail, CheckCircle, Loader2, Rocket, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -13,6 +13,7 @@ interface EmailCaptureModalProps {
   quizScore?: number;
   quizBlocker?: string;
   onSuccess?: () => void;
+  onStartBuilding?: () => void;
 }
 
 export const EmailCaptureModal = ({ 
@@ -20,7 +21,8 @@ export const EmailCaptureModal = ({
   onClose, 
   quizScore, 
   quizBlocker,
-  onSuccess 
+  onSuccess,
+  onStartBuilding
 }: EmailCaptureModalProps) => {
   const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
@@ -205,22 +207,49 @@ export const EmailCaptureModal = ({
                   animate={{ opacity: 1, scale: 1 }}
                   className="text-center py-4"
                 >
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-status-complete/20 flex items-center justify-center">
-                    <CheckCircle className="w-8 h-8 text-status-complete" />
+                  {/* Success checkmark */}
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-status-complete/20 flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-status-complete" />
                   </div>
-                  <h3 className="text-xl font-display text-foreground mb-2">
+                  <h3 className="text-lg font-display text-foreground mb-1">
                     {t("landing.mobile.email.successTitle")}
                   </h3>
-                  <p className="text-sm text-muted-foreground font-body mb-6">
+                  <p className="text-sm text-muted-foreground font-body">
                     {t("landing.mobile.email.successMessage")}
                   </p>
-                  <Button
+
+                  {/* Divider */}
+                  <div className="my-4 border-t border-border" />
+
+                  {/* Upsell block */}
+                  <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl p-4 mb-4 border border-primary/20">
+                    <Rocket className="w-8 h-8 text-primary mx-auto mb-2" />
+                    <h4 className="font-display text-foreground mb-1">
+                      {t("landing.mobile.email.upsell.title")}
+                    </h4>
+                    <p className="text-xs text-muted-foreground mb-3 font-body">
+                      {t("landing.mobile.email.upsell.description")}
+                    </p>
+                    
+                    <Button 
+                      onClick={() => {
+                        handleClose();
+                        onStartBuilding?.();
+                      }}
+                      className="w-full bg-gradient-to-r from-primary to-secondary font-display"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      {t("landing.mobile.email.upsell.cta")}
+                    </Button>
+                  </div>
+                  
+                  {/* Ghost button */}
+                  <button 
                     onClick={handleClose}
-                    variant="outline"
-                    className="font-display"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors font-body"
                   >
-                    {t("landing.mobile.email.close")}
-                  </Button>
+                    {t("landing.mobile.email.upsell.later")}
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
