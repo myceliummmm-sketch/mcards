@@ -10,11 +10,16 @@ import { Loader2, ArrowRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { OnboardingStep } from "@/components/onboarding/OnboardingStep";
 import { TeamShowcase } from "@/components/onboarding/TeamShowcase";
+import { MobileOnboarding } from "@/components/onboarding/MobileOnboarding";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useLanguage } from "@/contexts/LanguageContext";
 import myceliumCardsHero from "@/assets/mycelium-cards-hero.png";
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
+  const isMobile = useIsMobile();
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState("");
@@ -252,6 +257,24 @@ const Onboarding = () => {
       </motion.div>
     </OnboardingStep>,
   ];
+
+  // Render mobile version
+  if (isMobile) {
+    return (
+      <MobileOnboarding
+        username={username}
+        projectName={projectName}
+        setProjectName={setProjectName}
+        projectDescription={projectDescription}
+        setProjectDescription={setProjectDescription}
+        currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+        isLoading={isLoading}
+        handleSkip={handleSkip}
+        handleCreateProject={handleCreateProject}
+      />
+    );
+  }
 
   return (
     <div

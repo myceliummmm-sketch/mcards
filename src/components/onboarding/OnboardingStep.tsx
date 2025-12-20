@@ -1,12 +1,19 @@
 import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface OnboardingStepProps {
   children: ReactNode;
+  isMobile?: boolean;
 }
 
-export const OnboardingStep = ({ children }: OnboardingStepProps) => {
+export const OnboardingStep = ({ children, isMobile = false }: OnboardingStepProps) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center px-4",
+        isMobile ? "min-h-[calc(100dvh-120px)] pb-safe-bottom" : "min-h-[60vh]"
+      )}
+    >
       {children}
     </div>
   );
