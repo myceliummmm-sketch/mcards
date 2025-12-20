@@ -89,7 +89,7 @@ export function MobileCardEditor({
       4: { en: 'Why you?', ru: 'Почему ты?' },
       5: { en: 'What\'s your vision?', ru: 'Какое твоё видение?' },
     };
-    return titles[card.card_slot]?.[language] || cardDef?.title || `Card ${card.card_slot}`;
+    return titles[card.card_slot]?.[language as 'en' | 'ru'] || (cardDef?.title as any)?.[language] || (cardDef?.title as any)?.en || `Card ${card.card_slot}`;
   };
 
   // Placeholder text
@@ -116,7 +116,7 @@ export function MobileCardEditor({
         ru: 'Как выглядит успех через 3 года? Нарисуй картину.'
       },
     };
-    return placeholders[card.card_slot]?.[language] || mainField?.placeholder || '';
+    return placeholders[card.card_slot]?.[language as 'en' | 'ru'] || (mainField?.placeholder as any)?.[language] || (mainField?.placeholder as any)?.en || '';
   };
 
   return (
