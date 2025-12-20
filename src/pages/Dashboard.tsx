@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { InvitationNotifications } from "@/components/InvitationNotifications";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDistanceToNow } from "date-fns";
 
 interface Deck {
@@ -30,6 +31,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  const hasAutoCreatedDeck = useRef(false);
   const [decks, setDecks] = useState<Deck[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -38,6 +41,42 @@ const Dashboard = () => {
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [lastDeckInfo, setLastDeckInfo] = useState<{ name: string; activity: string } | null>(null);
   const { projectLimit, isPro } = useSubscription();
+
+  // Auto-create deck for mobile first-time users
+  useEffect(() => {
+    const autoCreateDeckForMobile = async () => {
+      if (!isMobile || isLoading || decks.length > 0 || hasAutoCreatedDeck.current) {
+        return;
+      }
+      
+      hasAutoCreatedDeck.current = true;
+      
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const { data: newDeck, error } = await supabase
+          .from("decks")
+          .insert({
+            user_id: session.user.id,
+            title: "My First Deck",
+            description: "Your startup journey begins here",
+            theme: "startup"
+          })
+          .select()
+          .single();
+
+        if (newDeck && !error) {
+          navigate(`/deck/${newDeck.id}`);
+        }
+      } catch (e) {
+        console.error("Auto-create deck failed:", e);
+        hasAutoCreatedDeck.current = false;
+      }
+    };
+
+    autoCreateDeckForMobile();
+  }, [isMobile, isLoading, decks.length, navigate]);
 
   useEffect(() => {
     let mounted = true;
