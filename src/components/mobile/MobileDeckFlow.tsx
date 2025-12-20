@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MessageCircle, Sparkles, Check } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Sparkles, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MobileCardEditor } from './MobileCardEditor';
 import { MobileChat } from './MobileChat';
 import { MobileAutoComplete } from './MobileAutoComplete';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/hooks/useSubscription';
+import { supabase } from '@/integrations/supabase/client';
+import { CARD_DEFINITIONS } from '@/data/cardDefinitions';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -37,10 +39,44 @@ export function MobileDeckFlow({
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [flowStep, setFlowStep] = useState<FlowStep>('editing');
   const [showChat, setShowChat] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
 
-  // Get vision cards only (first 5)
+  // Initialize vision cards if none exist
+  useEffect(() => {
+    const initializeCards = async () => {
+      const visionCardsExist = cards.some(c => c.card_slot >= 1 && c.card_slot <= 5);
+
+      if (!visionCardsExist && cards.length === 0 && !isInitializing) {
+        setIsInitializing(true);
+
+        // Get vision card definitions (slots 1-5)
+        const visionDefs = CARD_DEFINITIONS.filter(d => d.slot >= 1 && d.slot <= 5);
+
+        // Create empty cards for each vision slot
+        for (const def of visionDefs) {
+          await supabase
+            .from('deck_cards')
+            .upsert({
+              deck_id: deckId,
+              card_slot: def.slot,
+              card_type: def.cardType,
+              card_data: {},
+            }, {
+              onConflict: 'deck_id,card_slot'
+            });
+        }
+
+        setIsInitializing(false);
+        // Cards will be refetched via realtime subscription
+      }
+    };
+
+    initializeCards();
+  }, [deckId, cards, isInitializing]);
+
+  // Get vision cards only (slots 1-5, regardless of card_type)
   const visionCards = cards
-    .filter(c => c.card_type === 'vision')
+    .filter(c => c.card_slot >= 1 && c.card_slot <= 5)
     .sort((a, b) => a.card_slot - b.card_slot);
 
   const currentCard = visionCards[currentCardIndex];
@@ -214,6 +250,16 @@ export function MobileDeckFlow({
         onComplete={handleAutoCompleteFinished}
         onBack={() => setFlowStep('choose-path')}
       />
+    );
+  }
+
+  // Loading state while initializing cards
+  if (isInitializing || (cards.length === 0 && !visionCards.length)) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-muted-foreground">Setting up your deck...</p>
+      </div>
     );
   }
 
