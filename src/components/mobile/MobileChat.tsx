@@ -3,7 +3,7 @@ import { X, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getCharacterById, TEAM_CHARACTERS } from '@/data/teamCharacters';
+import { getCharacterById, getAllCharacters } from '@/data/teamCharacters';
 import type { Database } from '@/integrations/supabase/types';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
@@ -30,7 +30,7 @@ export function MobileChat({ deckId, cards, onClose }: MobileChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get available characters (simplified for mobile)
-  const characters = TEAM_CHARACTERS.slice(0, 4); // First 4 characters
+  const characters = getAllCharacters(language).slice(0, 4); // First 4 characters
 
   // Scroll to bottom on new messages
   useEffect(() => {
