@@ -35,12 +35,12 @@ export function MobileCardEditor({
 
   // Get card definition
   const cardDef = CARD_DEFINITIONS.find(
-    def => def.type === card.card_type && def.slot === card.card_slot
+    def => def.id === card.card_type && def.slot === card.card_slot
   );
 
   // Get the main field (first required field)
   const mainField = cardDef?.fields?.[0];
-  const fieldKey = mainField?.key || 'content';
+  const fieldKey = mainField?.name || 'content';
 
   // Current value
   const cardData = card.card_data as Record<string, any> | null;

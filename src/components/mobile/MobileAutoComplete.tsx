@@ -23,21 +23,27 @@ export function MobileAutoComplete({
   const { t } = useLanguage();
   const {
     startAutoComplete,
-    isGenerating,
-    progress,
-    error,
+    isActive,
+    cardProgress,
     isComplete,
   } = useAutoCompleteVision(deckId);
 
   const [hasStarted, setHasStarted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Get card1 data for auto-complete
+  const card1 = cards.find(c => c.card_slot === 1);
+  const card1Data = (card1?.card_data as Record<string, any>) || {};
 
   // Start auto-complete on mount
   useEffect(() => {
-    if (!hasStarted) {
+    if (!hasStarted && Object.keys(card1Data).length > 0) {
       setHasStarted(true);
-      startAutoComplete();
+      startAutoComplete(card1Data).catch(err => {
+        setError(err instanceof Error ? err.message : 'Failed to generate');
+      });
     }
-  }, [hasStarted, startAutoComplete]);
+  }, [hasStarted, startAutoComplete, card1Data]);
 
   // Auto-navigate when complete
   useEffect(() => {
@@ -100,11 +106,13 @@ export function MobileAutoComplete({
   const getCardStatus = (slot: number): 'done' | 'generating' | 'pending' => {
     if (slot === 1) return 'done'; // First card is always done (user filled it)
 
-    const cardProgress = progress.find(p => p.slot === slot);
-    if (cardProgress?.status === 'complete') return 'done';
-    if (cardProgress?.status === 'generating') return 'generating';
+    const progress = cardProgress.find(p => p.slot === slot);
+    if (progress?.status === 'complete') return 'done';
+    if (progress?.status === 'generating') return 'generating';
     return 'pending';
   };
+
+  const isGenerating = isActive;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -168,7 +176,7 @@ export function MobileAutoComplete({
 
         {/* Error retry */}
         {error && (
-          <Button onClick={() => startAutoComplete()} className="w-full">
+          <Button onClick={() => { setError(null); setHasStarted(false); }} className="w-full">
             {t('mobileFlow.autoComplete.retry') || 'Try Again'}
           </Button>
         )}
