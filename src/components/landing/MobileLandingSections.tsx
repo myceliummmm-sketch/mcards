@@ -200,9 +200,18 @@ export const MobileSocialProof = () => {
 };
 
 // Mobile Bottom CTA
-export const MobileBottomCTA = () => {
+interface MobileBottomCTAProps {
+  trackEvent?: (eventType: string, metadata?: Record<string, unknown>) => void;
+}
+
+export const MobileBottomCTA = ({ trackEvent }: MobileBottomCTAProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleCtaClick = () => {
+    trackEvent?.('cta_click', { location: 'bottom', destination: '/quiz2' });
+    navigate("/quiz2");
+  };
 
   return (
     <section className="py-12 px-4 pb-20">
@@ -221,7 +230,7 @@ export const MobileBottomCTA = () => {
 
         <Button
           size="lg"
-          onClick={() => navigate("/quiz2")}
+          onClick={handleCtaClick}
           className="w-full max-w-[300px] text-sm gap-2 py-5 cta-pulse"
         >
           <span>{t('landing.finalCta.cta')}</span>

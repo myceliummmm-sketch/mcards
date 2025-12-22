@@ -359,7 +359,11 @@ const EmailModal = ({
   );
 };
 
-export const GamifiedWizard = () => {
+interface GamifiedWizardProps {
+  trackEvent?: (eventType: string, metadata?: Record<string, unknown>) => void;
+}
+
+export const GamifiedWizard = ({ trackEvent }: GamifiedWizardProps) => {
   const { t, language } = useTranslation();
   const { state, actions } = useStartupSimulator(language);
   const [showEmailModal, setShowEmailModal] = useState(false);
@@ -387,10 +391,15 @@ export const GamifiedWizard = () => {
   // Auto-flip card when result is ready
   useEffect(() => {
     if (state.step === "result" && state.result) {
+      trackEvent?.('result_view', { 
+        title: state.result.title,
+        class: state.selections.userClass,
+        interest: state.selections.interest
+      });
       const timer = setTimeout(() => setCardFlipped(true), 800);
       return () => clearTimeout(timer);
     }
-  }, [state.step, state.result]);
+  }, [state.step, state.result, state.selections, trackEvent]);
 
   const pageVariants = {
     initial: { opacity: 0, y: 20 },
@@ -459,12 +468,12 @@ export const GamifiedWizard = () => {
               </h2>
               
               <div className="grid grid-cols-2 gap-3">
-                <SelectionCard icon={Code} title={t('simulator.coder')} subtitle={t('simulator.coderSub')} onClick={() => actions.selectClass("coder")} />
-                <SelectionCard icon={Briefcase} title={t('simulator.founder')} subtitle={t('simulator.founderSub')} onClick={() => actions.selectClass("founder")} />
-                <SelectionCard icon={Palette} title={t('simulator.designer')} subtitle={t('simulator.designerSub')} onClick={() => actions.selectClass("designer")} />
-                <SelectionCard icon={Megaphone} title={t('simulator.marketer')} subtitle={t('simulator.marketerSub')} onClick={() => actions.selectClass("marketer")} />
-                <SelectionCard icon={Zap} title={t('simulator.hustler')} subtitle={t('simulator.hustlerSub')} onClick={() => actions.selectClass("hustler")} />
-                <SelectionCard icon={Sparkles} title={t('simulator.dreamer')} subtitle={t('simulator.dreamerSub')} onClick={() => actions.selectClass("dreamer")} />
+                <SelectionCard icon={Code} title={t('simulator.coder')} subtitle={t('simulator.coderSub')} onClick={() => { trackEvent?.('class_select', { class: 'coder' }); actions.selectClass("coder"); }} />
+                <SelectionCard icon={Briefcase} title={t('simulator.founder')} subtitle={t('simulator.founderSub')} onClick={() => { trackEvent?.('class_select', { class: 'founder' }); actions.selectClass("founder"); }} />
+                <SelectionCard icon={Palette} title={t('simulator.designer')} subtitle={t('simulator.designerSub')} onClick={() => { trackEvent?.('class_select', { class: 'designer' }); actions.selectClass("designer"); }} />
+                <SelectionCard icon={Megaphone} title={t('simulator.marketer')} subtitle={t('simulator.marketerSub')} onClick={() => { trackEvent?.('class_select', { class: 'marketer' }); actions.selectClass("marketer"); }} />
+                <SelectionCard icon={Zap} title={t('simulator.hustler')} subtitle={t('simulator.hustlerSub')} onClick={() => { trackEvent?.('class_select', { class: 'hustler' }); actions.selectClass("hustler"); }} />
+                <SelectionCard icon={Sparkles} title={t('simulator.dreamer')} subtitle={t('simulator.dreamerSub')} onClick={() => { trackEvent?.('class_select', { class: 'dreamer' }); actions.selectClass("dreamer"); }} />
               </div>
             </motion.div>
           )}
@@ -484,14 +493,14 @@ export const GamifiedWizard = () => {
               </h2>
               
               <div className="grid grid-cols-2 gap-2">
-                <InterestCard icon={Gamepad2} label={t('simulator.gaming')} onClick={() => actions.selectInterest("gaming")} />
-                <InterestCard icon={Landmark} label={t('simulator.fintech')} onClick={() => actions.selectInterest("fintech")} />
-                <InterestCard icon={Heart} label={t('simulator.health')} onClick={() => actions.selectInterest("health")} />
-                <InterestCard icon={Bot} label={t('simulator.ai')} onClick={() => actions.selectInterest("ai")} />
-                <InterestCard icon={Bitcoin} label={t('simulator.crypto')} onClick={() => actions.selectInterest("crypto")} />
-                <InterestCard icon={ShoppingCart} label={t('simulator.ecommerce')} onClick={() => actions.selectInterest("ecommerce")} />
-                <InterestCard icon={GraduationCap} label={t('simulator.education')} onClick={() => actions.selectInterest("education")} />
-                <InterestCard icon={Cloud} label={t('simulator.saas')} onClick={() => actions.selectInterest("saas")} />
+                <InterestCard icon={Gamepad2} label={t('simulator.gaming')} onClick={() => { trackEvent?.('interest_select', { interest: 'gaming' }); actions.selectInterest("gaming"); }} />
+                <InterestCard icon={Landmark} label={t('simulator.fintech')} onClick={() => { trackEvent?.('interest_select', { interest: 'fintech' }); actions.selectInterest("fintech"); }} />
+                <InterestCard icon={Heart} label={t('simulator.health')} onClick={() => { trackEvent?.('interest_select', { interest: 'health' }); actions.selectInterest("health"); }} />
+                <InterestCard icon={Bot} label={t('simulator.ai')} onClick={() => { trackEvent?.('interest_select', { interest: 'ai' }); actions.selectInterest("ai"); }} />
+                <InterestCard icon={Bitcoin} label={t('simulator.crypto')} onClick={() => { trackEvent?.('interest_select', { interest: 'crypto' }); actions.selectInterest("crypto"); }} />
+                <InterestCard icon={ShoppingCart} label={t('simulator.ecommerce')} onClick={() => { trackEvent?.('interest_select', { interest: 'ecommerce' }); actions.selectInterest("ecommerce"); }} />
+                <InterestCard icon={GraduationCap} label={t('simulator.education')} onClick={() => { trackEvent?.('interest_select', { interest: 'education' }); actions.selectInterest("education"); }} />
+                <InterestCard icon={Cloud} label={t('simulator.saas')} onClick={() => { trackEvent?.('interest_select', { interest: 'saas' }); actions.selectInterest("saas"); }} />
               </div>
             </motion.div>
           )}
@@ -511,8 +520,8 @@ export const GamifiedWizard = () => {
               </h2>
               
               <div className="grid grid-cols-2 gap-4">
-                <SelectionCard icon={Skull} title={t('simulator.hard')} subtitle={t('simulator.hardSub')} onClick={() => actions.selectDifficulty("hard")} />
-                <SelectionCard icon={Flame} title={t('simulator.godMode')} subtitle={t('simulator.godModeSub')} onClick={() => actions.selectDifficulty("god")} />
+                <SelectionCard icon={Skull} title={t('simulator.hard')} subtitle={t('simulator.hardSub')} onClick={() => { trackEvent?.('difficulty_select', { difficulty: 'hard' }); actions.selectDifficulty("hard"); }} />
+                <SelectionCard icon={Flame} title={t('simulator.godMode')} subtitle={t('simulator.godModeSub')} onClick={() => { trackEvent?.('difficulty_select', { difficulty: 'god' }); actions.selectDifficulty("god"); }} />
               </div>
             </motion.div>
           )}
