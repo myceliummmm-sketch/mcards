@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/integrations/supabase/client";
-import { DollarSign, Rocket, Unlock, CheckCircle, Loader2, ArrowLeft } from "lucide-react";
+import { DollarSign, Rocket, Unlock, Users, CheckCircle, Loader2, ArrowLeft, Globe, Link2 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import LegalFooter from "@/components/landing/LegalFooter";
 import { Link } from "react-router-dom";
@@ -35,7 +35,7 @@ const Community = () => {
         .from('leads')
         .insert({
           email: email.trim().toLowerCase(),
-          source: 'community_insight_buro'
+          source: 'community_mycelium_network'
         });
 
       if (error) {
@@ -61,6 +61,13 @@ const Community = () => {
     { icon: DollarSign, text: t('community.about.point1') },
     { icon: Rocket, text: t('community.about.point2') },
     { icon: Unlock, text: t('community.about.point3') },
+    { icon: Users, text: t('community.about.point4') },
+  ];
+
+  const tribePoints = [
+    { icon: Users, text: t('community.tribe.circle') },
+    { icon: Link2, text: t('community.tribe.connections') },
+    { icon: Globe, text: t('community.tribe.global') },
   ];
 
   return (
@@ -70,14 +77,14 @@ const Community = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm">Back</span>
+            <span className="text-sm">{t('common.back')}</span>
           </Link>
           <LanguageSwitcher />
         </div>
       </header>
 
       {/* Hero with GIF background */}
-      <section className="relative pt-20 pb-8 px-4 min-h-[80vh] flex flex-col items-center justify-center">
+      <section className="relative pt-20 pb-8 px-4 min-h-[85vh] flex flex-col items-center justify-center">
         {/* GIF as background */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-background z-10" />
@@ -107,7 +114,7 @@ const Community = () => {
               {t('community.hero.subtitle')}
             </p>
 
-            {/* CTA Form - RIGHT AT THE TOP */}
+            {/* CTA Form */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -167,12 +174,48 @@ const Community = () => {
                 </>
               )}
             </motion.div>
+
+            {/* Tribe Badge */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-6"
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary">
+                <Globe className="h-4 w-4" />
+                {t('community.tribe.badge')}
+              </span>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
+      {/* Tribe Points */}
+      <section className="py-8 px-4">
+        <div className="container mx-auto max-w-3xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {tribePoints.map((point, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="flex flex-col items-center text-center p-4 rounded-xl bg-card/30 border border-border/20"
+              >
+                <div className="p-3 rounded-full bg-primary/10 mb-3">
+                  <point.icon className="h-5 w-5 text-primary" />
+                </div>
+                <p className="text-foreground/80 text-sm font-medium">{point.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Money-focused Points */}
-      <section className="py-12 px-4">
+      <section className="py-8 px-4">
         <div className="container mx-auto max-w-2xl">
           <div className="space-y-4">
             {points.map((point, index) => (

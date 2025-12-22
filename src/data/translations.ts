@@ -827,27 +827,34 @@ export const translations = {
     },
     community: {
       hero: {
-        title: "Stop dreaming.",
-        titleHighlight: "Start building your income.",
-        subtitle: "From idea to first $1,000 — with those who've already walked this path."
+        title: "Don't build alone.",
+        titleHighlight: "Mycelium Network",
+        subtitle: "A community where ideas turn into income. From your first $1,000 to full independence — together."
+      },
+      tribe: {
+        badge: "127 builders in the network",
+        circle: "A circle of builders who get it",
+        connections: "Connections over capital",
+        global: "Mycelium Network — global tribe"
       },
       about: {
-        quote: "\"The ultimate goal of any creative activity is creation.\"",
-        text: "But creating in a vacuum is impossible. Insight Büro is the research wing of Mycelium — where theory meets practice.",
+        quote: "\"You don't need a million to start. You need a plan and the right connections.\"",
+        text: "Insight Büro is the research wing of Mycelium — where theory meets practice.",
         point1: "💰 Find your first $1,000 in 90 days — no investment needed",
         point2: "🚀 Launch a product without coding or budget",
-        point3: "🔓 Quit your job and work for yourself"
+        point3: "🔓 Quit your job and work for yourself",
+        point4: "👥 Join those who've already walked this path"
       },
       cta: {
-        title: "Get Your Action Plan",
-        subtitle: "Leave your email — we'll send a step-by-step guide to financial independence through your own project.",
+        title: "Join Mycelium Network",
+        subtitle: "Leave your email — get access to a closed circle of builders and a step-by-step plan to your first $1,000.",
         placeholder: "Your email",
-        button: "I want to start",
-        successTitle: "You're in!",
+        button: "Join the tribe",
+        successTitle: "Welcome to the network!",
         successMessage: "Check your inbox for next steps.",
         invalidEmail: "Please enter a valid email",
         alreadySubscribed: "Welcome back! Check your inbox.",
-        success: "Application sent!",
+        success: "You're in!",
         error: "Something went wrong. Please try again."
       }
     },
@@ -1678,27 +1685,34 @@ export const translations = {
     },
     community: {
       hero: {
-        title: "Хватит мечтать.",
-        titleHighlight: "Начни строить свой доход.",
-        subtitle: "От идеи до первых $1,000 — вместе с теми, кто уже прошёл этот путь."
+        title: "Не строй в одиночку.",
+        titleHighlight: "Mycelium Network",
+        subtitle: "Сообщество, где идеи превращаются в доход. От первой $1,000 до полной независимости — вместе."
+      },
+      tribe: {
+        badge: "Уже 127 билдеров в сети",
+        circle: "Круг билдеров, которые понимают",
+        connections: "Связи важнее капитала",
+        global: "Mycelium Network — глобальное племя"
       },
       about: {
-        quote: "«Конечная цель любой творческой деятельности — это создание».",
-        text: "Но создавать в вакууме невозможно. Insight Büro — исследовательское крыло Mycelium, где теория встречается с практикой.",
+        quote: "«Тебе не нужен миллион, чтобы начать. Нужен план и правильные связи».",
+        text: "Insight Büro — исследовательское крыло Mycelium, где теория встречается с практикой.",
         point1: "💰 Найти первые $1,000 за 90 дней без инвестиций",
         point2: "🚀 Запустить продукт без программирования и бюджета",
-        point3: "🔓 Выйти из найма и работать на себя"
+        point3: "🔓 Выйти из найма и работать на себя",
+        point4: "👥 Войти в круг тех, кто уже прошёл этот путь"
       },
       cta: {
-        title: "Получи план действий",
-        subtitle: "Оставь почту — пришлём пошаговый гайд к финансовой независимости через свой проект.",
+        title: "Вступить в Mycelium Network",
+        subtitle: "Оставь почту — получишь доступ в закрытый круг билдеров и пошаговый план к первой $1,000.",
         placeholder: "Твой email",
-        button: "Хочу начать",
-        successTitle: "Ты в деле!",
+        button: "Присоединиться",
+        successTitle: "Добро пожаловать в сеть!",
         successMessage: "Проверь почту — там следующие шаги.",
         invalidEmail: "Введи корректный email",
         alreadySubscribed: "С возвращением! Проверь почту.",
-        success: "Заявка отправлена!",
+        success: "Ты в деле!",
         error: "Что-то пошло не так. Попробуй ещё раз."
       }
     },
@@ -2529,27 +2543,34 @@ export const translations = {
     },
     community: {
       hero: {
-        title: "Deja de soñar.",
-        titleHighlight: "Empieza a construir tus ingresos.",
-        subtitle: "De la idea a los primeros $1,000 — con quienes ya recorrieron este camino."
+        title: "No construyas solo.",
+        titleHighlight: "Mycelium Network",
+        subtitle: "Una comunidad donde las ideas se convierten en ingresos. Desde tu primer $1,000 hasta la independencia total — juntos."
+      },
+      tribe: {
+        badge: "127 builders en la red",
+        circle: "Un círculo de builders que entienden",
+        connections: "Conexiones sobre capital",
+        global: "Mycelium Network — tribu global"
       },
       about: {
-        quote: "\"El objetivo final de cualquier actividad creativa es la creación.\"",
-        text: "Pero crear en el vacío es imposible. Insight Büro es el ala de investigación de Mycelium — donde la teoría se encuentra con la práctica.",
+        quote: "\"No necesitas un millón para empezar. Necesitas un plan y las conexiones correctas.\"",
+        text: "Insight Büro es el ala de investigación de Mycelium — donde la teoría se encuentra con la práctica.",
         point1: "💰 Encuentra tus primeros $1,000 en 90 días — sin inversión",
         point2: "🚀 Lanza un producto sin programar ni presupuesto",
-        point3: "🔓 Deja tu empleo y trabaja para ti mismo"
+        point3: "🔓 Deja tu empleo y trabaja para ti mismo",
+        point4: "👥 Únete a quienes ya recorrieron este camino"
       },
       cta: {
-        title: "Obtén tu plan de acción",
-        subtitle: "Deja tu email — te enviaremos una guía paso a paso hacia la independencia financiera con tu propio proyecto.",
+        title: "Únete a Mycelium Network",
+        subtitle: "Deja tu email — obtén acceso a un círculo cerrado de builders y un plan paso a paso hacia tus primeros $1,000.",
         placeholder: "Tu email",
-        button: "Quiero empezar",
-        successTitle: "¡Estás dentro!",
+        button: "Unirme a la tribu",
+        successTitle: "¡Bienvenido a la red!",
         successMessage: "Revisa tu bandeja para los próximos pasos.",
         invalidEmail: "Por favor ingresa un email válido",
         alreadySubscribed: "¡Bienvenido de vuelta! Revisa tu bandeja.",
-        success: "¡Solicitud enviada!",
+        success: "¡Estás dentro!",
         error: "Algo salió mal. Intenta de nuevo."
       }
     },
