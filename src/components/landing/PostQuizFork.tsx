@@ -54,25 +54,6 @@ export const PostQuizFork = ({ onGetPlaybook, onStartBuilding, results }: PostQu
         </div>
       </motion.button>
 
-      {/* Title/Subtitle - MOVED DOWN */}
-      <div className="text-center">
-        <motion.h2
-          className="text-lg font-display text-foreground mb-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {t("landing.mobile.postQuiz.title")}
-        </motion.h2>
-        <motion.p
-          className="text-sm text-muted-foreground font-body"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          {t("landing.mobile.postQuiz.subtitle")}
-        </motion.p>
-      </div>
     </motion.div>
   );
 };

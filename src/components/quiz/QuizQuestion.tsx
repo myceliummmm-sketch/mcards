@@ -29,16 +29,25 @@ export const QuizQuestion = ({ question, questionIndex, onAnswer }: QuizQuestion
         {t(question.questionKey)}
       </motion.h2>
 
-      <div className="space-y-3">
+      <motion.div 
+        className="space-y-3"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } }
+        }}
+      >
         {question.options.map((option, idx) => (
           <motion.button
             key={idx}
             onClick={() => onAnswer(idx)}
             className="w-full p-4 rounded-lg bg-card border border-border hover:border-primary 
                        transition-all duration-300 card-shine group relative overflow-hidden"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + idx * 0.1 }}
+            variants={{
+              hidden: { opacity: 0, y: 8 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } }
+            }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -59,7 +68,7 @@ export const QuizQuestion = ({ question, questionIndex, onAnswer }: QuizQuestion
             </div>
           </motion.button>
         ))}
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
