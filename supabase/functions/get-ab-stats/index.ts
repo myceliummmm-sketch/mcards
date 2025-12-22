@@ -14,6 +14,11 @@ interface ABStats {
   quiz_starts: number;
   quiz_completes: number;
   avg_load_time_ms: number;
+  // New metrics for Empire Builder
+  email_submits: number;
+  chest_opens: number;
+  video_plays: number;
+  first_event_at: string | null;
 }
 
 serve(async (req) => {
@@ -33,8 +38,8 @@ serve(async (req) => {
     const { data, error } = await supabase
       .from('ab_test_events')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(10000);
+      .order('created_at', { ascending: true })
+      .limit(50000);
 
     if (error) {
       console.error('Database error:', error);
@@ -58,25 +63,52 @@ serve(async (req) => {
           cta_clicks: 0,
           quiz_starts: 0,
           quiz_completes: 0,
-          avg_load_time_ms: 0
+          avg_load_time_ms: 0,
+          email_submits: 0,
+          chest_opens: 0,
+          video_plays: 0,
+          first_event_at: null
         };
         sessions[v] = new Set();
       }
       
+      // Track first event
+      if (!aggregated[v].first_event_at) {
+        aggregated[v].first_event_at = event.created_at;
+      }
+      
       sessions[v].add(event.session_id);
       
-      if (event.event_type === 'page_load') {
-        aggregated[v].page_loads++;
-        if (event.page_load_time_ms) {
-          aggregated[v].avg_load_time_ms += event.page_load_time_ms;
-        }
+      // Count event types
+      switch (event.event_type) {
+        case 'page_load':
+          aggregated[v].page_loads++;
+          if (event.page_load_time_ms) {
+            aggregated[v].avg_load_time_ms += event.page_load_time_ms;
+          }
+          break;
+        case 'cta_click':
+          aggregated[v].cta_clicks++;
+          break;
+        case 'quiz_start':
+          aggregated[v].quiz_starts++;
+          break;
+        case 'quiz_complete':
+          aggregated[v].quiz_completes++;
+          break;
+        case 'email_submit':
+          aggregated[v].email_submits++;
+          break;
+        case 'chest_open':
+          aggregated[v].chest_opens++;
+          break;
+        case 'video_play':
+          aggregated[v].video_plays++;
+          break;
       }
-      if (event.event_type === 'cta_click') aggregated[v].cta_clicks++;
-      if (event.event_type === 'quiz_start') aggregated[v].quiz_starts++;
-      if (event.event_type === 'quiz_complete') aggregated[v].quiz_completes++;
     });
 
-    // Finalize
+    // Finalize averages and session counts
     Object.keys(aggregated).forEach(v => {
       aggregated[v].total_sessions = sessions[v]?.size || 0;
       if (aggregated[v].page_loads > 0) {
@@ -85,7 +117,7 @@ serve(async (req) => {
     });
 
     const stats = Object.values(aggregated);
-    console.log('Aggregated stats:', stats);
+    console.log('Aggregated stats:', JSON.stringify(stats, null, 2));
 
     return new Response(JSON.stringify({ stats }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

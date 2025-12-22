@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RefreshCw, Users, MousePointer, Clock, TrendingUp, Mail, Gift } from "lucide-react";
+import { ArrowLeft, RefreshCw, Users, MousePointer, Clock, TrendingUp, Mail, Gift, Play, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 
 interface ABStats {
   variant: string;
@@ -13,17 +14,19 @@ interface ABStats {
   quiz_starts: number;
   quiz_completes: number;
   avg_load_time_ms: number;
-  email_submits?: number;
-  chest_opens?: number;
+  email_submits: number;
+  chest_opens: number;
+  video_plays: number;
+  first_event_at: string | null;
 }
 
 // All expected current variants
 const CURRENT_VARIANTS = ['empire', 'community', 'classic'] as const;
 
 const variantNames: Record<string, string> = {
-  empire: "Empire Builder (50%)",
+  empire: "Empire Builder (60%)",
   community: "Community Page (25%)", 
-  classic: "Classic Landing (25%)",
+  classic: "Classic Landing (15%)",
   A: "Legacy A",
   B: "Legacy B"
 };
@@ -81,7 +84,9 @@ const AdminABAnalytics = () => {
       quiz_completes: 0,
       avg_load_time_ms: 0,
       email_submits: 0,
-      chest_opens: 0
+      chest_opens: 0,
+      video_plays: 0,
+      first_event_at: null
     };
   });
 
@@ -97,6 +102,12 @@ const AdminABAnalytics = () => {
             {stat.variant}
           </span>
         </CardTitle>
+        {stat.first_event_at && (
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            Since {format(new Date(stat.first_event_at), 'MMM d, HH:mm')}
+          </p>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
@@ -135,19 +146,22 @@ const AdminABAnalytics = () => {
 
         {/* Empire-specific metrics */}
         {stat.variant === 'empire' && (
-          <div className="grid grid-cols-2 gap-4 pt-2 border-t">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-amber-500" />
-              <div>
-                <p className="text-2xl font-bold">{stat.email_submits || 0}</p>
-                <p className="text-xs text-muted-foreground">Email Submits</p>
+          <div className="space-y-4 pt-2 border-t">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col items-center gap-1 p-2 bg-amber-500/10 rounded-lg">
+                <Mail className="h-4 w-4 text-amber-500" />
+                <p className="text-xl font-bold">{stat.email_submits}</p>
+                <p className="text-xs text-muted-foreground">Emails</p>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Gift className="h-4 w-4 text-amber-500" />
-              <div>
-                <p className="text-2xl font-bold">{stat.chest_opens || 0}</p>
-                <p className="text-xs text-muted-foreground">Chest Opens</p>
+              <div className="flex flex-col items-center gap-1 p-2 bg-amber-500/10 rounded-lg">
+                <Gift className="h-4 w-4 text-amber-500" />
+                <p className="text-xl font-bold">{stat.chest_opens}</p>
+                <p className="text-xs text-muted-foreground">Chests</p>
+              </div>
+              <div className="flex flex-col items-center gap-1 p-2 bg-amber-500/10 rounded-lg">
+                <Play className="h-4 w-4 text-amber-500" />
+                <p className="text-xl font-bold">{stat.video_plays}</p>
+                <p className="text-xs text-muted-foreground">Videos</p>
               </div>
             </div>
           </div>
@@ -170,7 +184,7 @@ const AdminABAnalytics = () => {
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Email Conversion</span>
               <span className="font-medium text-amber-500">
-                {calcConversion(stat.email_submits || 0, stat.page_loads)}
+                {calcConversion(stat.email_submits, stat.page_loads)}
               </span>
             </div>
           )}
