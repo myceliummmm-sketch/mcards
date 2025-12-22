@@ -1,8 +1,14 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Clock } from "lucide-react";
 import { BLOCKER_KEYS, getVideoUrl, CHARACTER_BY_BLOCKER, type QuizResults } from "@/data/quizData";
 import { getCharacterById } from "@/data/teamCharacters";
 import { useLanguage } from "@/contexts/LanguageContext";
+
+const getDaysText = (days: number) => {
+  if (days === 1) return "day";
+  return "days";
+};
 
 interface VideoQuizResultProps {
   results: QuizResults;
@@ -97,6 +103,22 @@ export const VideoQuizResult = ({ results }: VideoQuizResultProps) => {
               {character?.name} {t("quiz.videoResult.willHelp")}
             </p>
           </div>
+        </div>
+      </motion.div>
+
+      {/* Time to First Customers */}
+      <motion.div
+        className="flex items-center justify-center gap-3 p-4 rounded-xl bg-card border border-primary/30"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+      >
+        <Clock className="w-6 h-6 text-primary" />
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground font-body">{t("quiz.result.timeToFirst1000")}</p>
+          <p className="text-xl font-display text-foreground">
+            {results.daysToFirst100} {getDaysText(results.daysToFirst100)}
+          </p>
         </div>
       </motion.div>
     </motion.div>
