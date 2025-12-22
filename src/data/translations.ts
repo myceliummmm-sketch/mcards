@@ -833,6 +833,7 @@ export const translations = {
       },
       tribe: {
         badge: "127 builders in the network",
+        badgeSuffix: "builders in the network",
         circle: "A circle of builders who get it",
         connections: "Connections over capital",
         global: "Mycelium Network — global tribe"
@@ -1691,6 +1692,7 @@ export const translations = {
       },
       tribe: {
         badge: "Уже 127 билдеров в сети",
+        badgeSuffix: "билдеров в сети",
         circle: "Круг билдеров, которые понимают",
         connections: "Связи важнее капитала",
         global: "Mycelium Network — глобальное племя"
@@ -2549,6 +2551,7 @@ export const translations = {
       },
       tribe: {
         badge: "127 builders en la red",
+        badgeSuffix: "builders en la red",
         circle: "Un círculo de builders que entienden",
         connections: "Conexiones sobre capital",
         global: "Mycelium Network — tribu global"

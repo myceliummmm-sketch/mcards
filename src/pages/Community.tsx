@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,27 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import myceliumNetworkGif from "@/assets/mycelium-network.gif";
 
+const BASE_MEMBER_COUNT = 137;
+
 const Community = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [memberCount, setMemberCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchMemberCount = async () => {
+      const { count, error } = await supabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true });
+      
+      if (!error && count !== null) {
+        setMemberCount(BASE_MEMBER_COUNT + count);
+      }
+    };
+    fetchMemberCount();
+  }, []);
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -47,6 +63,7 @@ const Community = () => {
         }
       } else {
         setIsSuccess(true);
+        setMemberCount(prev => prev !== null ? prev + 1 : null);
         toast.success(t('community.cta.success'));
       }
     } catch (error) {
@@ -184,7 +201,10 @@ const Community = () => {
             >
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary">
                 <Globe className="h-4 w-4" />
-                {t('community.tribe.badge')}
+                {memberCount !== null 
+                  ? `🌐 ${memberCount} ${t('community.tribe.badgeSuffix')}`
+                  : t('community.tribe.badge')
+                }
               </span>
             </motion.div>
           </motion.div>
