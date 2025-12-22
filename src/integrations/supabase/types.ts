@@ -712,6 +712,7 @@ export type Database = {
     }
     Functions: {
       can_view_profile: { Args: { profile_user_id: string }; Returns: boolean }
+      get_leads_count: { Args: never; Returns: number }
     }
     Enums: {
       collaborator_role: "reviewer" | "editor"

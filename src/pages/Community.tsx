@@ -22,15 +22,13 @@ const Community = () => {
   const [memberCount, setMemberCount] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchMemberCount = async () => {
-      const { count, error } = await supabase
-        .from('leads')
-        .select('*', { count: 'exact', head: true });
-      
-      if (!error && count !== null) {
-        setMemberCount(BASE_MEMBER_COUNT + count);
-      }
-    };
+  const fetchMemberCount = async () => {
+    const { data, error } = await supabase.rpc('get_leads_count');
+    
+    if (!error && data !== null) {
+      setMemberCount(BASE_MEMBER_COUNT + data);
+    }
+  };
     fetchMemberCount();
   }, []);
 
