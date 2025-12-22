@@ -65,10 +65,18 @@ export const useTrafficVariant = (): TrafficVariantContext => {
     const sid = getSessionId();
     setSessionId(sid);
 
-    const savedVariant = localStorage.getItem('traffic_variant') as TrafficVariant | null;
+    const savedVariant = localStorage.getItem('traffic_variant');
     
-    if (savedVariant) {
-      setVariant(savedVariant);
+    // Migrate old A/B variants to new system
+    if (savedVariant && ['A', 'B'].includes(savedVariant)) {
+      const newVariant = assignVariant();
+      localStorage.setItem('traffic_variant', newVariant);
+      localStorage.removeItem('traffic_session_id'); // Force new session
+      const newSid = getSessionId();
+      setSessionId(newSid);
+      setVariant(newVariant);
+    } else if (savedVariant && ['community', 'empire', 'classic'].includes(savedVariant)) {
+      setVariant(savedVariant as TrafficVariant);
     } else {
       const newVariant = assignVariant();
       localStorage.setItem('traffic_variant', newVariant);
