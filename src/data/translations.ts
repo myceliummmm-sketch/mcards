@@ -825,6 +825,32 @@ export const translations = {
       godMode: "GOD MODE",
       godModeSub: "Unlimited resources",
     },
+    community: {
+      hero: {
+        title: "Don't build alone.",
+        titleHighlight: "Join the Mycelium Network.",
+        subtitle: "A community where questions turn into startups."
+      },
+      about: {
+        quote: "\"The ultimate goal of any creative activity is creation.\"",
+        text: "But creating in a vacuum is impossible. Insight Büro is the research wing of Mycelium. We combine Think Tank (theory) and Launchpad (practice) so you can:",
+        point1: "Find partners in a world where connections matter more than capital.",
+        point2: "Use collective intelligence to solve unsolvable problems.",
+        point3: "Move from fear of death to legacy design."
+      },
+      cta: {
+        title: "Join the Research",
+        subtitle: "Leave your email to access exclusive Insight Büro materials and an invitation to the Builders circle.",
+        placeholder: "Your email",
+        button: "Apply",
+        successTitle: "Application received!",
+        successMessage: "We'll be in touch soon.",
+        invalidEmail: "Please enter a valid email",
+        alreadySubscribed: "Welcome back! Check your inbox.",
+        success: "Application sent!",
+        error: "Something went wrong. Please try again."
+      }
+    },
   },
   ru: {
     common: {
@@ -1650,6 +1676,32 @@ export const translations = {
       godMode: "БОГ-РЕЖИМ",
       godModeSub: "Безлимит ресурсов",
     },
+    community: {
+      hero: {
+        title: "Не строй в одиночку.",
+        titleHighlight: "Вступай в Mycelium Network.",
+        subtitle: "Сообщество, где вопросы превращаются в стартапы."
+      },
+      about: {
+        quote: "«Конечная цель любой творческой деятельности — это создание».",
+        text: "Но создавать в вакууме невозможно. Insight Büro — это исследовательское крыло Mycelium. Мы объединяем Think Tank (теорию) и Launchpad (практику), чтобы ты мог:",
+        point1: "Найти партнеров в мире, где связи важнее капитала.",
+        point2: "Использовать коллективный интеллект для решения нерешаемых задач.",
+        point3: "Перейти от страха смерти к дизайну наследия."
+      },
+      cta: {
+        title: "Присоединиться к Исследованию",
+        subtitle: "Оставь почту, чтобы получить доступ к закрытым материалам Insight Büro и приглашение в круг Билдеров.",
+        placeholder: "Твой email",
+        button: "Подать заявку",
+        successTitle: "Заявка принята!",
+        successMessage: "Мы скоро свяжемся.",
+        invalidEmail: "Введи корректный email",
+        alreadySubscribed: "С возвращением! Проверь почту.",
+        success: "Заявка отправлена!",
+        error: "Что-то пошло не так. Попробуй ещё раз."
+      }
+    },
   },
   es: {
     common: {
@@ -2474,6 +2526,32 @@ export const translations = {
       hardSub: "Modo bootstrap",
       godMode: "MODO DIOS",
       godModeSub: "Recursos ilimitados",
+    },
+    community: {
+      hero: {
+        title: "No construyas solo.",
+        titleHighlight: "Únete a Mycelium Network.",
+        subtitle: "Una comunidad donde las preguntas se convierten en startups."
+      },
+      about: {
+        quote: "\"El objetivo final de cualquier actividad creativa es la creación.\"",
+        text: "Pero crear en el vacío es imposible. Insight Büro es el ala de investigación de Mycelium. Combinamos Think Tank (teoría) y Launchpad (práctica) para que puedas:",
+        point1: "Encontrar socios en un mundo donde las conexiones importan más que el capital.",
+        point2: "Usar la inteligencia colectiva para resolver problemas irresolubles.",
+        point3: "Pasar del miedo a la muerte al diseño del legado."
+      },
+      cta: {
+        title: "Únete a la Investigación",
+        subtitle: "Deja tu email para acceder a materiales exclusivos de Insight Büro y una invitación al círculo de Builders.",
+        placeholder: "Tu email",
+        button: "Enviar solicitud",
+        successTitle: "¡Solicitud recibida!",
+        successMessage: "Nos pondremos en contacto pronto.",
+        invalidEmail: "Por favor ingresa un email válido",
+        alreadySubscribed: "¡Bienvenido de vuelta! Revisa tu bandeja.",
+        success: "¡Solicitud enviada!",
+        error: "Algo salió mal. Intenta de nuevo."
+      }
     },
   },
 } as const;
