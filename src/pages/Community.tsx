@@ -202,7 +202,7 @@ const Community = () => {
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary">
                 <Globe className="h-4 w-4" />
                 {memberCount !== null 
-                  ? `🌐 ${memberCount} ${t('community.tribe.badgeSuffix')}`
+                  ? `${memberCount} ${t('community.tribe.badgeSuffix')}`
                   : t('community.tribe.badge')
                 }
               </span>
