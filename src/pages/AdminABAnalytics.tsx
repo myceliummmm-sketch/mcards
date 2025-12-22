@@ -26,56 +26,13 @@ const AdminABAnalytics = () => {
     setError(null);
     
     try {
-      // Query aggregated stats - this requires service role, so we do it client-side with raw query
-      const { data, error: queryError } = await (supabase.from('ab_test_events') as any)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5000);
+      const { data, error: fnError } = await supabase.functions.invoke('get-ab-stats');
 
-      if (queryError) throw queryError;
-
-      // Aggregate client-side since we can't use service_role from browser
-      const aggregated: Record<string, ABStats> = {};
-      const sessions: Record<string, Set<string>> = { A: new Set(), B: new Set() };
-
-      (data || []).forEach((event: any) => {
-        const v = event.variant;
-        if (!aggregated[v]) {
-          aggregated[v] = {
-            variant: v,
-            total_sessions: 0,
-            page_loads: 0,
-            cta_clicks: 0,
-            quiz_starts: 0,
-            quiz_completes: 0,
-            avg_load_time_ms: 0
-          };
-        }
-        
-        sessions[v]?.add(event.session_id);
-        
-        if (event.event_type === 'page_load') {
-          aggregated[v].page_loads++;
-          if (event.page_load_time_ms) {
-            aggregated[v].avg_load_time_ms += event.page_load_time_ms;
-          }
-        }
-        if (event.event_type === 'cta_click') aggregated[v].cta_clicks++;
-        if (event.event_type === 'quiz_start') aggregated[v].quiz_starts++;
-        if (event.event_type === 'quiz_complete') aggregated[v].quiz_completes++;
-      });
-
-      // Finalize aggregation
-      Object.keys(aggregated).forEach(v => {
-        aggregated[v].total_sessions = sessions[v]?.size || 0;
-        if (aggregated[v].page_loads > 0) {
-          aggregated[v].avg_load_time_ms = Math.round(aggregated[v].avg_load_time_ms / aggregated[v].page_loads);
-        }
-      });
-
-      setStats(Object.values(aggregated));
+      if (fnError) throw fnError;
+      
+      setStats(data?.stats || []);
     } catch (err) {
-      setError('Нет доступа к данным. Нужно быть залогиненным как админ.');
+      setError('Ошибка загрузки данных. Попробуйте обновить страницу.');
       console.error(err);
     } finally {
       setLoading(false);
