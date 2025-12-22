@@ -5,9 +5,18 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import myceliumCardsHero from "@/assets/mycelium-cards-hero.png";
 
-export const MobileHero = () => {
+interface MobileHeroProps {
+  trackEvent?: (eventType: string, metadata?: Record<string, unknown>) => void;
+}
+
+export const MobileHero = ({ trackEvent }: MobileHeroProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleCtaClick = () => {
+    trackEvent?.('cta_click', { location: 'hero', destination: '/quiz2' });
+    navigate("/quiz2");
+  };
 
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
@@ -55,7 +64,7 @@ export const MobileHero = () => {
         {/* CTA Button - narrower text to fit mobile */}
         <Button
           size="lg"
-          onClick={() => navigate("/quiz2")}
+          onClick={handleCtaClick}
           className="w-full max-w-[300px] text-sm sm:text-base gap-2 py-5 sm:py-6 cta-pulse whitespace-nowrap overflow-hidden"
         >
           <span className="truncate">{t('landing.mobile.hero.cta')}</span>

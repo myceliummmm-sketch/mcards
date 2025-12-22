@@ -12,7 +12,11 @@ import {
   MobileBottomCTA 
 } from "./MobileLandingSections";
 
-export const MobileLanding = () => {
+interface MobileLandingProps {
+  trackEvent?: (eventType: string, metadata?: Record<string, unknown>) => void;
+}
+
+export const MobileLanding = ({ trackEvent }: MobileLandingProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,7 +41,7 @@ export const MobileLanding = () => {
         <LanguageSwitcher />
       </div>
 
-      <MobileHero />
+      <MobileHero trackEvent={trackEvent} />
 
       <LazySection minHeight="300px">
         <MobileTeamSection />
@@ -52,7 +56,7 @@ export const MobileLanding = () => {
       </LazySection>
 
       <LazySection minHeight="200px">
-        <MobileBottomCTA />
+        <MobileBottomCTA trackEvent={trackEvent} />
       </LazySection>
 
       <LegalFooter />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuizProgress } from "@/components/quiz/QuizProgress";
@@ -11,6 +11,26 @@ import { Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+// Track quiz events
+const trackQuizEvent = async (eventType: string, metadata?: Record<string, unknown>) => {
+  const sessionId = localStorage.getItem('ab_session_id');
+  const variant = localStorage.getItem('ab_test_variant');
+  
+  if (!sessionId || !variant) return;
+  
+  try {
+    await (supabase.from('ab_test_events') as any).insert({
+      session_id: sessionId,
+      variant: variant,
+      event_type: eventType,
+      metadata: metadata || {}
+    });
+  } catch (error) {
+    console.debug('Quiz tracking error:', error);
+  }
+};
 
 const Quiz2 = () => {
   const navigate = useNavigate();
@@ -23,6 +43,15 @@ const Quiz2 = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [results, setResults] = useState<QuizResults | null>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const hasTrackedStart = useRef(false);
+
+  // Track quiz start on mount
+  useEffect(() => {
+    if (!hasTrackedStart.current) {
+      hasTrackedStart.current = true;
+      trackQuizEvent('quiz_start');
+    }
+  }, []);
 
   const handleAnswer = (optionIndex: number) => {
     const newAnswers = [...answers, optionIndex];
@@ -35,6 +64,14 @@ const Quiz2 = () => {
     } else {
       const calculatedResults = calculateResults(newAnswers);
       setResults(calculatedResults);
+      
+      // Track quiz completion
+      trackQuizEvent('quiz_complete', { 
+        score: calculatedResults.totalScore,
+        blocker: calculatedResults.blocker,
+        daysToFirst100: calculatedResults.daysToFirst100
+      });
+      
       setTimeout(() => {
         // On mobile, show the fork. On desktop, show result directly
         if (isMobile) {

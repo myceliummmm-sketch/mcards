@@ -21,6 +21,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Quiz2 = lazy(() => import("./pages/Quiz2"));
 const AdminEmails = lazy(() => import("./pages/AdminEmails"));
+const AdminABAnalytics = lazy(() => import("./pages/AdminABAnalytics"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/quiz2" element={<Quiz2 />} />
               <Route path="/admin/emails" element={<AdminEmails />} />
+              <Route path="/admin/ab-analytics" element={<AdminABAnalytics />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/terms" element={<Terms />} />
