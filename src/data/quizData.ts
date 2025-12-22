@@ -17,6 +17,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       { icon: "💡", labelKey: "quiz.options.q1_o1", points: 30, blocker: null },
       { icon: "🤔", labelKey: "quiz.options.q1_o2", points: 20, blocker: null },
       { icon: "🔍", labelKey: "quiz.options.q1_o3", points: 10, blocker: "fear_of_choice" },
+      { icon: "🤷", labelKey: "quiz.options.q1_o4", points: 5, blocker: "start_paralysis" },
     ],
   },
   {
@@ -25,6 +26,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       { icon: "⏰", labelKey: "quiz.options.q2_o1", points: 15, blocker: null },
       { icon: "📅", labelKey: "quiz.options.q2_o2", points: 25, blocker: null },
       { icon: "🚀", labelKey: "quiz.options.q2_o3", points: 30, blocker: null },
+      { icon: "😅", labelKey: "quiz.options.q2_o4", points: 10, blocker: "start_paralysis" },
     ],
   },
   {
@@ -33,6 +35,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       { icon: "🌱", labelKey: "quiz.options.q3_o1", points: 10, blocker: null },
       { icon: "🔄", labelKey: "quiz.options.q3_o2", points: 20, blocker: "fear_of_repeat" },
       { icon: "⭐", labelKey: "quiz.options.q3_o3", points: 30, blocker: null },
+      { icon: "🌟", labelKey: "quiz.options.q3_o4", points: 5, blocker: "start_paralysis" },
     ],
   },
   {
@@ -41,6 +44,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       { icon: "⚡", labelKey: "quiz.options.q4_o1", points: 25, blocker: null },
       { icon: "⚖️", labelKey: "quiz.options.q4_o2", points: 15, blocker: null },
       { icon: "💎", labelKey: "quiz.options.q4_o3", points: 10, blocker: "perfectionism" },
+      { icon: "🤔", labelKey: "quiz.options.q4_o4", points: 5, blocker: "start_paralysis" },
     ],
   },
 ];
@@ -102,12 +106,19 @@ export const calculateResults = (answers: number[]): QuizResults => {
 
   const daysToFirst100 = Math.max(7, Math.round(21 - totalScore / 10));
 
+  // Check for "beginner" options first (index 3 = new 4th options)
   let blocker = "start_paralysis";
-  if (answers[0] === 2) blocker = "fear_of_choice";
-  else if (answers[2] === 1) blocker = "fear_of_repeat";
-  else if (answers[3] === 2) blocker = "perfectionism";
+  if (answers[0] === 3 || answers[2] === 3 || answers[3] === 3) {
+    blocker = "start_paralysis"; // Beginners go to Ever
+  } else if (answers[0] === 2) {
+    blocker = "fear_of_choice";
+  } else if (answers[2] === 1) {
+    blocker = "fear_of_repeat";
+  } else if (answers[3] === 2) {
+    blocker = "perfectionism";
+  }
 
-  const visionDays = answers[0] === 0 ? 1 : answers[0] === 1 ? 2 : 3;
+  const visionDays = answers[0] === 0 ? 1 : answers[0] === 1 ? 2 : answers[0] === 3 ? 4 : 3;
   const researchDays = 3;
   const buildDays = Math.max(1, daysToFirst100 - visionDays - researchDays - 1);
 
