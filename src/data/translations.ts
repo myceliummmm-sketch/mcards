@@ -827,24 +827,24 @@ export const translations = {
     },
     community: {
       hero: {
-        title: "Don't build alone.",
-        titleHighlight: "Join the Mycelium Network.",
-        subtitle: "A community where questions turn into startups."
+        title: "Stop dreaming.",
+        titleHighlight: "Start building your income.",
+        subtitle: "From idea to first $1,000 — with those who've already walked this path."
       },
       about: {
         quote: "\"The ultimate goal of any creative activity is creation.\"",
-        text: "But creating in a vacuum is impossible. Insight Büro is the research wing of Mycelium. We combine Think Tank (theory) and Launchpad (practice) so you can:",
-        point1: "Find partners in a world where connections matter more than capital.",
-        point2: "Use collective intelligence to solve unsolvable problems.",
-        point3: "Move from fear of death to legacy design."
+        text: "But creating in a vacuum is impossible. Insight Büro is the research wing of Mycelium — where theory meets practice.",
+        point1: "💰 Find your first $1,000 in 90 days — no investment needed",
+        point2: "🚀 Launch a product without coding or budget",
+        point3: "🔓 Quit your job and work for yourself"
       },
       cta: {
-        title: "Join the Research",
-        subtitle: "Leave your email to access exclusive Insight Büro materials and an invitation to the Builders circle.",
+        title: "Get Your Action Plan",
+        subtitle: "Leave your email — we'll send a step-by-step guide to financial independence through your own project.",
         placeholder: "Your email",
-        button: "Apply",
-        successTitle: "Application received!",
-        successMessage: "We'll be in touch soon.",
+        button: "I want to start",
+        successTitle: "You're in!",
+        successMessage: "Check your inbox for next steps.",
         invalidEmail: "Please enter a valid email",
         alreadySubscribed: "Welcome back! Check your inbox.",
         success: "Application sent!",
@@ -1678,24 +1678,24 @@ export const translations = {
     },
     community: {
       hero: {
-        title: "Не строй в одиночку.",
-        titleHighlight: "Вступай в Mycelium Network.",
-        subtitle: "Сообщество, где вопросы превращаются в стартапы."
+        title: "Хватит мечтать.",
+        titleHighlight: "Начни строить свой доход.",
+        subtitle: "От идеи до первых $1,000 — вместе с теми, кто уже прошёл этот путь."
       },
       about: {
         quote: "«Конечная цель любой творческой деятельности — это создание».",
-        text: "Но создавать в вакууме невозможно. Insight Büro — это исследовательское крыло Mycelium. Мы объединяем Think Tank (теорию) и Launchpad (практику), чтобы ты мог:",
-        point1: "Найти партнеров в мире, где связи важнее капитала.",
-        point2: "Использовать коллективный интеллект для решения нерешаемых задач.",
-        point3: "Перейти от страха смерти к дизайну наследия."
+        text: "Но создавать в вакууме невозможно. Insight Büro — исследовательское крыло Mycelium, где теория встречается с практикой.",
+        point1: "💰 Найти первые $1,000 за 90 дней без инвестиций",
+        point2: "🚀 Запустить продукт без программирования и бюджета",
+        point3: "🔓 Выйти из найма и работать на себя"
       },
       cta: {
-        title: "Присоединиться к Исследованию",
-        subtitle: "Оставь почту, чтобы получить доступ к закрытым материалам Insight Büro и приглашение в круг Билдеров.",
+        title: "Получи план действий",
+        subtitle: "Оставь почту — пришлём пошаговый гайд к финансовой независимости через свой проект.",
         placeholder: "Твой email",
-        button: "Подать заявку",
-        successTitle: "Заявка принята!",
-        successMessage: "Мы скоро свяжемся.",
+        button: "Хочу начать",
+        successTitle: "Ты в деле!",
+        successMessage: "Проверь почту — там следующие шаги.",
         invalidEmail: "Введи корректный email",
         alreadySubscribed: "С возвращением! Проверь почту.",
         success: "Заявка отправлена!",
@@ -2529,24 +2529,24 @@ export const translations = {
     },
     community: {
       hero: {
-        title: "No construyas solo.",
-        titleHighlight: "Únete a Mycelium Network.",
-        subtitle: "Una comunidad donde las preguntas se convierten en startups."
+        title: "Deja de soñar.",
+        titleHighlight: "Empieza a construir tus ingresos.",
+        subtitle: "De la idea a los primeros $1,000 — con quienes ya recorrieron este camino."
       },
       about: {
         quote: "\"El objetivo final de cualquier actividad creativa es la creación.\"",
-        text: "Pero crear en el vacío es imposible. Insight Büro es el ala de investigación de Mycelium. Combinamos Think Tank (teoría) y Launchpad (práctica) para que puedas:",
-        point1: "Encontrar socios en un mundo donde las conexiones importan más que el capital.",
-        point2: "Usar la inteligencia colectiva para resolver problemas irresolubles.",
-        point3: "Pasar del miedo a la muerte al diseño del legado."
+        text: "Pero crear en el vacío es imposible. Insight Büro es el ala de investigación de Mycelium — donde la teoría se encuentra con la práctica.",
+        point1: "💰 Encuentra tus primeros $1,000 en 90 días — sin inversión",
+        point2: "🚀 Lanza un producto sin programar ni presupuesto",
+        point3: "🔓 Deja tu empleo y trabaja para ti mismo"
       },
       cta: {
-        title: "Únete a la Investigación",
-        subtitle: "Deja tu email para acceder a materiales exclusivos de Insight Büro y una invitación al círculo de Builders.",
+        title: "Obtén tu plan de acción",
+        subtitle: "Deja tu email — te enviaremos una guía paso a paso hacia la independencia financiera con tu propio proyecto.",
         placeholder: "Tu email",
-        button: "Enviar solicitud",
-        successTitle: "¡Solicitud recibida!",
-        successMessage: "Nos pondremos en contacto pronto.",
+        button: "Quiero empezar",
+        successTitle: "¡Estás dentro!",
+        successMessage: "Revisa tu bandeja para los próximos pasos.",
         invalidEmail: "Por favor ingresa un email válido",
         alreadySubscribed: "¡Bienvenido de vuelta! Revisa tu bandeja.",
         success: "¡Solicitud enviada!",
