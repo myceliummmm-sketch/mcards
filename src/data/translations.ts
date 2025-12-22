@@ -28,7 +28,7 @@ export const translations = {
         uses: "",
         cardSystem: "",
         toReveal: "",
-        cta: "⚡ Start Free → Find Your First Client →",
+        cta: "⚡ Find My First Client",
         noCreditCard: "No credit card • 5 minutes to first insight",
       },
       aiTeam: {
@@ -102,7 +102,7 @@ export const translations = {
           headline1: "Pick an idea.",
           headline2: "Make your first $1K.",
           subline: "15 minutes to sharpen your idea, 14 days to paying customers.",
-          cta: "⚡ Start Free → Find Your First Client →",
+          cta: "⚡ Find My First Client",
           time: "No credit card • 5 minutes to first insight",
         },
         postQuiz: {
@@ -149,7 +149,7 @@ export const translations = {
       },
     },
     quiz: {
-      title: "Validation Quiz",
+      title: "How Fast to $1K?",
       poweredBy: "Powered by Mycelium",
       restartQuiz: "↺ Take quiz again",
       shareText: "I scored {score}/100 on the Validation Quiz! My path to first $1K: {days} days. Try it:",
@@ -853,7 +853,7 @@ export const translations = {
         uses: "",
         cardSystem: "",
         toReveal: "",
-        cta: "⚡ Начни бесплатно → Найди первого клиента →",
+        cta: "⚡ Найти первого клиента",
         noCreditCard: "Без карты • 5 минут до первого инсайта",
       },
       aiTeam: {
@@ -927,7 +927,7 @@ export const translations = {
           headline1: "Выбери идею.",
           headline2: "Сделай первые $1K.",
           subline: "15 минут на проработку идеи, 14 дней до платящих клиентов.",
-          cta: "⚡ Начни бесплатно → Найди первого клиента →",
+          cta: "⚡ Найти первого клиента",
           time: "Без карты • 5 минут до первого инсайта",
         },
         postQuiz: {
@@ -974,7 +974,7 @@ export const translations = {
       },
     },
     quiz: {
-      title: "Квиз валидации",
+      title: "За сколько до $1K?",
       poweredBy: "При поддержке Mycelium",
       restartQuiz: "↺ Пройти ещё раз",
       shareText: "Мой балл {score}/100 в Квизе валидации! Путь к первым $1K: {days} дней. Попробуй:",
@@ -1678,7 +1678,7 @@ export const translations = {
         uses: "",
         cardSystem: "",
         toReveal: "",
-        cta: "⚡ Empieza gratis → Encuentra tu primer cliente →",
+        cta: "⚡ Encontrar mi primer cliente",
         noCreditCard: "Sin tarjeta • 5 minutos hasta el primer insight",
       },
       aiTeam: {
@@ -1752,7 +1752,7 @@ export const translations = {
           headline1: "Elige una idea.",
           headline2: "Haz tus primeros $1K.",
           subline: "15 minutos para afinar tu idea, 14 días hasta clientes que pagan.",
-          cta: "⚡ Empieza → Primer cliente →",
+          cta: "⚡ Encontrar mi primer cliente",
           time: "Sin tarjeta • 5 min hasta primer insight",
         },
         postQuiz: {
@@ -1799,7 +1799,7 @@ export const translations = {
       },
     },
     quiz: {
-      title: "Quiz de validación",
+      title: "¿En cuánto tiempo a $1K?",
       poweredBy: "Impulsado por Mycelium",
       restartQuiz: "↺ Hacer de nuevo",
       shareText: "¡Mi puntuación es {score}/100 en el Quiz de Validación! Tiempo hasta los primeros $1K: {days} días. ¡Pruébalo:",
