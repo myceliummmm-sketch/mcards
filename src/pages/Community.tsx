@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/integrations/supabase/client";
-import { DollarSign, Rocket, Unlock, Users, CheckCircle, Loader2, ArrowLeft, Globe, Link2 } from "lucide-react";
+import { DollarSign, Rocket, Unlock, Users, CheckCircle, Loader2, ArrowLeft, Globe, Link2, Gamepad2 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import LegalFooter from "@/components/landing/LegalFooter";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import myceliumNetworkGif from "@/assets/mycelium-network.gif";
 
@@ -15,6 +15,7 @@ const BASE_MEMBER_COUNT = 137;
 
 const Community = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -150,9 +151,17 @@ const Community = () => {
                   <h3 className="text-xl font-display font-bold mb-2">
                     {t('community.cta.successTitle')}
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground mb-6">
                     {t('community.cta.successMessage')}
                   </p>
+                  <Button
+                    size="lg"
+                    className="w-full h-12 text-lg font-bold"
+                    onClick={() => navigate('/quiz2')}
+                  >
+                    <Gamepad2 className="h-5 w-5 mr-2" />
+                    {t('community.cta.continueQuiz')}
+                  </Button>
                 </motion.div>
               ) : (
                 <>
