@@ -28,22 +28,28 @@ export function EmailStep({ data, selectedPath, onComplete }: EmailStepProps) {
     setIsLoading(true);
 
     try {
+      const interviewDataForDb = {
+        branch: data.branch,
+        projectName: data.projectName,
+        analogyTemplate: data.analogyTemplate,
+        analogyNiche: data.analogyNiche,
+        targetAudience: data.targetAudience,
+        painArea: data.painArea,
+        specificPain: data.specificPain,
+        selectedIdea: data.selectedIdea ? {
+          name: data.selectedIdea.name,
+          analogy: data.selectedIdea.analogy,
+          tagline: data.selectedIdea.tagline,
+        } : null,
+        motivation: data.motivation,
+        painDetails: data.painDetails,
+        experience: data.experience,
+      };
+
       const { error } = await supabase.from('leads').insert([{
         email: email.trim(),
         source: 'interview_wizard',
-        interview_data: {
-          branch: data.branch,
-          projectName: data.projectName,
-          analogyTemplate: data.analogyTemplate,
-          analogyNiche: data.analogyNiche,
-          targetAudience: data.targetAudience,
-          painArea: data.painArea,
-          specificPain: data.specificPain,
-          selectedIdea: data.selectedIdea,
-          motivation: data.motivation,
-          painDetails: data.painDetails,
-          experience: data.experience,
-        },
+        interview_data: interviewDataForDb,
         founder_fit_score: data.founderFitScore,
         card_rarity: data.cardRarity,
         selected_path: selectedPath,
