@@ -11,31 +11,13 @@ import { Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-
-// Track quiz events
-const trackQuizEvent = async (eventType: string, metadata?: Record<string, unknown>) => {
-  const sessionId = localStorage.getItem('ab_session_id');
-  const variant = localStorage.getItem('ab_test_variant');
-  
-  if (!sessionId || !variant) return;
-  
-  try {
-    await (supabase.from('ab_test_events') as any).insert({
-      session_id: sessionId,
-      variant: variant,
-      event_type: eventType,
-      metadata: metadata || {}
-    });
-  } catch (error) {
-    console.debug('Quiz tracking error:', error);
-  }
-};
+import { useTrafficVariant } from "@/hooks/useTrafficVariant";
 
 const Quiz2 = () => {
   const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
   const isMobile = useIsMobile();
+  const { trackEvent } = useTrafficVariant();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
@@ -49,9 +31,9 @@ const Quiz2 = () => {
   useEffect(() => {
     if (!hasTrackedStart.current) {
       hasTrackedStart.current = true;
-      trackQuizEvent('quiz_start');
+      trackEvent('quiz_start');
     }
-  }, []);
+  }, [trackEvent]);
 
   const handleAnswer = (optionIndex: number) => {
     const newAnswers = [...answers, optionIndex];
@@ -65,8 +47,8 @@ const Quiz2 = () => {
       const calculatedResults = calculateResults(newAnswers);
       setResults(calculatedResults);
       
-      // Track quiz completion
-      trackQuizEvent('quiz_complete', { 
+      // Track quiz completion using new traffic variant system
+      trackEvent('quiz_complete', { 
         score: calculatedResults.totalScore,
         blocker: calculatedResults.blocker,
         daysToFirst100: calculatedResults.daysToFirst100
