@@ -2,9 +2,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTrafficVariant } from "@/hooks/useTrafficVariant";
-import { MobileLanding } from "@/components/landing/MobileLanding";
 import { GamifiedWizard } from "./GamifiedWizard";
-import { EmpireBuilder } from "./EmpireBuilder";
+import { InterviewWizard } from "./InterviewWizard";
 import { DesktopLanding } from "./DesktopLanding";
 
 export const LandingPageSplitter = () => {
@@ -40,11 +39,11 @@ export const LandingPageSplitter = () => {
   }
 
   // 4. MOBILE TRAFFIC SPLIT:
-  // Empire (60%) -> New Empire Builder with chest video
+  // Empire (60%) -> New Interview Wizard with chest video
   if (variant === 'empire') {
     return (
       <>
-        <EmpireBuilder trackEvent={trackEvent} />
+        <InterviewWizard trackEvent={trackEvent} />
         {isDev && (
           <button
             onClick={resetTest}
