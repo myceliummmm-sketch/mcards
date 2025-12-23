@@ -389,6 +389,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   onForge={(wizardFormData) => handleSave(false, true, wizardFormData)}
                   isForging={isSaving}
                   deckId={deckId}
+                  hasExistingCard={!!(currentImageUrl || currentEvaluation)}
                 />
               ) : (
                 <>

@@ -19,6 +19,7 @@ interface CardCraftingWizardProps {
   onForge: (formData: Record<string, any>) => void;
   isForging: boolean;
   deckId?: string;
+  hasExistingCard?: boolean;
 }
 
 export const CardCraftingWizard = ({
@@ -27,7 +28,8 @@ export const CardCraftingWizard = ({
   onChange,
   onForge,
   isForging,
-  deckId
+  deckId,
+  hasExistingCard = false
 }: CardCraftingWizardProps) => {
   const { t, language } = useTranslation();
   const { toast } = useToast();
@@ -179,7 +181,7 @@ export const CardCraftingWizard = ({
           onEdit={handleEditFromReview}
           onForge={() => onForge(formData)}
           isForging={isForging}
-          hasExistingCard={Object.keys(initialData).length > 0}
+          hasExistingCard={hasExistingCard}
         />
 
         <div className="flex justify-start">
