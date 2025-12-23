@@ -115,7 +115,7 @@ export const FIELD_GUIDANCE: Record<string, FieldGuidance> = {
 
   // AUDIENCE card
   demographics: {
-    questionTitle: { en: 'Who are they in demographic terms?', ru: 'Кто они в демографических терминах?' },
+    questionTitle: { en: 'Social profile of your user', ru: 'Социальный профиль вашего пользователя' },
     hints: [
       { en: 'Age range, location, profession, income level', ru: 'Возраст, локация, профессия, уровень дохода' },
       { en: 'Education level if relevant', ru: 'Уровень образования, если релевантно' },
