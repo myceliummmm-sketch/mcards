@@ -200,26 +200,30 @@ async function evaluateWithCharacter(
   }
 
   const isToxic = characterId === 'toxic';
-  
+
   const systemPrompt = lang === 'ru'
     ? `Ты ${char.name.ru}, ${char.role.ru} стартап-команды.
 ${char.personality.ru}
 
-ТЫ ОЦЕНИВАЕШЬ ЧЕСТНО как настоящий эксперт:
-- Высокие баллы (7+) даёшь ТОЛЬКО за действительно качественную, аутентичную работу
-- Средние баллы (5-6) за нормальную работу с недостатками
-- Низкие баллы (3-4) за слабую работу с очевидными проблемами
-- Не завышай оценки! Но и не занижай без причины.
-${isToxic ? '\nТЫ ТОКСИК - ты находишь ВСЕ слабые места и BS. Ты не веришь словам без доказательств.' : ''}`
+ТЫ ОЦЕНИВАЕШЬ СПРАВЕДЛИВО И КОНСТРУКТИВНО:
+- 8-10: Отличная работа с конкретикой и глубиной
+- 6-7: Хорошая работа, есть над чем поработать
+- 4-5: Базовая работа, нужны улучшения
+- 1-3: Требует серьёзной переработки
+- Будь справедлив - хорошая работа заслуживает хороших оценок
+- Критикуй конструктивно, предлагай улучшения
+${isToxic ? '\nТы скептик и проверяешь утверждения на достоверность. Указывай на риски, но признавай сильные стороны.' : ''}`
     : `You are ${char.name.en}, ${char.role.en} of the startup team.
 ${char.personality.en}
 
-YOU EVALUATE HONESTLY as a real expert:
-- High scores (7+) ONLY for truly quality, authentic work
-- Medium scores (5-6) for normal work with flaws
-- Low scores (3-4) for weak work with obvious problems
-- Don't inflate scores! But don't deflate without reason.
-${isToxic ? '\nYOU ARE TOXIC - you find ALL weak spots and BS. You dont believe words without proof.' : ''}`;
+YOU EVALUATE FAIRLY AND CONSTRUCTIVELY:
+- 8-10: Excellent work with specifics and depth
+- 6-7: Good work with room for improvement
+- 4-5: Basic work that needs improvements
+- 1-3: Requires significant rework
+- Be fair - good work deserves good scores
+- Criticize constructively, suggest improvements
+${isToxic ? '\nYou are a skeptic who verifies claims for credibility. Point out risks, but acknowledge strengths.' : ''}`;
 
   const prompt = lang === 'ru'
     ? `ОЦЕНКА КАРТОЧКИ "${cardType}" | ТВОЙ КРИТЕРИЙ: ${char.criterion.toUpperCase()}
@@ -237,13 +241,14 @@ ${char.whatMakesGreat.ru}
 ${char.redFlags.ru}
 
 📊 ШКАЛА ОЦЕНОК:
-- 8-10: ВЫДАЮЩЕЕСЯ - аутентично, конкретно, убедительно
-- 6-7: ХОРОШО - есть суть, но можно улучшить
-- 4-5: СРЕДНЕ - много общих фраз или проблем
-- 1-3: СЛАБО - переделывать
+- 8-10: ОТЛИЧНО - конкретно, глубоко, убедительно
+- 6-7: ХОРОШО - есть суть, можно улучшить
+- 4-5: БАЗОВО - общие фразы, нужна доработка
+- 1-3: СЛАБО - требует переработки
 
-Оценивай ЧЕСТНО. Если данные общие и неконкретные - это 4-5 баллов.
-Если данные аутентичные и специфичные - это 7+ баллов.
+Оценивай СПРАВЕДЛИВО. Признавай сильные стороны работы.
+Конкретный контент с деталями заслуживает 6-8 баллов.
+Выдающийся контент с глубоким анализом - 8-10 баллов.
 
 Верни JSON:
 {
@@ -267,13 +272,14 @@ ${char.whatMakesGreat.en}
 ${char.redFlags.en}
 
 📊 SCORING SCALE:
-- 8-10: OUTSTANDING - authentic, specific, convincing
-- 6-7: GOOD - has substance but could improve
-- 4-5: AVERAGE - too generic or has problems
+- 8-10: EXCELLENT - specific, deep, convincing
+- 6-7: GOOD - has substance, room to improve
+- 4-5: BASIC - generic phrases, needs work
 - 1-3: WEAK - needs rework
 
-Evaluate HONESTLY. If data is generic and unspecific - thats 4-5 points.
-If data is authentic and specific - thats 7+ points.
+Evaluate FAIRLY. Acknowledge the strengths of the work.
+Specific content with details deserves 6-8 points.
+Outstanding content with deep analysis - 8-10 points.
 
 Return JSON:
 {

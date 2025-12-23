@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, MessageCircle, Sparkles, Loader2 } from 'lucide-react';
+import { Check, X, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { 
@@ -159,14 +159,12 @@ export function InsightValidationFlow({
         handleResonate();
       } else if (e.key === 'ArrowDown' || e.key === 's') {
         handleReject();
-      } else if (e.key === 'ArrowRight' || e.key === 'd') {
-        handleDiscuss();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleResonate, handleReject, handleDiscuss, canValidate, isAnimating, discussionOpen]);
+  }, [handleResonate, handleReject, canValidate, isAnimating, discussionOpen]);
 
   // Vision card labels
   const visionLabels: Record<number, string> = {
@@ -438,8 +436,8 @@ export function InsightValidationFlow({
               </motion.div>
             </AnimatePresence>
 
-            {/* Action Buttons - 3 columns */}
-            <div className="grid grid-cols-3 gap-3 mt-6">
+            {/* Action Buttons - 2 columns */}
+            <div className="grid grid-cols-2 gap-3 mt-6">
               <Button
                 size="lg"
                 className="h-14 text-base font-bold bg-green-600 hover:bg-green-700 text-white"
@@ -459,23 +457,12 @@ export function InsightValidationFlow({
                 <X className="w-5 h-5 mr-1.5" />
                 Не резонирует
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-14 text-base font-bold border-primary/50 text-primary hover:bg-primary/10"
-                onClick={handleDiscuss}
-                disabled={isAnimating}
-              >
-                <MessageCircle className="w-5 h-5 mr-1.5" />
-                Обсудить
-              </Button>
             </div>
 
             {/* Keyboard Hints */}
             <div className="flex justify-center gap-6 mt-4 text-xs text-muted-foreground">
               <span>A - Резонирует</span>
               <span>S - Не резонирует</span>
-              <span>D - Обсудить</span>
             </div>
           </>
         )}

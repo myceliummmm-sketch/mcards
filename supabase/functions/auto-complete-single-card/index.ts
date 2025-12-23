@@ -51,10 +51,10 @@ Be hyper-specific, include psychographic details.`
 - Current alternatives: what do people use now?
 - Alternative cost: in time, money, frustration (specific numbers)
 - Your solution: what makes you unique?
-- Price positioning: competitive analysis
-- ROI multiple: how much do they save/gain?
+- Price positioning: USE REALISTIC SaaS PRICES ($9-49/month for individual, $29-199/month for teams, $99-499/month for enterprise). Never suggest prices over $100/month for individual users.
+- ROI multiple: how much do they save/gain vs price?
 
-Show clear 10x value with numbers and comparisons.`
+Show clear value with REALISTIC pricing. Most successful SaaS products start at $9-29/month.`
   },
   5: {
     fields: ['vision_statement', 'who_benefits', 'what_becomes_possible', 'barrier_removed'],

@@ -389,6 +389,7 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   onForge={(wizardFormData) => handleSave(false, true, wizardFormData)}
                   isForging={isSaving}
                   deckId={deckId}
+                  hasExistingCard={!!(currentImageUrl || currentEvaluation)}
                 />
               ) : (
                 <>
@@ -444,7 +445,9 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   </motion.div>
 
                   {currentEvaluation && (
-                    <EvaluationMatrix evaluation={currentEvaluation} />
+                    <div className="mt-8">
+                      <EvaluationMatrix evaluation={currentEvaluation} />
+                    </div>
                   )}
 
                   {/* Auto-translation indicator */}

@@ -132,11 +132,11 @@
   }
   
   .xp-bar {
-    @apply h-2 rounded-full overflow-hidden bg-muted;
+    @apply rounded-full bg-muted;
   }
-  
+
   .xp-fill {
-    @apply h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500;
+    @apply h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500 rounded-full;
   }
   
   .badge-glow {

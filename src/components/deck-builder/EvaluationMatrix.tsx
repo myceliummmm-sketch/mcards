@@ -40,7 +40,7 @@ export const EvaluationMatrix = ({ evaluation }: EvaluationMatrixProps) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-8 p-6 bg-background/50 border border-border rounded-lg"
+      className="p-6 bg-background/50 border border-border rounded-lg"
     >
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-sm font-mono font-bold text-primary uppercase tracking-wider">
