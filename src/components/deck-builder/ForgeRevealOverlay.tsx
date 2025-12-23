@@ -64,14 +64,6 @@ export const ForgeRevealOverlay = ({
               className="w-full max-w-lg"
             >
               <ForgeLoadingState stage={loadingStage} />
-              <motion.p
-                className="text-center text-muted-foreground mt-6 text-sm"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                Your card is being forged by the Mycelium system...
-              </motion.p>
             </motion.div>
           )}
 

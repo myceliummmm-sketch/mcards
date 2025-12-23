@@ -444,7 +444,9 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
                   </motion.div>
 
                   {currentEvaluation && (
-                    <EvaluationMatrix evaluation={currentEvaluation} />
+                    <div className="mt-8">
+                      <EvaluationMatrix evaluation={currentEvaluation} />
+                    </div>
                   )}
 
                   {/* Auto-translation indicator */}
