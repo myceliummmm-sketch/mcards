@@ -10,25 +10,32 @@ import LegalFooter from "@/components/landing/LegalFooter";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import myceliumNetworkGif from "@/assets/mycelium-network.gif";
+import { useTrafficVariant } from "@/hooks/useTrafficVariant";
 
 const BASE_MEMBER_COUNT = 137;
 
 const Community = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { trackEvent } = useTrafficVariant();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [memberCount, setMemberCount] = useState<number | null>(null);
 
+  // Track community page load
   useEffect(() => {
-  const fetchMemberCount = async () => {
-    const { data, error } = await supabase.rpc('get_leads_count');
-    
-    if (!error && data !== null) {
-      setMemberCount(BASE_MEMBER_COUNT + data);
-    }
-  };
+    trackEvent('community_page_load');
+  }, [trackEvent]);
+
+  useEffect(() => {
+    const fetchMemberCount = async () => {
+      const { data, error } = await supabase.rpc('get_leads_count');
+      
+      if (!error && data !== null) {
+        setMemberCount(BASE_MEMBER_COUNT + data);
+      }
+    };
     fetchMemberCount();
   }, []);
 
@@ -57,6 +64,7 @@ const Community = () => {
         if (error.code === '23505') {
           toast.success(t('community.cta.alreadySubscribed'));
           setIsSuccess(true);
+          trackEvent('email_submit', { source: 'community', duplicate: true });
         } else {
           throw error;
         }
@@ -64,6 +72,7 @@ const Community = () => {
         setIsSuccess(true);
         setMemberCount(prev => prev !== null ? prev + 1 : null);
         toast.success(t('community.cta.success'));
+        trackEvent('email_submit', { source: 'community' });
       }
     } catch (error) {
       console.error('Error submitting lead:', error);
