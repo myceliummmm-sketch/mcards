@@ -371,27 +371,39 @@ export type Database = {
       }
       leads: {
         Row: {
+          card_rarity: string | null
           created_at: string | null
           email: string
+          founder_fit_score: number | null
           id: string
+          interview_data: Json | null
           quiz_blocker: string | null
           quiz_score: number | null
+          selected_path: string | null
           source: string | null
         }
         Insert: {
+          card_rarity?: string | null
           created_at?: string | null
           email: string
+          founder_fit_score?: number | null
           id?: string
+          interview_data?: Json | null
           quiz_blocker?: string | null
           quiz_score?: number | null
+          selected_path?: string | null
           source?: string | null
         }
         Update: {
+          card_rarity?: string | null
           created_at?: string | null
           email?: string
+          founder_fit_score?: number | null
           id?: string
+          interview_data?: Json | null
           quiz_blocker?: string | null
           quiz_score?: number | null
+          selected_path?: string | null
           source?: string | null
         }
         Relationships: []
