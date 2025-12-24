@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Lock, Crown, Gift, Sparkles, Loader2, CheckCircle2, Rocket, Trophy, BarChart3, AlertTriangle } from 'lucide-react';
 import {
   Accordion,
@@ -20,19 +20,11 @@ import { FlippableCard } from '../FlippableCard';
 import { PhaseIcon } from '../PhaseIcon';
 import { UpgradeModal } from '@/components/paywall/UpgradeModal';
 import { RewardModal } from '../RewardModal';
-import { PHASE_CONFIG, getCardsByPhase } from '@/data/cardDefinitions';
+import { PHASE_CONFIG } from '@/data/cardDefinitions';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { useBuildPhase, BuildMode } from '@/hooks/useBuildPhase';
 import type { Database } from '@/integrations/supabase/types';
-
-interface BuildScore {
-  overallScore: number;
-  rarity: { name: string; nameLocalized: string; emoji: string };
-  cardScores: Record<number, { score: number; details: Record<string, number>; feedback: string }>;
-  coherenceCheck: Record<string, boolean>;
-}
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
 
@@ -46,9 +38,9 @@ interface BuildPhaseSectionProps {
   researchCards?: DeckCard[];
 }
 
-export const BuildPhaseSection = ({ 
-  deckId, 
-  cards, 
+export const BuildPhaseSection = ({
+  deckId,
+  cards,
   onEditCard,
   onRefresh,
   locked = false,
@@ -56,58 +48,36 @@ export const BuildPhaseSection = ({
   researchCards = []
 }: BuildPhaseSectionProps) => {
   const config = PHASE_CONFIG['build'];
-  const definitions = getCardsByPhase('build');
+  const { t, language } = useTranslation();
+
+  // UI-only state
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [rewardModalOpen, setRewardModalOpen] = useState(false);
-  const [generatingSlots, setGeneratingSlots] = useState<number[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [buildScore, setBuildScore] = useState<BuildScore | null>(null);
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const [cardWarnings, setCardWarnings] = useState<Record<number, { type: string; message: string; field?: string }[]>>({});
-  const [buildMode, setBuildMode] = useState<'auto' | 'hybrid' | 'manual'>('hybrid');
-  const { t, language } = useTranslation();
-  const { toast } = useToast();
 
-  const filledCount = definitions.filter(def =>
-    cards.some(c => c.card_slot === def.slot && c.card_data && Object.keys(c.card_data as object).length > 0)
-  ).length;
-
-  // Fetch BUILD score when all cards are filled
-  const evaluateBuildPhase = async () => {
-    if (isEvaluating || filledCount < 5) return;
-
-    setIsEvaluating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('build-evaluate', {
-        body: { deckId, language }
-      });
-
-      if (error) throw error;
-      if (data?.success) {
-        setBuildScore(data);
-      }
-    } catch (error) {
-      console.error('[BUILD] Evaluation error:', error);
-    } finally {
-      setIsEvaluating(false);
-    }
-  };
-
-  // Auto-evaluate when all 5 cards are filled
-  useEffect(() => {
-    if (filledCount === 5 && !buildScore && !isEvaluating) {
-      evaluateBuildPhase();
-    }
-  }, [filledCount]);
+  // Build phase logic from custom hook
+  const {
+    generatingSlots,
+    isGenerating,
+    buildScore,
+    isEvaluating,
+    cardWarnings,
+    buildMode,
+    filledCount,
+    definitions,
+    setBuildMode,
+    evaluateBuildPhase,
+    generateBuildCard,
+    generateAllBuildCards,
+  } = useBuildPhase({
+    deckId,
+    cards,
+    language,
+    onRefresh
+  });
 
   // Check if Vision phase is complete (at least first card filled)
-  const visionComplete = visionCards.some(c => 
+  const visionComplete = visionCards.some(c =>
     c.card_slot === 1 && c.card_data && Object.keys(c.card_data as object).length > 0
-  );
-
-  // Check if Research phase has any data
-  const hasResearchData = researchCards.some(c => 
-    c.card_data && Object.keys(c.card_data as object).length > 0
   );
 
   const handleAccordionClick = (e: React.MouseEvent) => {
@@ -118,147 +88,11 @@ export const BuildPhaseSection = ({
     }
   };
 
-  const generateBuildCard = async (cardSlot: number) => {
-    if (generatingSlots.includes(cardSlot)) return;
-    
-    setGeneratingSlots(prev => [...prev, cardSlot]);
-    
-    try {
-      toast({
-        title: language === 'ru' ? '🔧 Генерация карточки...' : '🔧 Generating card...',
-        description: language === 'ru' 
-          ? 'AI анализирует Vision и Research данные' 
-          : 'AI is analyzing Vision and Research data',
-      });
-
-      console.log('[BUILD UI] Calling build-generate for slot:', cardSlot);
-
-      const { data, error } = await supabase.functions.invoke('build-generate', {
-        body: { deckId, cardSlot, language }
-      });
-
-      console.log('[BUILD UI] Response:', { data, error });
-
-      if (error) throw error;
-
-      if (data?.cardData) {
-        // Get existing card or create new
-        const existingCard = cards.find(c => c.card_slot === cardSlot);
-        
-        if (existingCard) {
-          const { error: updateError } = await supabase
-            .from('deck_cards')
-            .update({ 
-              card_data: data.cardData,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', existingCard.id);
-          
-          if (updateError) throw updateError;
-        } else {
-          const cardDef = definitions.find(d => d.slot === cardSlot);
-          const { error: insertError } = await supabase
-            .from('deck_cards')
-            .insert({
-              deck_id: deckId,
-              card_slot: cardSlot,
-              card_type: cardDef?.id || 'build',
-              card_data: data.cardData
-            });
-          
-          if (insertError) throw insertError;
-        }
-
-        // Trigger refresh to update UI
-        if (onRefresh) {
-          console.log('[BUILD UI] Triggering refresh...');
-          onRefresh();
-        }
-
-        // Handle Toxic Validation warnings
-        if (data.warnings && data.warnings.length > 0) {
-          setCardWarnings(prev => ({
-            ...prev,
-            [cardSlot]: data.warnings
-          }));
-
-          // Show warning toast
-          const warningCount = data.warnings.length;
-          toast({
-            title: language === 'ru'
-              ? `⚠️ Карточка готова (${warningCount} предупреждений)`
-              : `⚠️ Card ready (${warningCount} warnings)`,
-            description: data.warnings[0].message,
-            variant: 'destructive',
-          });
-        } else {
-          // Clear any previous warnings for this slot
-          setCardWarnings(prev => {
-            const updated = { ...prev };
-            delete updated[cardSlot];
-            return updated;
-          });
-
-          toast({
-            title: language === 'ru' ? '✅ Карточка готова!' : '✅ Card ready!',
-            description: language === 'ru'
-              ? 'Нажмите чтобы редактировать'
-              : 'Click to edit',
-          });
-        }
-      } else {
-        throw new Error('No card data returned');
-      }
-    } catch (error) {
-      console.error('Build generation error:', error);
-      toast({
-        title: language === 'ru' ? '❌ Ошибка генерации' : '❌ Generation error',
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive',
-      });
-    } finally {
-      setGeneratingSlots(prev => prev.filter(s => s !== cardSlot));
-    }
-  };
-
-  const generateAllBuildCards = async () => {
-    if (isGenerating) return;
-    
-    setIsGenerating(true);
-    
-    toast({
-      title: language === 'ru' ? '🚀 Генерация BUILD фазы' : '🚀 Generating BUILD phase',
-      description: language === 'ru' 
-        ? 'Создаём все 5 карточек последовательно...' 
-        : 'Creating all 5 cards sequentially...',
-    });
-
-    try {
-      // Generate cards in order (11 -> 15)
-      for (const slot of [11, 12, 13, 14, 15]) {
-        await generateBuildCard(slot);
-        // Small delay between cards
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-
-      toast({
-        title: language === 'ru' ? '🎉 BUILD фаза готова!' : '🎉 BUILD phase complete!',
-        description: language === 'ru' 
-          ? 'Все карточки сгенерированы. Проверьте и отредактируйте.' 
-          : 'All cards generated. Review and edit as needed.',
-      });
-    } catch (error) {
-      console.error('Build all error:', error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   const canStartBuild = visionComplete;
 
   return (
     <>
-      <div 
+      <div
         className={cn(
           "rounded-xl border-2 transition-all overflow-hidden",
           locked && "opacity-70"
@@ -267,7 +101,7 @@ export const BuildPhaseSection = ({
       >
         <Accordion type="single" collapsible defaultValue={locked || filledCount === 0 ? undefined : 'build'}>
           <AccordionItem value="build" className="border-b-0">
-            <AccordionTrigger 
+            <AccordionTrigger
               className={cn(
                 "hover:no-underline group py-6 px-6",
                 locked && "cursor-pointer"
@@ -289,36 +123,36 @@ export const BuildPhaseSection = ({
                         </Badge>
                       )}
                     </div>
-                    
+
                     {/* Mini thumbnails */}
                     <div className="flex gap-1.5 mt-2">
                       {definitions.map(def => {
                         const cardData = cards.find(c => c.card_slot === def.slot);
                         const hasData = cardData?.card_data && Object.keys(cardData.card_data as object).length > 0;
                         const imageUrl = cardData?.card_image_url;
-                        const isGenerating = generatingSlots.includes(def.slot);
-                        
+                        const isCardGenerating = generatingSlots.includes(def.slot);
+
                         return (
-                          <div 
+                          <div
                             key={def.slot}
                             className={cn(
                               'w-7 h-10 rounded-sm overflow-hidden border-2 transition-all flex items-center justify-center',
-                              hasData 
-                                ? 'shadow-sm' 
+                              hasData
+                                ? 'shadow-sm'
                                 : 'border-dashed bg-muted/30'
                             )}
-                            style={{ 
+                            style={{
                               borderColor: hasData ? config.color : 'hsl(var(--muted-foreground) / 0.3)'
                             }}
                           >
-                            {isGenerating ? (
+                            {isCardGenerating ? (
                               <Loader2 className="w-3 h-3 animate-spin text-primary" />
                             ) : imageUrl ? (
                               <img src={imageUrl} className="w-full h-full object-cover" alt="" />
                             ) : hasData ? (
-                              <div 
-                                className="w-full h-full" 
-                                style={{ background: `${config.color}40` }} 
+                              <div
+                                className="w-full h-full"
+                                style={{ background: `${config.color}40` }}
                               />
                             ) : (
                               <Lock className="w-3 h-3 text-muted-foreground/40" />
@@ -327,7 +161,7 @@ export const BuildPhaseSection = ({
                         );
                       })}
                     </div>
-                    
+
                     {/* Reward hint */}
                     <button
                       onClick={(e) => {
@@ -346,12 +180,12 @@ export const BuildPhaseSection = ({
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                   {/* Mode Selector */}
                   {!locked && canStartBuild && (
                     <div onClick={(e) => e.stopPropagation()}>
-                      <Select value={buildMode} onValueChange={(v) => setBuildMode(v as 'auto' | 'hybrid' | 'manual')}>
+                      <Select value={buildMode} onValueChange={(v) => setBuildMode(v as BuildMode)}>
                         <SelectTrigger className="w-[140px] h-9 text-xs bg-background/80 border-muted">
                           <SelectValue />
                         </SelectTrigger>
@@ -398,7 +232,7 @@ export const BuildPhaseSection = ({
                       </Button>
                     </div>
                   )}
-                  
+
                   <div className="flex items-center gap-3">
                     {/* BUILD Score Display */}
                     {buildScore && filledCount === 5 && (
@@ -458,7 +292,7 @@ export const BuildPhaseSection = ({
                 </div>
               </div>
             </AccordionTrigger>
-            
+
             <AccordionContent>
               {!canStartBuild ? (
                 <motion.div
@@ -472,7 +306,7 @@ export const BuildPhaseSection = ({
                       {language === 'ru' ? 'Сначала завершите Vision' : 'Complete Vision First'}
                     </h3>
                     <p className="text-muted-foreground">
-                      {language === 'ru' 
+                      {language === 'ru'
                         ? 'BUILD фаза использует данные из Vision и Research карт для генерации спецификации приложения.'
                         : 'BUILD phase uses Vision and Research card data to generate app specification.'}
                     </p>
@@ -495,12 +329,12 @@ export const BuildPhaseSection = ({
                     const cardData = cards.find(c => c.card_slot === definition.slot);
                     const hasData = cardData?.card_data && Object.keys(cardData.card_data as object).length > 0;
                     const isCardGenerating = generatingSlots.includes(definition.slot);
-                    
+
                     // Check if previous card is filled (for sequential generation)
                     const prevSlot = definition.slot - 1;
-                    const canGenerate = definition.slot === 11 || 
+                    const canGenerate = definition.slot === 11 ||
                       cards.some(c => c.card_slot === prevSlot && c.card_data && Object.keys(c.card_data as object).length > 0);
-                    
+
                     return (
                       <motion.div
                         key={definition.slot}
@@ -517,7 +351,7 @@ export const BuildPhaseSection = ({
                           onEdit={() => hasData ? onEditCard(definition.slot) : (canGenerate && generateBuildCard(definition.slot))}
                           isGenerating={isCardGenerating}
                         />
-                        
+
                         {/* Generate/Fill button overlay for empty cards */}
                         {!hasData && canGenerate && !isCardGenerating && (
                           <motion.div
@@ -553,7 +387,7 @@ export const BuildPhaseSection = ({
                             </div>
                           </motion.div>
                         )}
-                        
+
                         {/* Completed indicator with warning badge */}
                         {hasData && (
                           <div className="absolute top-2 right-2 flex items-center gap-1">
@@ -587,11 +421,11 @@ export const BuildPhaseSection = ({
           </AccordionItem>
         </Accordion>
       </div>
-      
+
       <UpgradeModal open={upgradeModalOpen} onOpenChange={setUpgradeModalOpen} />
-      <RewardModal 
-        open={rewardModalOpen} 
-        onOpenChange={setRewardModalOpen} 
+      <RewardModal
+        open={rewardModalOpen}
+        onOpenChange={setRewardModalOpen}
         phase="build"
       />
     </>
