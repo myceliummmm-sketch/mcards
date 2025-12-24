@@ -46,12 +46,15 @@ export const GenerateLovablePromptModal = ({
   };
 
   const generatePrompt = () => {
-    // Vision data
+    // Vision data (using actual field names from cardDefinitions.ts)
     const v1 = getCardData(1); // Product
     const v2 = getCardData(2); // Problem
     const v3 = getCardData(3); // Audience
     const v4 = getCardData(4); // Value
     const v5 = getCardData(5); // Vision
+
+    // Research data
+    const r3 = getCardData(8); // User Insights
 
     // Build data
     const b1 = getCardData(11); // Features
@@ -62,99 +65,162 @@ export const GenerateLovablePromptModal = ({
 
     const isRu = language === 'ru';
 
-    // Extract features list
-    const features = b1.features || b1.selectedFeatures || [];
-    const featuresText = Array.isArray(features) 
-      ? features.map((f: any) => `- ${typeof f === 'string' ? f : f.name || f.title}`).join('\n')
-      : '';
+    // Determine app format
+    const appFormat = b5.app_format || 'Mobile App (iOS + Android)';
+    const isMobile = appFormat.toLowerCase().includes('mobile');
+    const isWeb = appFormat.toLowerCase().includes('web');
 
-    // Extract screens
-    const screens = b3.screens || [];
-    const screensText = Array.isArray(screens)
-      ? screens.map((s: any, i: number) => 
-          `${i + 1}. ${typeof s === 'string' ? s : s.name || s.title}\n   ${s.description || s.elements?.join(', ') || ''}`
-        ).join('\n')
-      : '';
+    // Generate the prompt following ТЗ v4.0 structure
+    const generatedPrompt = isRu ? `# ${b5.app_name || v1.product_name || deckTitle}
 
-    // Extract user path
-    const userPath = b2.steps || b2.path || [];
-    const pathText = Array.isArray(userPath)
-      ? userPath.map((p: any) => typeof p === 'string' ? p : p.name || p.step).join(' → ')
-      : '';
+## Формат
+${appFormat}
 
-    // Extract style
-    const theme = b4.theme || b4.colorScheme || 'dark';
-    const mood = b4.mood || b4.style || 'premium';
-    const reference = b4.reference || b4.inspiration || '';
-    const colors = b4.colors || {};
+## Описание
+${b5.app_description || v1.one_liner || `${v1.product_name} — это ${v1.analogy} для ${v1.target_audience}`}
 
-    // Generate the prompt
-    const generatedPrompt = isRu ? `
-Создай веб-приложение "${v1.productName || v1.name || deckTitle}".
+## Аудитория
+**Персона:** ${v3.demographics || 'Целевая аудитория'}
+**Боль:** ${v2.pain_description || 'Основная проблема пользователей'}
+**Цитаты юзеров:** ${r3.user_quotes || r3.user_needs || 'Потребности пользователей'}
 
-## СУТЬ
-${v2.problem || v2.painPoint || 'Решает проблему пользователей'} для ${v3.targetAudience || v3.audience || 'целевой аудитории'}.
+## Фичи
 
-## УНИКАЛЬНОСТЬ
-${v4.uniqueValue || v4.valueProposition || 'Уникальное ценностное предложение'}
+### Базовые (MVP)
+${b1.basic_features || '- Регистрация и авторизация\n- Сохранение данных\n- Профиль пользователя'}
 
-## ФИЧИ
-${featuresText || '- Регистрация и авторизация\n- Основной функционал\n- Профиль пользователя'}
+### Ключевые (отличие)
+${b1.key_features || '- Уникальная функциональность из V-04'}
 
-## ЭКРАНЫ
-${screensText || '1. Онбординг\n2. Главный экран\n3. Профиль'}
+### Монетизация
+${b1.monetization_features || 'Freemium модель'}
 
-## ПУТЬ ПОЛЬЗОВАТЕЛЯ
-${pathText || 'Вход → Онбординг → Основной функционал → Результат'}
+### Возврат юзеров
+${b1.engagement_features || 'Push-уведомления, прогресс'}
 
-## СТИЛЬ
-- Тема: ${theme === 'dark' ? 'Тёмная' : theme === 'light' ? 'Светлая' : theme}
-- Настроение: ${mood}
-- Референс: ${reference || 'Современный минимализм'}
-- Основной цвет: ${colors.primary || 'Фиолетовый'}
-- Акцент: ${colors.accent || 'Золотой'}
+## Путь юзера
 
-## ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ
-- React + TypeScript + Tailwind CSS
-- Supabase для базы данных и аутентификации
-- Адаптивный дизайн (mobile-first)
-- Анимации с Framer Motion
+1. **Entry:** ${b2.step_1_entry || 'Пользователь открывает приложение'}
+2. **Input:** ${b2.step_2_input || 'Пользователь вводит данные'}
+3. **Magic:** ${b2.step_3_magic || 'Момент "вау" — ключевая ценность'}
+4. **Value:** ${b2.step_4_value || 'Пользователь получает результат'}
+5. **Return:** ${b2.step_5_return || 'Пользователь возвращается'}
 
-## ВИДЕНИЕ ПРОДУКТА
-${v5.vision || v5.futureVision || 'Масштабируемое решение с потенциалом роста'}
-`.trim() : `
-Create a web application "${v1.productName || v1.name || deckTitle}".
+## Экраны
 
-## ESSENCE
-${v2.problem || v2.painPoint || 'Solves user problems'} for ${v3.targetAudience || v3.audience || 'target audience'}.
+### Онбординг
+${b3.onboarding_screens || '1. Welcome\n2. How It Works\n3. Get Started'}
 
-## UNIQUENESS
-${v4.uniqueValue || v4.valueProposition || 'Unique value proposition'}
+### Основные
+${b3.main_screens || '- Главный экран\n- Экран ввода\n- Экран обработки'}
 
-## FEATURES
-${featuresText || '- Registration and authentication\n- Core functionality\n- User profile'}
+### Результат
+${b3.result_screens || '- Экран результата\n- Детали'}
 
-## SCREENS
-${screensText || '1. Onboarding\n2. Main screen\n3. Profile'}
+### Вспомогательные
+${b3.profile_screens || '- Профиль\n- Настройки'}
 
-## USER PATH
-${pathText || 'Entry → Onboarding → Core functionality → Result'}
+## Стиль
 
-## STYLE
-- Theme: ${theme}
-- Mood: ${mood}
-- Reference: ${reference || 'Modern minimalism'}
-- Primary color: ${colors.primary || 'Purple'}
-- Accent: ${colors.accent || 'Gold'}
+**Тема:** ${b4.theme || 'Dark'}
+**Настроение:** ${b4.mood || 'Premium'}
+**Основной цвет:** ${b4.primary_color || 'Purple'}
+**Акцент:** ${b4.accent_color || 'Gold'}
+**Референсы:** ${b4.reference_apps || 'Современный минималистичный дизайн'}
 
-## TECHNICAL REQUIREMENTS
-- React + TypeScript + Tailwind CSS
-- Supabase for database and authentication
-- Responsive design (mobile-first)
-- Animations with Framer Motion
+${b4.style_reasoning ? `**Обоснование:** ${b4.style_reasoning}` : ''}
 
-## PRODUCT VISION
-${v5.vision || v5.futureVision || 'Scalable solution with growth potential'}
+## Tech Stack
+${b5.tech_stack || `**Core:**
+- ${isMobile ? 'React Native (iOS + Android)' : 'Next.js + React'}
+- TypeScript + Tailwind CSS
+- Supabase (база данных + аутентификация)
+
+**Интеграции:**
+- Framer Motion (анимации)
+- ${b1.monetization_features?.includes('подписк') ? 'Stripe / RevenueCat (платежи)' : ''}
+- ${b1.engagement_features?.includes('Push') ? 'Firebase / OneSignal (push)' : ''}`}
+
+## UX заметки
+${b3.ux_notes || 'Минимальный интерфейс, фокус на скорости'}
+
+## Tech Validation
+${b1.tech_validation || 'Всё реализуемо в Lovable / React Native'}
+`.trim() : `# ${b5.app_name || v1.product_name || deckTitle}
+
+## Format
+${appFormat}
+
+## Description
+${b5.app_description || v1.one_liner || `${v1.product_name} is ${v1.analogy} for ${v1.target_audience}`}
+
+## Audience
+**Persona:** ${v3.demographics || 'Target audience'}
+**Pain:** ${v2.pain_description || 'Main user problem'}
+**User Quotes:** ${r3.user_quotes || r3.user_needs || 'User needs'}
+
+## Features
+
+### Basic (MVP)
+${b1.basic_features || '- Registration and auth\n- Data persistence\n- User profile'}
+
+### Key (differentiation)
+${b1.key_features || '- Unique functionality from V-04'}
+
+### Monetization
+${b1.monetization_features || 'Freemium model'}
+
+### User Return
+${b1.engagement_features || 'Push notifications, progress tracking'}
+
+## User Path
+
+1. **Entry:** ${b2.step_1_entry || 'User opens the app'}
+2. **Input:** ${b2.step_2_input || 'User provides data'}
+3. **Magic:** ${b2.step_3_magic || 'The "wow" moment — key value'}
+4. **Value:** ${b2.step_4_value || 'User receives result'}
+5. **Return:** ${b2.step_5_return || 'User comes back'}
+
+## Screens
+
+### Onboarding
+${b3.onboarding_screens || '1. Welcome\n2. How It Works\n3. Get Started'}
+
+### Main
+${b3.main_screens || '- Home screen\n- Input screen\n- Processing screen'}
+
+### Result
+${b3.result_screens || '- Result screen\n- Details'}
+
+### Supporting
+${b3.profile_screens || '- Profile\n- Settings'}
+
+## Style
+
+**Theme:** ${b4.theme || 'Dark'}
+**Mood:** ${b4.mood || 'Premium'}
+**Primary Color:** ${b4.primary_color || 'Purple'}
+**Accent:** ${b4.accent_color || 'Gold'}
+**References:** ${b4.reference_apps || 'Modern minimalist design'}
+
+${b4.style_reasoning ? `**Reasoning:** ${b4.style_reasoning}` : ''}
+
+## Tech Stack
+${b5.tech_stack || `**Core:**
+- ${isMobile ? 'React Native (iOS + Android)' : 'Next.js + React'}
+- TypeScript + Tailwind CSS
+- Supabase (database + auth)
+
+**Integrations:**
+- Framer Motion (animations)
+- ${b1.monetization_features?.toLowerCase().includes('subscription') ? 'Stripe / RevenueCat (payments)' : ''}
+- ${b1.engagement_features?.toLowerCase().includes('push') ? 'Firebase / OneSignal (push)' : ''}`}
+
+## UX Notes
+${b3.ux_notes || 'Minimal interface, focus on speed'}
+
+## Tech Validation
+${b1.tech_validation || 'Everything buildable in Lovable / React Native'}
 `.trim();
 
     setPrompt(generatedPrompt);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Crown, Gift, Sparkles, Loader2, CheckCircle2, Rocket } from 'lucide-react';
+import { Lock, Crown, Gift, Sparkles, Loader2, CheckCircle2, Rocket, Trophy, BarChart3 } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -19,6 +19,13 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+
+interface BuildScore {
+  overallScore: number;
+  rarity: { name: string; nameLocalized: string; emoji: string };
+  cardScores: Record<number, { score: number; details: Record<string, number>; feedback: string }>;
+  coherenceCheck: Record<string, boolean>;
+}
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
 
@@ -47,12 +54,42 @@ export const BuildPhaseSection = ({
   const [rewardModalOpen, setRewardModalOpen] = useState(false);
   const [generatingSlots, setGeneratingSlots] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [buildScore, setBuildScore] = useState<BuildScore | null>(null);
+  const [isEvaluating, setIsEvaluating] = useState(false);
   const { t, language } = useTranslation();
   const { toast } = useToast();
 
-  const filledCount = definitions.filter(def => 
+  const filledCount = definitions.filter(def =>
     cards.some(c => c.card_slot === def.slot && c.card_data && Object.keys(c.card_data as object).length > 0)
   ).length;
+
+  // Fetch BUILD score when all cards are filled
+  const evaluateBuildPhase = async () => {
+    if (isEvaluating || filledCount < 5) return;
+
+    setIsEvaluating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('build-evaluate', {
+        body: { deckId, language }
+      });
+
+      if (error) throw error;
+      if (data?.success) {
+        setBuildScore(data);
+      }
+    } catch (error) {
+      console.error('[BUILD] Evaluation error:', error);
+    } finally {
+      setIsEvaluating(false);
+    }
+  };
+
+  // Auto-evaluate when all 5 cards are filled
+  useEffect(() => {
+    if (filledCount === 5 && !buildScore && !isEvaluating) {
+      evaluateBuildPhase();
+    }
+  }, [filledCount]);
 
   // Check if Vision phase is complete (at least first card filled)
   const visionComplete = visionCards.some(c => 
@@ -300,15 +337,53 @@ export const BuildPhaseSection = ({
                     </div>
                   )}
                   
-                  <div className="flex items-center gap-2">
-                    <div 
+                  <div className="flex items-center gap-3">
+                    {/* BUILD Score Display */}
+                    {buildScore && filledCount === 5 && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30"
+                      >
+                        <Trophy className="w-4 h-4 text-yellow-400" />
+                        <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
+                          {buildScore.overallScore}%
+                        </span>
+                        <span className="text-xs text-purple-300/80">
+                          {buildScore.rarity.emoji} {buildScore.rarity.nameLocalized}
+                        </span>
+                      </motion.div>
+                    )}
+
+                    {/* Evaluate Button */}
+                    {filledCount === 5 && !buildScore && (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          onClick={evaluateBuildPhase}
+                          disabled={isEvaluating}
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                        >
+                          {isEvaluating ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <BarChart3 className="w-4 h-4" />
+                          )}
+                          {language === 'ru' ? 'Оценить' : 'Evaluate'}
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Progress Counter */}
+                    <div
                       className={cn(
                         "w-16 h-16 rounded-full border-4 flex items-center justify-center font-bold text-lg",
                         locked && "opacity-60"
                       )}
-                      style={{ 
+                      style={{
                         borderColor: locked ? `${config.color}80` : config.color,
-                        color: locked ? `${config.color}80` : config.color 
+                        color: locked ? `${config.color}80` : config.color
                       }}
                     >
                       {locked ? (
