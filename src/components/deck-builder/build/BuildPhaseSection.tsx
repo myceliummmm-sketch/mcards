@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Crown, Gift, Sparkles, Loader2, CheckCircle2, Rocket, Trophy, BarChart3 } from 'lucide-react';
+import { Lock, Crown, Gift, Sparkles, Loader2, CheckCircle2, Rocket, Trophy, BarChart3, AlertTriangle } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FlippableCard } from '../FlippableCard';
@@ -56,6 +63,8 @@ export const BuildPhaseSection = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [buildScore, setBuildScore] = useState<BuildScore | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [cardWarnings, setCardWarnings] = useState<Record<number, { type: string; message: string; field?: string }[]>>({});
+  const [buildMode, setBuildMode] = useState<'auto' | 'hybrid' | 'manual'>('hybrid');
   const { t, language } = useTranslation();
   const { toast } = useToast();
 
@@ -166,12 +175,37 @@ export const BuildPhaseSection = ({
           onRefresh();
         }
 
-        toast({
-          title: language === 'ru' ? '✅ Карточка готова!' : '✅ Card ready!',
-          description: language === 'ru' 
-            ? 'Нажмите чтобы редактировать' 
-            : 'Click to edit',
-        });
+        // Handle Toxic Validation warnings
+        if (data.warnings && data.warnings.length > 0) {
+          setCardWarnings(prev => ({
+            ...prev,
+            [cardSlot]: data.warnings
+          }));
+
+          // Show warning toast
+          const warningCount = data.warnings.length;
+          toast({
+            title: language === 'ru'
+              ? `⚠️ Карточка готова (${warningCount} предупреждений)`
+              : `⚠️ Card ready (${warningCount} warnings)`,
+            description: data.warnings[0].message,
+            variant: 'destructive',
+          });
+        } else {
+          // Clear any previous warnings for this slot
+          setCardWarnings(prev => {
+            const updated = { ...prev };
+            delete updated[cardSlot];
+            return updated;
+          });
+
+          toast({
+            title: language === 'ru' ? '✅ Карточка готова!' : '✅ Card ready!',
+            description: language === 'ru'
+              ? 'Нажмите чтобы редактировать'
+              : 'Click to edit',
+          });
+        }
       } else {
         throw new Error('No card data returned');
       }
@@ -314,8 +348,36 @@ export const BuildPhaseSection = ({
                 </div>
                 
                 <div className="flex items-center gap-4">
-                  {/* Generate All Button */}
-                  {!locked && canStartBuild && filledCount === 0 && (
+                  {/* Mode Selector */}
+                  {!locked && canStartBuild && (
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <Select value={buildMode} onValueChange={(v) => setBuildMode(v as 'auto' | 'hybrid' | 'manual')}>
+                        <SelectTrigger className="w-[140px] h-9 text-xs bg-background/80 border-muted">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="auto">
+                            <span className="flex items-center gap-2">
+                              🤖 {language === 'ru' ? 'Авто' : 'Auto'}
+                            </span>
+                          </SelectItem>
+                          <SelectItem value="hybrid">
+                            <span className="flex items-center gap-2">
+                              🔄 {language === 'ru' ? 'Гибрид' : 'Hybrid'}
+                            </span>
+                          </SelectItem>
+                          <SelectItem value="manual">
+                            <span className="flex items-center gap-2">
+                              ✍️ {language === 'ru' ? 'Ручной' : 'Manual'}
+                            </span>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Generate All Button - shows in auto/hybrid mode */}
+                  {!locked && canStartBuild && filledCount === 0 && buildMode !== 'manual' && (
                     <div onClick={(e) => e.stopPropagation()}>
                       <Button
                         onClick={generateAllBuildCards}
@@ -456,27 +518,64 @@ export const BuildPhaseSection = ({
                           isGenerating={isCardGenerating}
                         />
                         
-                        {/* Generate button overlay for empty cards */}
+                        {/* Generate/Fill button overlay for empty cards */}
                         {!hasData && canGenerate && !isCardGenerating && (
                           <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg cursor-pointer hover:bg-black/50 transition-colors"
-                            onClick={() => generateBuildCard(definition.slot)}
+                            onClick={() => {
+                              if (buildMode === 'manual') {
+                                // In manual mode, open edit modal directly
+                                onEditCard(definition.slot);
+                              } else {
+                                // In auto/hybrid mode, generate with AI
+                                generateBuildCard(definition.slot);
+                              }
+                            }}
                           >
                             <div className="text-center p-4">
-                              <Sparkles className="w-8 h-8 mx-auto mb-2 text-primary animate-pulse" />
-                              <span className="text-sm font-medium text-white">
-                                {language === 'ru' ? 'Сгенерировать' : 'Generate'}
-                              </span>
+                              {buildMode === 'manual' ? (
+                                <>
+                                  <span className="text-2xl mb-2 block">✍️</span>
+                                  <span className="text-sm font-medium text-white">
+                                    {language === 'ru' ? 'Заполнить' : 'Fill in'}
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-8 h-8 mx-auto mb-2 text-primary animate-pulse" />
+                                  <span className="text-sm font-medium text-white">
+                                    {language === 'ru' ? 'Сгенерировать' : 'Generate'}
+                                  </span>
+                                </>
+                              )}
                             </div>
                           </motion.div>
                         )}
                         
-                        {/* Completed indicator */}
+                        {/* Completed indicator with warning badge */}
                         {hasData && (
-                          <div className="absolute top-2 right-2">
-                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                          <div className="absolute top-2 right-2 flex items-center gap-1">
+                            {cardWarnings[definition.slot]?.length > 0 ? (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="relative group cursor-pointer"
+                              >
+                                <AlertTriangle className="w-5 h-5 text-amber-500 animate-pulse" />
+                                {/* Warning tooltip */}
+                                <div className="absolute right-0 top-6 w-64 p-2 bg-background/95 border border-amber-500/30 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
+                                  {cardWarnings[definition.slot].map((warning, i) => (
+                                    <div key={i} className="text-xs text-amber-200 mb-1 last:mb-0">
+                                      {warning.message}
+                                    </div>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            ) : (
+                              <CheckCircle2 className="w-5 h-5 text-green-500" />
+                            )}
                           </div>
                         )}
                       </motion.div>

@@ -351,11 +351,130 @@ Generate the card content. Return ONLY valid JSON, no markdown.`;
 
     console.log('[BUILD] Card data generated successfully');
 
+    // Toxic Validation: Check for bloat and issues
+    const warnings: { type: 'warning' | 'error'; message: string; field?: string }[] = [];
+
+    if (cardSlot === 11) {
+      // FEATURES: Check for too many features
+      const basicFeatures = cardData.basic_features || '';
+      const keyFeatures = cardData.key_features || '';
+
+      const basicCount = (basicFeatures.match(/^\d+\./gm) || []).length;
+      const keyCount = (keyFeatures.match(/^\d+\./gm) || []).length;
+
+      if (basicCount > 5) {
+        warnings.push({
+          type: 'warning',
+          message: language === 'ru'
+            ? `☢️ Toxic: Слишком много базовых фич (${basicCount}/5). MVP должен быть минимальным!`
+            : `☢️ Toxic: Too many basic features (${basicCount}/5). MVP should be minimal!`,
+          field: 'basic_features'
+        });
+      }
+
+      if (keyCount > 3) {
+        warnings.push({
+          type: 'warning',
+          message: language === 'ru'
+            ? `☢️ Toxic: Слишком много ключевых фич (${keyCount}/3). Фокусируйтесь на главном отличии!`
+            : `☢️ Toxic: Too many key features (${keyCount}/3). Focus on main differentiator!`,
+          field: 'key_features'
+        });
+      }
+    }
+
+    if (cardSlot === 12) {
+      // USER PATH: Check time to value
+      const inputStep = cardData.step_2_input || '';
+      const magicStep = cardData.step_3_magic || '';
+
+      // Try to extract time values
+      const timePattern = /(\d+)\s*(минут|minute|секунд|second|мин|сек|sec|min)/gi;
+      let totalSeconds = 0;
+
+      [inputStep, magicStep].forEach(step => {
+        const matches = step.matchAll(timePattern);
+        for (const match of matches) {
+          const value = parseInt(match[1]);
+          const unit = match[2].toLowerCase();
+          if (unit.includes('мин') || unit.includes('min')) {
+            totalSeconds += value * 60;
+          } else {
+            totalSeconds += value;
+          }
+        }
+      });
+
+      if (totalSeconds > 180) {
+        warnings.push({
+          type: 'warning',
+          message: language === 'ru'
+            ? `☢️ Toxic: Время до ценности > 3 минут (~${Math.round(totalSeconds/60)} мин). Zen говорит: упрощай!`
+            : `☢️ Toxic: Time to value > 3 minutes (~${Math.round(totalSeconds/60)} min). Zen says: simplify!`,
+          field: 'step_2_input'
+        });
+      }
+    }
+
+    if (cardSlot === 13) {
+      // SCREENS: Check for too many screens
+      const onboarding = cardData.onboarding_screens || '';
+      const main = cardData.main_screens || '';
+      const result = cardData.result_screens || '';
+      const profile = cardData.profile_screens || '';
+
+      const onboardingCount = (onboarding.match(/^\d+\./gm) || []).length;
+      const allText = onboarding + main + result + profile;
+      const totalScreens = (allText.match(/^\d+\./gm) || []).length ||
+                           (allText.match(/Screen|Экран/gi) || []).length;
+
+      if (onboardingCount > 3) {
+        warnings.push({
+          type: 'warning',
+          message: language === 'ru'
+            ? `☢️ Toxic: Слишком много онбординг-экранов (${onboardingCount}/3). Пользователи не дочитают!`
+            : `☢️ Toxic: Too many onboarding screens (${onboardingCount}/3). Users won't finish!`,
+          field: 'onboarding_screens'
+        });
+      }
+
+      if (totalScreens > 10) {
+        warnings.push({
+          type: 'warning',
+          message: language === 'ru'
+            ? `☢️ Toxic: Слишком много экранов (${totalScreens}/10). Для MVP это избыточно!`
+            : `☢️ Toxic: Too many screens (${totalScreens}/10). Excessive for MVP!`,
+          field: 'main_screens'
+        });
+      }
+    }
+
+    if (cardSlot === 15) {
+      // SUMMARY: Check coherence indicators
+      const qualityScore = cardData.build_quality_score || '';
+      const failedChecks = (qualityScore.match(/✗/g) || []).length;
+
+      if (failedChecks > 0) {
+        warnings.push({
+          type: 'error',
+          message: language === 'ru'
+            ? `🌲 Ever Green: ${failedChecks} проверка(ок) не пройдено. Пересмотрите предыдущие карты.`
+            : `🌲 Ever Green: ${failedChecks} check(s) failed. Review previous cards.`,
+          field: 'build_quality_score'
+        });
+      }
+    }
+
+    if (warnings.length > 0) {
+      console.log(`[BUILD] Toxic Validation found ${warnings.length} warnings`);
+    }
+
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         cardData,
-        cardSlot 
+        cardSlot,
+        warnings: warnings.length > 0 ? warnings : undefined
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
