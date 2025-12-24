@@ -259,25 +259,33 @@ const Community = () => {
     return `${prefix}-${timestamp.slice(-4)}-${random}`;
   };
 
-  // Create passport in database
+  // Create passport in database via Edge Function (bypasses RLS caching issues)
   const createPassport = async (name: string, passportNum: string, archetypeVal: ArchetypeKey) => {
     try {
-      const { data, error } = await supabase
-        .from('passports')
-        .insert({
-          founder_name: name,
-          archetype: archetypeVal,
-          passport_number: passportNum,
-        })
-        .select('id')
-        .single();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-passport`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            founder_name: name,
+            archetype: archetypeVal,
+            passport_number: passportNum,
+          }),
+        }
+      );
 
-      if (error) {
-        console.error('Error creating passport:', error);
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Error creating passport:', data.error);
         return null;
       }
 
-      if (data) {
+      if (data.id) {
         setPassportId(data.id);
         return data.id;
       }
