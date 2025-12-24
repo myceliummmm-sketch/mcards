@@ -1,8 +1,20 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Rocket, User, Sparkles, Lightbulb, ArrowRight, Plus } from 'lucide-react';
+import { Rocket, User, Sparkles, Lightbulb, ArrowRight, Plus, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ARCHETYPE_DATA, ArchetypeKey } from '@/data/passportQuizData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ProblemCardData {
   id: string;
@@ -22,6 +34,7 @@ interface PortalDashboardProps {
   passportNumber: string;
   problemCards?: ProblemCardData[];
   onStartProjectSeed: () => void;
+  onReset?: () => void;
 }
 
 export function PortalDashboard({ 
@@ -29,7 +42,8 @@ export function PortalDashboard({
   archetype, 
   passportNumber,
   problemCards = [],
-  onStartProjectSeed 
+  onStartProjectSeed,
+  onReset
 }: PortalDashboardProps) {
   const archetypeData = ARCHETYPE_DATA[archetype];
   const { language } = useLanguage();
@@ -55,6 +69,10 @@ export function PortalDashboard({
       yourProjects: "Your Problem Cards",
       newCard: "+ New Card",
       analysisPending: "Analysis pending...",
+      resetTitle: "Reset Portal?",
+      resetDescription: "This will clear all your data and start fresh. Your passport and problem cards will be deleted. This action cannot be undone.",
+      resetConfirm: "Yes, Reset Everything",
+      resetCancel: "Cancel",
     },
     ru: {
       welcome: "Добро пожаловать,",
@@ -76,6 +94,10 @@ export function PortalDashboard({
       yourProjects: "Ваши Problem Cards",
       newCard: "+ Новая карта",
       analysisPending: "Анализ в процессе...",
+      resetTitle: "Сбросить портал?",
+      resetDescription: "Это удалит все ваши данные и начнёт заново. Ваш паспорт и карточки проблем будут удалены. Это действие нельзя отменить.",
+      resetConfirm: "Да, сбросить всё",
+      resetCancel: "Отмена",
     },
   };
 
@@ -84,12 +106,45 @@ export function PortalDashboard({
   return (
     <div className="min-h-screen bg-[#0D1117] px-4 py-12">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+        {/* Header with Reset button */}
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-12 relative"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
+          {/* Reset button in top-right */}
+          {onReset && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button 
+                  className="absolute top-0 right-0 p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/40 hover:text-white/70 transition-colors"
+                  title="Reset Portal"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-[#0D1117] border-white/10">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-white">{text.resetTitle}</AlertDialogTitle>
+                  <AlertDialogDescription className="text-white/60">
+                    {text.resetDescription}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+                    {text.resetCancel}
+                  </AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={onReset}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {text.resetConfirm}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
             {text.welcome} {founderName}
           </h1>

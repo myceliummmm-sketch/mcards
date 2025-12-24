@@ -45,6 +45,11 @@ const STORAGE_KEYS = {
   hasShownRegistration: 'portal_has_shown_registration',
 };
 
+// Screens that require a valid passportId
+const SCREENS_REQUIRING_PASSPORT: PortalScreen[] = [
+  'reveal', 'email-capture', 'wallet', 'dashboard', 'project-seed', 'problem-card', 'registration-prompt'
+];
+
 // Calculate archetype from quiz answers
 const calculateArchetype = (answers: ArchetypeKey[]): ArchetypeKey => {
   const counts: Record<ArchetypeKey, number> = {
@@ -133,6 +138,37 @@ const Community = () => {
   });
   
   const [memberCount, setMemberCount] = useState<number | null>(null);
+
+  // Data consistency check on page load - reset if passportId is missing but screen requires it
+  useEffect(() => {
+    if (SCREENS_REQUIRING_PASSPORT.includes(currentScreen) && !passportId) {
+      console.warn('Data inconsistency detected: passportId is missing but screen requires it. Resetting to hero.');
+      resetPortal();
+    }
+  }, []);
+
+  // Reset portal function - clears all localStorage and state
+  const resetPortal = () => {
+    // Clear all localStorage keys
+    Object.values(STORAGE_KEYS).forEach(key => {
+      localStorage.removeItem(key);
+    });
+    
+    // Reset all state to defaults
+    setCurrentScreen('hero');
+    setArchetype('CULTIVATOR');
+    setFounderName('');
+    setPassportNumber('');
+    setPassportId('');
+    setUserEmail('');
+    setSkippedWallet(false);
+    setBannerDismissed(false);
+    setProjectSeedAnswers([]);
+    setProblemCards([]);
+    setHasShownRegistration(false);
+    
+    toast.success('Portal reset successfully');
+  };
 
   // Track page load
   useEffect(() => {
@@ -452,6 +488,7 @@ const Community = () => {
             passportNumber={passportNumber}
             problemCards={problemCards}
             onStartProjectSeed={handleStartProjectSeed}
+            onReset={resetPortal}
           />
         )}
 
