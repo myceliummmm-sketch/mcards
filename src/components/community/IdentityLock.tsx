@@ -38,8 +38,8 @@ export function IdentityLock({ onComplete }: IdentityLockProps) {
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring" }}
         >
-          <div className="w-20 h-20 rounded-full bg-[#2E7D32]/20 border-2 border-[#2E7D32] flex items-center justify-center">
-            <Lock className="w-10 h-10 text-[#2E7D32]" />
+          <div className="w-20 h-20 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center">
+            <Lock className="w-10 h-10 text-primary" />
           </div>
         </motion.div>
 
@@ -63,7 +63,7 @@ export function IdentityLock({ onComplete }: IdentityLockProps) {
                 setError('');
               }}
               placeholder="Enter your founder name..."
-              className="pl-12 h-14 bg-white/5 border-2 border-white/10 focus:border-[#2E7D32] text-white text-lg placeholder:text-white/30"
+              className="pl-12 h-14 bg-white/5 border-2 border-white/10 focus:border-primary text-white text-lg placeholder:text-white/30"
               autoFocus
             />
           </div>
@@ -81,7 +81,7 @@ export function IdentityLock({ onComplete }: IdentityLockProps) {
           <Button
             type="submit"
             size="lg"
-            className="w-full bg-[#2E7D32] hover:bg-[#1B5E20] text-white border-2 border-[#2E7D32] shadow-[4px_4px_0_rgba(46,125,50,0.5)] hover:shadow-[2px_2px_0_rgba(46,125,50,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all min-h-14 text-lg font-bold"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-primary shadow-[4px_4px_0_hsl(var(--primary)/0.5)] hover:shadow-[2px_2px_0_hsl(var(--primary)/0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all min-h-14 text-lg font-bold"
           >
             LOCK MY IDENTITY
           </Button>

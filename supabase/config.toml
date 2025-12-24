@@ -104,3 +104,6 @@ verify_jwt = false
 
 [functions.create-passport]
 verify_jwt = false
+
+[functions.update-passport-email]
+verify_jwt = false

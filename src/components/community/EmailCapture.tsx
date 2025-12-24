@@ -82,19 +82,12 @@ export function EmailCapture({ passportId, onComplete, onSkip }: EmailCapturePro
     setIsSubmitting(true);
 
     try {
-      // Update passport with email
-      const { error: updateError } = await supabase
-        .from('passports')
-        .update({ email })
-        .eq('id', passportId);
-
-      if (updateError) throw updateError;
-
-      // Also save to leads for marketing
-      await supabase.from('leads').insert({
-        email,
-        source: 'portal_passport',
+      // Use Edge Function to update passport email (bypasses PostgREST caching)
+      const { data, error } = await supabase.functions.invoke('update-passport-email', {
+        body: { passport_id: passportId, email }
       });
+
+      if (error) throw error;
 
       toast.success(text.success);
       onComplete(email);
@@ -119,9 +112,9 @@ export function EmailCapture({ passportId, onComplete, onSkip }: EmailCapturePro
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-          className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#2E7D32]/20 flex items-center justify-center"
+          className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/20 flex items-center justify-center"
         >
-          <Mail className="w-10 h-10 text-[#2E7D32]" />
+          <Mail className="w-10 h-10 text-primary" />
         </motion.div>
 
         {/* Title */}
@@ -152,8 +145,8 @@ export function EmailCapture({ passportId, onComplete, onSkip }: EmailCapturePro
         >
           {[text.benefit1, text.benefit2, text.benefit3].map((benefit, i) => (
             <div key={i} className="flex items-center gap-3 text-left">
-              <div className="w-6 h-6 rounded-full bg-[#2E7D32]/20 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-3 h-3 text-[#2E7D32]" />
+              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-3 h-3 text-primary" />
               </div>
               <span className="text-white/70 text-sm">{benefit}</span>
             </div>
@@ -181,7 +174,7 @@ export function EmailCapture({ passportId, onComplete, onSkip }: EmailCapturePro
             type="submit"
             size="lg"
             disabled={isSubmitting}
-            className="w-full bg-[#2E7D32] hover:bg-[#1B5E20] text-white border-2 border-[#2E7D32] shadow-[4px_4px_0_rgba(46,125,50,0.5)] hover:shadow-[2px_2px_0_rgba(46,125,50,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all min-h-14 text-lg font-bold"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-primary shadow-[4px_4px_0_hsl(var(--primary)/0.5)] hover:shadow-[2px_2px_0_hsl(var(--primary)/0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all min-h-14 text-lg font-bold"
           >
             {isSubmitting ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
