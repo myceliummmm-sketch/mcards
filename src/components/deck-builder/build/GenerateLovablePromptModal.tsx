@@ -302,12 +302,14 @@ ${b1.tech_validation || 'Everything buildable in Lovable / React Native'}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden flex flex-col gap-4">
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col gap-4">
           {/* Preview */}
-          <ScrollArea className="flex-1 border rounded-lg bg-muted/30">
-            <pre className="p-4 text-sm whitespace-pre-wrap font-mono text-foreground/90">
-              {prompt}
-            </pre>
+          <ScrollArea className="flex-1 min-h-0 h-[50vh] border rounded-lg bg-muted/30">
+            <div className="p-4">
+              <pre className="text-sm whitespace-pre-wrap font-mono text-foreground/90">
+                {prompt}
+              </pre>
+            </div>
           </ScrollArea>
 
           {/* Actions */}
