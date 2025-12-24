@@ -490,6 +490,71 @@ export type Database = {
           },
         ]
       }
+      passports: {
+        Row: {
+          archetype: string
+          created_at: string | null
+          email: string | null
+          founder_name: string
+          id: string
+          passport_number: string
+          user_id: string | null
+          wallet_synced: boolean | null
+        }
+        Insert: {
+          archetype: string
+          created_at?: string | null
+          email?: string | null
+          founder_name: string
+          id?: string
+          passport_number: string
+          user_id?: string | null
+          wallet_synced?: boolean | null
+        }
+        Update: {
+          archetype?: string
+          created_at?: string | null
+          email?: string | null
+          founder_name?: string
+          id?: string
+          passport_number?: string
+          user_id?: string | null
+          wallet_synced?: boolean | null
+        }
+        Relationships: []
+      }
+      problem_cards: {
+        Row: {
+          ai_analysis: Json | null
+          answers: number[]
+          created_at: string | null
+          id: string
+          passport_id: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          answers: number[]
+          created_at?: string | null
+          id?: string
+          passport_id: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          answers?: number[]
+          created_at?: string | null
+          id?: string
+          passport_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "problem_cards_passport_id_fkey"
+            columns: ["passport_id"]
+            isOneToOne: false
+            referencedRelation: "passports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

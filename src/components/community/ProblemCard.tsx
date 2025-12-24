@@ -11,6 +11,7 @@ interface ProblemCardProps {
   founderName: string;
   onViewDashboard: () => void;
   onStartAnother: () => void;
+  onCardComplete?: (analysis: AIAnalysis | null) => void;
 }
 
 interface AIAnalysis {
@@ -24,7 +25,8 @@ export function ProblemCard({
   answers, 
   founderName,
   onViewDashboard,
-  onStartAnother 
+  onStartAnother,
+  onCardComplete
 }: ProblemCardProps) {
   const { t } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(true);
@@ -56,6 +58,7 @@ export function ProblemCard({
 
         if (data?.analysis) {
           setAIAnalysis(data.analysis);
+          onCardComplete?.(data.analysis);
         }
 
         setProgress(100);
