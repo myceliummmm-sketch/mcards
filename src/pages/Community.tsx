@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { useTrafficVariant } from "@/hooks/useTrafficVariant";
 import { PortalHero } from "@/components/community/PortalHero";
 import { PassportQuiz } from "@/components/community/PassportQuiz";
@@ -224,21 +225,31 @@ const Community = () => {
 
   // Create passport in database
   const createPassport = async (name: string, passportNum: string, archetypeVal: ArchetypeKey) => {
-    const { data, error } = await supabase
-      .from('passports')
-      .insert({
-        founder_name: name,
-        archetype: archetypeVal,
-        passport_number: passportNum,
-      })
-      .select('id')
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('passports')
+        .insert({
+          founder_name: name,
+          archetype: archetypeVal,
+          passport_number: passportNum,
+        })
+        .select('id')
+        .single();
 
-    if (!error && data) {
-      setPassportId(data.id);
-      return data.id;
+      if (error) {
+        console.error('Error creating passport:', error);
+        return null;
+      }
+
+      if (data) {
+        setPassportId(data.id);
+        return data.id;
+      }
+      return null;
+    } catch (err) {
+      console.error('Exception creating passport:', err);
+      return null;
     }
-    return null;
   };
 
   // Save problem card to database
@@ -289,7 +300,12 @@ const Community = () => {
     setPassportNumber(newPassportNumber);
     
     // Create passport in database
-    await createPassport(name, newPassportNumber, archetype);
+    const newPassportId = await createPassport(name, newPassportNumber, archetype);
+    
+    if (!newPassportId) {
+      toast.error('Failed to create passport. Please try again.');
+      return;
+    }
     
     setCurrentScreen('reveal');
   };

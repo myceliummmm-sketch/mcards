@@ -63,6 +63,13 @@ export function EmailCapture({ passportId, onComplete, onSkip }: EmailCapturePro
       return;
     }
 
+    // Validate passportId before proceeding
+    if (!passportId || passportId.length < 10) {
+      console.error('Invalid or missing passportId:', passportId);
+      toast.error(text.error);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
