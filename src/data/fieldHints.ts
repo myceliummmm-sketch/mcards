@@ -260,6 +260,335 @@ export const FIELD_GUIDANCE: Record<string, FieldGuidance> = {
     example: { en: 'Cost of coaching, time to practice, fear of judgment', ru: 'Стоимость коучинга, время на практику, страх осуждения' },
     validationTip: { en: 'Removing barriers = expanding your market', ru: 'Устранение барьеров = расширение рынка' },
     aiHelper: 'evergreen'
+  },
+
+  // ========== BUILD CARD #11: FEATURES ==========
+  basic_features: {
+    questionTitle: { en: 'What basic features must your MVP have?', ru: 'Какие базовые функции должен иметь ваш MVP?' },
+    hints: [
+      { en: 'Features that SOLVE pain from V-02 + R-3', ru: 'Функции, которые РЕШАЮТ боль из V-02 + R-3' },
+      { en: 'Keep to 3-5 features max for MVP', ru: 'Держитесь 3-5 функций макс для MVP' },
+      { en: 'Each feature should have a source citation', ru: 'Каждая функция должна иметь ссылку на источник' }
+    ],
+    example: { en: '1. User auth (data persistence)\n2. Dashboard (V-02: users need visibility)\n3. Export data (R-3: portability need)', ru: '1. Авторизация (сохранение данных)\n2. Дашборд (V-02: юзерам нужна видимость)\n3. Экспорт данных (R-3: потребность в портабельности)' },
+    validationTip: { en: 'Every feature must trace back to user pain', ru: 'Каждая функция должна восходить к боли пользователя' },
+    aiHelper: 'prisma'
+  },
+  key_features: {
+    questionTitle: { en: 'What makes you DIFFERENT from competitors?', ru: 'Что отличает вас от конкурентов?' },
+    hints: [
+      { en: 'Derive from V-04 (your unique solution)', ru: 'Выводите из V-04 (ваше уникальное решение)' },
+      { en: 'Reference R-2 competitor weaknesses', ru: 'Ссылайтесь на слабости конкурентов из R-2' },
+      { en: 'Keep to 2-3 differentiators max', ru: 'Держитесь 2-3 отличий максимум' }
+    ],
+    example: { en: '1. AI-powered personalization (V-04)\n2. Real-time sync (R-2: competitors lack this)', ru: '1. AI-персонализация (V-04)\n2. Синхронизация в реальном времени (R-2: у конкурентов нет)' },
+    validationTip: { en: 'These should beat competitors from R-2', ru: 'Должны побеждать конкурентов из R-2' },
+    aiHelper: 'prisma'
+  },
+  monetization_features: {
+    questionTitle: { en: 'How will you make money?', ru: 'Как вы будете зарабатывать?' },
+    hints: [
+      { en: 'Based on R-1 market size and V-04 pricing', ru: 'На основе размера рынка R-1 и ценообразования V-04' },
+      { en: 'Freemium, subscription, one-time, or usage-based?', ru: 'Freemium, подписка, разовая оплата или по использованию?' },
+      { en: 'Consider competitor pricing from R-2', ru: 'Учтите цены конкурентов из R-2' }
+    ],
+    example: { en: 'Freemium model:\n- Free: 5 projects\n- Pro $19/mo: unlimited + AI', ru: 'Freemium модель:\n- Бесплатно: 5 проектов\n- Pro $19/мес: безлимит + AI' },
+    validationTip: { en: 'Must fit audience willingness to pay (V-03)', ru: 'Должно соответствовать готовности платить (V-03)' },
+    aiHelper: 'phoenix'
+  },
+  engagement_features: {
+    questionTitle: { en: 'How will users come back?', ru: 'Как пользователи будут возвращаться?' },
+    hints: [
+      { en: 'Based on V-03 behaviors and active hours', ru: 'На основе поведения и активных часов из V-03' },
+      { en: 'Push notifications, streaks, social features', ru: 'Пуш-уведомления, серии, социальные функции' },
+      { en: 'Address pain points from R-3', ru: 'Решайте болевые точки из R-3' }
+    ],
+    example: { en: '- Daily reminder at 7am (V-03: morning routine)\n- Progress streak with rewards\n- Share achievements', ru: '- Ежедневное напоминание в 7 утра (V-03: утренняя рутина)\n- Серия прогресса с наградами\n- Шеринг достижений' },
+    validationTip: { en: 'Should create a habit loop', ru: 'Должно создавать петлю привычки' },
+    aiHelper: 'prisma'
+  },
+  tech_validation: {
+    questionTitle: { en: 'Is this technically feasible?', ru: 'Технически реализуемо?' },
+    hints: [
+      { en: 'Tech Priest validates each feature', ru: 'Tech Priest валидирует каждую функцию' },
+      { en: 'Note what needs external APIs/services', ru: 'Отметьте, что требует внешних API/сервисов' },
+      { en: 'Flag any technical risks from R-4', ru: 'Отметьте технические риски из R-4' }
+    ],
+    example: { en: '⚙️ Tech Priest:\n✅ User auth: Supabase Auth\n⚠️ AI features: needs OpenAI API', ru: '⚙️ Tech Priest:\n✅ Авторизация: Supabase Auth\n⚠️ AI функции: нужен OpenAI API' },
+    validationTip: { en: 'Everything must be buildable in Lovable', ru: 'Всё должно быть реализуемо в Lovable' },
+    aiHelper: 'techpriest'
+  },
+
+  // ========== BUILD CARD #12: USER PATH ==========
+  step_1_entry: {
+    questionTitle: { en: 'How does the user arrive?', ru: 'Как пользователь приходит?' },
+    hints: [
+      { en: 'From V-02 pain + V-03 where they hang out', ru: 'Из V-02 боль + V-03 где они тусуются' },
+      { en: 'What do they see in the first 3 seconds?', ru: 'Что они видят в первые 3 секунды?' },
+      { en: 'Single clear CTA', ru: 'Один чёткий призыв к действию' }
+    ],
+    example: { en: 'User arrives with pain from V-02\n• From: Instagram/TikTok\n• First see: "Solve [problem] in 5 min"\n• CTA: "Start Free"', ru: 'Юзер приходит с болью из V-02\n• Откуда: Instagram/TikTok\n• Видит: "Реши [проблему] за 5 мин"\n• CTA: "Начать бесплатно"' },
+    validationTip: { en: 'Should hook them within 3 seconds', ru: 'Должно зацепить за 3 секунды' },
+    aiHelper: 'virgilia'
+  },
+  step_2_input: {
+    questionTitle: { en: 'What minimum data do you need?', ru: 'Какой минимум данных вам нужен?' },
+    hints: [
+      { en: 'Based on B-01 basic features', ru: 'На основе базовых функций B-01' },
+      { en: 'V-03 patience level - be fast!', ru: 'Уровень терпения V-03 — будьте быстры!' },
+      { en: 'Aim for under 60 seconds', ru: 'Цельтесь менее 60 секунд' }
+    ],
+    example: { en: 'Quick setup:\n• Fields: Name, Goal, Level (3 taps)\n• Time: 45 seconds max\n• Progress bar showing 3 steps', ru: 'Быстрая настройка:\n• Поля: Имя, Цель, Уровень (3 тапа)\n• Время: 45 сек макс\n• Прогресс-бар на 3 шага' },
+    validationTip: { en: 'Less fields = higher completion', ru: 'Меньше полей = выше конверсия' },
+    aiHelper: 'zen'
+  },
+  step_3_magic: {
+    questionTitle: { en: 'What is the "WOW" moment?', ru: 'Какой момент "ВАУ"?' },
+    hints: [
+      { en: 'B-01 key feature in action', ru: 'Ключевая функция B-01 в действии' },
+      { en: 'V-04 unique solution revealed', ru: 'Уникальное решение V-04 раскрывается' },
+      { en: 'This is where they fall in love', ru: 'Здесь они влюбляются' }
+    ],
+    example: { en: 'AI generates personal result:\n• Loading: "AI analyzing..."\n• Reveal: Animated result card\n• Emotion: Surprise → Excitement', ru: 'AI генерирует персональный результат:\n• Загрузка: "AI анализирует..."\n• Раскрытие: Анимированная карточка\n• Эмоция: Удивление → Воодушевление' },
+    validationTip: { en: 'This moment determines retention', ru: 'Этот момент определяет удержание' },
+    aiHelper: 'phoenix'
+  },
+  step_4_value: {
+    questionTitle: { en: 'How do they see the transformation?', ru: 'Как они видят трансформацию?' },
+    hints: [
+      { en: 'V-04 transformation visible', ru: 'Трансформация из V-04 видна' },
+      { en: 'Celebration moment (confetti, sound)', ru: 'Момент празднования (конфетти, звук)' },
+      { en: 'Clear next actions: save, share, act', ru: 'Чёткие следующие действия: сохранить, поделиться, действовать' }
+    ],
+    example: { en: 'First success complete!\n• Result: "Done! 🎉"\n• Feel: Accomplishment, pride\n• Actions: Share | Save | Next\n• Celebration: Confetti', ru: 'Первый успех завершён!\n• Результат: "Готово! 🎉"\n• Чувство: Достижение, гордость\n• Действия: Поделиться | Сохранить | Далее\n• Празднование: Конфетти' },
+    validationTip: { en: 'Make them feel successful', ru: 'Заставьте их почувствовать успех' },
+    aiHelper: 'virgilia'
+  },
+  step_5_return: {
+    questionTitle: { en: 'Why and when do they come back?', ru: 'Почему и когда они возвращаются?' },
+    hints: [
+      { en: 'B-01 engagement mechanisms', ru: 'Механизмы вовлечения B-01' },
+      { en: 'V-03 active hours for timing', ru: 'Активные часы V-03 для тайминга' },
+      { en: 'Create habit loop: trigger → action → reward', ru: 'Создайте петлю привычки: триггер → действие → награда' }
+    ],
+    example: { en: 'Daily routine trigger:\n• Trigger: Push at 7am (V-03)\n• New value: Fresh daily content\n• Habit loop: Notification → Open → See streak', ru: 'Триггер ежедневной рутины:\n• Триггер: Пуш в 7 утра (V-03)\n• Новая ценность: Свежий контент\n• Петля привычки: Уведомление → Открыть → Серия' },
+    validationTip: { en: 'Retention > Acquisition for growth', ru: 'Удержание > Привлечение для роста' },
+    aiHelper: 'prisma'
+  },
+
+  // ========== BUILD CARD #13: SCREENS ==========
+  onboarding_screens: {
+    questionTitle: { en: 'How do you welcome new users?', ru: 'Как вы встречаете новых пользователей?' },
+    hints: [
+      { en: 'MAX 3 screens (Toxic rule)', ru: 'МАКС 3 экрана (правило Toxic)' },
+      { en: 'Show V-04 promise immediately', ru: 'Покажите обещание V-04 сразу' },
+      { en: 'Always have skip button', ru: 'Всегда кнопка пропуска' }
+    ],
+    example: { en: '1. Welcome: Hero message + visual\n2. How It Works: 3 simple steps\n3. Get Started: Sign up CTA', ru: '1. Приветствие: Главное сообщение + визуал\n2. Как это работает: 3 простых шага\n3. Начать: CTA регистрации' },
+    validationTip: { en: '50%+ skip onboarding - keep it short!', ru: '50%+ пропускают онбординг — будьте кратки!' },
+    aiHelper: 'virgilia'
+  },
+  main_screens: {
+    questionTitle: { en: 'What are the core screens?', ru: 'Какие основные экраны?' },
+    hints: [
+      { en: 'Map to B-02 step_2 and step_3', ru: 'Сопоставьте с B-02 step_2 и step_3' },
+      { en: 'One screen per major feature', ru: 'Один экран на основную функцию' },
+      { en: 'Keep navigation simple', ru: 'Навигация простая' }
+    ],
+    example: { en: '1. Home/Dashboard: Today\'s tasks\n2. Input Screen: Data entry\n3. Progress View: Charts and stats', ru: '1. Главная/Дашборд: Задачи на сегодня\n2. Экран ввода: Ввод данных\n3. Прогресс: Графики и статистика' },
+    validationTip: { en: 'Each screen serves one purpose', ru: 'Каждый экран — одна цель' },
+    aiHelper: 'virgilia'
+  },
+  result_screens: {
+    questionTitle: { en: 'How do you show success?', ru: 'Как вы показываете успех?' },
+    hints: [
+      { en: 'Map to B-02 step_4 value delivery', ru: 'Сопоставьте с B-02 step_4 доставка ценности' },
+      { en: 'Celebrate achievements', ru: 'Празднуйте достижения' },
+      { en: 'Include sharing options', ru: 'Включите опции шеринга' }
+    ],
+    example: { en: '1. Success Screen: Congrats + stats\n2. Achievement: Badge animation\n• Share to Stories button', ru: '1. Экран успеха: Поздравление + статистика\n2. Достижение: Анимация бейджа\n• Кнопка "В Stories"' },
+    validationTip: { en: 'Make success feel tangible', ru: 'Сделайте успех ощутимым' },
+    aiHelper: 'virgilia'
+  },
+  profile_screens: {
+    questionTitle: { en: 'What settings and profile screens?', ru: 'Какие настройки и экраны профиля?' },
+    hints: [
+      { en: 'Include subscription management if monetized', ru: 'Включите управление подпиской если монетизация' },
+      { en: 'User preferences and data', ru: 'Предпочтения пользователя и данные' },
+      { en: 'History and achievements', ru: 'История и достижения' }
+    ],
+    example: { en: '1. Profile: Avatar, stats, history\n2. Settings: Notifications, subscription, theme', ru: '1. Профиль: Аватар, статистика, история\n2. Настройки: Уведомления, подписка, тема' },
+    validationTip: { en: 'Keep settings minimal for MVP', ru: 'Минимум настроек для MVP' },
+    aiHelper: 'zen'
+  },
+  ux_notes: {
+    questionTitle: { en: 'Any UX considerations?', ru: 'UX-соображения?' },
+    hints: [
+      { en: 'Consider V-03 tech level', ru: 'Учтите техуровень V-03' },
+      { en: 'Avoid competitor UX mistakes from R-2', ru: 'Избегайте UX-ошибок конкурентов из R-2' },
+      { en: 'Accessibility considerations', ru: 'Доступность' }
+    ],
+    example: { en: '📋 UX Summary:\n• Total: 8 screens (under 10 ✓)\n• Navigation: Tab bar\n• Avoid R-2 competitor: cluttered home', ru: '📋 UX Сводка:\n• Всего: 8 экранов (меньше 10 ✓)\n• Навигация: Tab bar\n• Избегать R-2: перегруженный главный' },
+    validationTip: { en: 'Simple UX wins over feature-rich', ru: 'Простой UX побеждает фиче-насыщенный' },
+    aiHelper: 'zen'
+  },
+
+  // ========== BUILD CARD #14: STYLE ==========
+  theme: {
+    questionTitle: { en: 'Light, Dark, or Auto theme?', ru: 'Светлая, Тёмная или Авто тема?' },
+    hints: [
+      { en: 'Based on V-03 demographics', ru: 'На основе демографии V-03' },
+      { en: 'Dark = premium/serious, Light = friendly', ru: 'Тёмная = премиум, Светлая = дружелюбный' },
+      { en: 'Consider competitor themes from R-2', ru: 'Учтите темы конкурентов из R-2' }
+    ],
+    example: { en: 'Dark theme\n• V-03: Young professionals prefer dark\n• Premium feel matches V-04', ru: 'Тёмная тема\n• V-03: Молодые профессионалы предпочитают тёмную\n• Премиум соответствует V-04' },
+    validationTip: { en: 'Theme should match brand positioning', ru: 'Тема должна соответствовать позиционированию' },
+    aiHelper: 'virgilia'
+  },
+  mood: {
+    questionTitle: { en: 'What is the visual mood?', ru: 'Какое визуальное настроение?' },
+    hints: [
+      { en: 'Premium, Playful, Professional, or Minimal', ru: 'Премиум, Игривый, Профессиональный или Минимальный' },
+      { en: 'Must match V-04 emotion delivery', ru: 'Должно соответствовать эмоции V-04' },
+      { en: 'Consistent with V-01 positioning', ru: 'Согласовано с позиционированием V-01' }
+    ],
+    example: { en: 'Premium mood\n• V-04 emotion: confident, accomplished\n• Subtle gradients, smooth animations', ru: 'Премиум настроение\n• V-04 эмоция: уверенный, успешный\n• Тонкие градиенты, плавные анимации' },
+    validationTip: { en: 'Mood creates the emotional experience', ru: 'Настроение создаёт эмоциональный опыт' },
+    aiHelper: 'virgilia'
+  },
+  reference_apps: {
+    questionTitle: { en: 'What apps inspire your design?', ru: 'Какие приложения вдохновляют ваш дизайн?' },
+    hints: [
+      { en: 'Apps your V-03 audience already uses', ru: 'Приложения, которые V-03 аудитория уже использует' },
+      { en: 'Include ANTI-references from R-2', ru: 'Включите АНТИ-референсы из R-2' },
+      { en: 'Be specific about what to take', ru: 'Конкретизируйте что взять' }
+    ],
+    example: { en: '1. Headspace → Take: Calm UX\n2. Peloton → Take: Celebrations\n3. [Competitor] → Avoid: Cluttered UI', ru: '1. Headspace → Взять: Спокойный UX\n2. Peloton → Взять: Празднования\n3. [Конкурент] → Избегать: Перегруженный UI' },
+    validationTip: { en: 'References speed up design decisions', ru: 'Референсы ускоряют дизайн-решения' },
+    aiHelper: 'virgilia'
+  },
+  primary_color: {
+    questionTitle: { en: 'What is your primary brand color?', ru: 'Какой основной цвет бренда?' },
+    hints: [
+      { en: '60% of interface will use this color', ru: '60% интерфейса будет этого цвета' },
+      { en: 'Consider V-03 cultural associations', ru: 'Учтите культурные ассоциации V-03' },
+      { en: 'Must work with chosen theme', ru: 'Должен работать с выбранной темой' }
+    ],
+    example: { en: 'Deep Purple (#6366F1)\n• V-03 associates with: wisdom\n• Works well on dark background', ru: 'Глубокий Фиолетовый (#6366F1)\n• V-03 ассоциации: мудрость\n• Хорошо на тёмном фоне' },
+    validationTip: { en: 'Primary color is your brand identity', ru: 'Основной цвет — идентичность бренда' },
+    aiHelper: 'virgilia'
+  },
+  accent_color: {
+    questionTitle: { en: 'What color draws attention?', ru: 'Какой цвет привлекает внимание?' },
+    hints: [
+      { en: 'Used for CTAs and highlights', ru: 'Для кнопок действия и акцентов' },
+      { en: 'Must contrast with primary', ru: 'Должен контрастировать с основным' },
+      { en: 'Match V-04 transformation emotion', ru: 'Соответствовать эмоции трансформации V-04' }
+    ],
+    example: { en: 'Vibrant Gold (#F59E0B)\n• Contrasts with purple primary\n• V-04 emotion: success', ru: 'Яркий Золотой (#F59E0B)\n• Контрастирует с фиолетовым\n• V-04 эмоция: успех' },
+    validationTip: { en: 'Accent drives user actions', ru: 'Акцент управляет действиями пользователя' },
+    aiHelper: 'virgilia'
+  },
+  style_reasoning: {
+    questionTitle: { en: 'Why these style choices?', ru: 'Почему такие стилевые решения?' },
+    hints: [
+      { en: 'Phoenix validates: does style scream value?', ru: 'Phoenix валидирует: стиль кричит ценность?' },
+      { en: 'Toxic validates: different from competitors?', ru: 'Toxic валидирует: отличается от конкурентов?' },
+      { en: 'Connect each choice to data', ru: 'Свяжите каждый выбор с данными' }
+    ],
+    example: { en: '🔥 Phoenix: Dark + Premium = speaks to V-03\n☢️ Toxic: R-2 uses Light → we differ\n✅ Message: "Elevated experience"', ru: '🔥 Phoenix: Тёмная + Премиум = говорит с V-03\n☢️ Toxic: R-2 использует Светлую → отличаемся\n✅ Послание: "Элитный опыт"' },
+    validationTip: { en: 'Every style choice has a reason', ru: 'Каждое стилевое решение имеет причину' },
+    aiHelper: 'phoenix'
+  },
+
+  // ========== BUILD CARD #15: SUMMARY ==========
+  app_name: {
+    questionTitle: { en: 'Final app name', ru: 'Финальное название приложения' },
+    hints: [
+      { en: 'Should match V-01 product_name', ru: 'Должно совпадать с product_name из V-01' },
+      { en: 'Confirm it is memorable and unique', ru: 'Убедитесь что запоминающееся и уникальное' },
+      { en: 'Check domain/app store availability', ru: 'Проверьте доступность домена/app store' }
+    ],
+    example: { en: 'FitAI (from V-01)', ru: 'FitAI (из V-01)' },
+    validationTip: { en: 'Name is your first impression', ru: 'Название — первое впечатление' },
+    aiHelper: 'evergreen'
+  },
+  app_format: {
+    questionTitle: { en: 'Mobile, Web, or Both?', ru: 'Мобильное, Веб или Оба?' },
+    hints: [
+      { en: 'Based on V-03 audience behavior', ru: 'На основе поведения аудитории V-03' },
+      { en: 'Mobile if push notifications important', ru: 'Мобильное если важны пуш-уведомления' },
+      { en: 'Web if lots of text input or B2B', ru: 'Веб если много текстового ввода или B2B' }
+    ],
+    example: { en: 'Mobile App (iOS + Android)\n• V-03: Mobile-first audience\n• B-01 needs push notifications', ru: 'Мобильное приложение (iOS + Android)\n• V-03: Mobile-first аудитория\n• B-01 нужны пуш-уведомления' },
+    validationTip: { en: 'Format affects tech stack', ru: 'Формат влияет на техстек' },
+    aiHelper: 'techpriest'
+  },
+  app_description: {
+    questionTitle: { en: 'One-line app description', ru: 'Описание приложения в одну строку' },
+    hints: [
+      { en: 'Combine V-01 + V-02 + V-04', ru: 'Объедините V-01 + V-02 + V-04' },
+      { en: 'Who + Problem + Solution + Transformation', ru: 'Кто + Проблема + Решение + Трансформация' },
+      { en: 'App Store friendly', ru: 'Подходит для App Store' }
+    ],
+    example: { en: '[Product] helps [audience] solve [problem] by [solution], delivering [transformation].', ru: '[Продукт] помогает [аудитории] решить [проблему] через [решение], давая [трансформацию].' },
+    validationTip: { en: 'This goes in the App Store', ru: 'Это идёт в App Store' },
+    aiHelper: 'evergreen'
+  },
+  features_summary: {
+    questionTitle: { en: 'Summary of all features', ru: 'Сводка всех функций' },
+    hints: [
+      { en: 'Pull from B-01 Features card', ru: 'Возьмите из карточки B-01 Функции' },
+      { en: 'Group by Basic, Key, Monetization', ru: 'Группируйте по Базовые, Ключевые, Монетизация' },
+      { en: 'Bullet points for clarity', ru: 'Буллеты для ясности' }
+    ],
+    example: { en: 'MVP Features:\n✓ Auth + profiles\n✓ Core feature\n\nKey: ⭐ Differentiator\n\nMonetization: 💰 Freemium', ru: 'MVP Функции:\n✓ Авторизация + профили\n✓ Основная функция\n\nКлючевое: ⭐ Отличие\n\nМонетизация: 💰 Freemium' },
+    validationTip: { en: 'Complete feature inventory', ru: 'Полный инвентарь функций' },
+    aiHelper: 'prisma'
+  },
+  screens_summary: {
+    questionTitle: { en: 'Summary of all screens', ru: 'Сводка всех экранов' },
+    hints: [
+      { en: 'Pull from B-03 Screens card', ru: 'Возьмите из карточки B-03 Экраны' },
+      { en: 'Count totals by category', ru: 'Посчитайте итоги по категориям' },
+      { en: 'Include navigation type', ru: 'Включите тип навигации' }
+    ],
+    example: { en: '📱 Total: 8 screens\n• Onboarding: 3\n• Main: 3\n• Result: 1\n• Profile: 1\n\nNav: Tab bar', ru: '📱 Всего: 8 экранов\n• Онбординг: 3\n• Основные: 3\n• Результат: 1\n• Профиль: 1\n\nНав: Tab bar' },
+    validationTip: { en: 'Screen count under 10 for MVP', ru: 'Экранов меньше 10 для MVP' },
+    aiHelper: 'virgilia'
+  },
+  style_summary: {
+    questionTitle: { en: 'Summary of visual style', ru: 'Сводка визуального стиля' },
+    hints: [
+      { en: 'Pull from B-04 Style card', ru: 'Возьмите из карточки B-04 Стиль' },
+      { en: 'Theme + Mood + Colors', ru: 'Тема + Настроение + Цвета' },
+      { en: 'Key references', ru: 'Ключевые референсы' }
+    ],
+    example: { en: '🎨 Dark theme • Premium mood\n🎯 Like: Headspace, Peloton\n🎨 Colors: Purple + Gold', ru: '🎨 Тёмная тема • Премиум настроение\n🎯 Как: Headspace, Peloton\n🎨 Цвета: Фиолетовый + Золотой' },
+    validationTip: { en: 'Style is your brand identity', ru: 'Стиль — идентичность бренда' },
+    aiHelper: 'virgilia'
+  },
+  tech_stack: {
+    questionTitle: { en: 'What technologies to use?', ru: 'Какие технологии использовать?' },
+    hints: [
+      { en: 'Based on B-01 features requirements', ru: 'На основе требований функций B-01' },
+      { en: 'Consider R-4 technical risks', ru: 'Учтите технические риски R-4' },
+      { en: 'Lovable-compatible stack', ru: 'Стек, совместимый с Lovable' }
+    ],
+    example: { en: '⚙️ Core: React Native + Supabase\n🔌 Integrations: Framer Motion, RevenueCat', ru: '⚙️ Ядро: React Native + Supabase\n🔌 Интеграции: Framer Motion, RevenueCat' },
+    validationTip: { en: 'All buildable in Lovable', ru: 'Всё собирается в Lovable' },
+    aiHelper: 'techpriest'
+  },
+  build_quality_score: {
+    questionTitle: { en: 'BUILD phase quality check', ru: 'Проверка качества BUILD фазы' },
+    hints: [
+      { en: 'Ever Green coherence check', ru: 'Проверка согласованности Ever Green' },
+      { en: 'All 4 checks should pass', ru: 'Все 4 проверки должны пройти' },
+      { en: 'Score determines rarity', ru: 'Оценка определяет редкость' }
+    ],
+    example: { en: '85% EPIC 💜\n✓ B-01 → V-02: features solve pain\n✓ B-02 → V-04: path delivers value', ru: '85% ЭПИЧЕСКИЙ 💜\n✓ B-01 → V-02: функции решают боль\n✓ B-02 → V-04: путь доставляет ценность' },
+    validationTip: { en: 'All checks must pass for Legendary', ru: 'Все проверки должны пройти для Легендарного' },
+    aiHelper: 'evergreen'
   }
 };
 
