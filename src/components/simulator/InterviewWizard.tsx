@@ -119,139 +119,153 @@ export function InterviewWizard({ trackEvent }: InterviewWizardProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex flex-col items-center justify-center py-12">
-      <AnimatePresence mode="wait">
-        {step === 'start' && (
-          <StartStep key="start" onSelect={handleBranchSelect} />
-        )}
-
-        {step === 'project-name' && (
-          <ProjectNameStep
-            key="project-name"
-            onNext={handleProjectName}
-            onBack={actions.goBack}
-            initialValue={data.projectName}
-          />
-        )}
-
-        {step === 'analogy' && (
-          <AnalogyStep
-            key="analogy"
-            onSelect={handleAnalogy}
-            onBack={actions.goBack}
-          />
-        )}
-
-        {step === 'niche' && data.analogyTemplate && (
-          <NicheStep
-            key="niche"
-            template={data.analogyTemplate}
-            onNext={handleNiche}
-            onBack={actions.goBack}
-            initialValue={data.analogyNiche}
-          />
-        )}
-
-        {step === 'audience' && (
-          <AudienceStep
-            key="audience"
-            onNext={handleAudience}
-            onBack={actions.goBack}
-            initialValue={data.targetAudience}
-          />
-        )}
-
-        {step === 'pain-area' && (
-          <PainAreaStep
-            key="pain-area"
-            onSelect={handlePainArea}
-            onBack={actions.goBack}
-          />
-        )}
-
-        {step === 'pain-specific' && (
-          <PainSpecificStep
-            key="pain-specific"
-            painArea={data.painArea}
-            onSelect={handlePainSpecific}
-            onBack={actions.goBack}
-          />
-        )}
-
-        {step === 'ai-ideas' && (
-          <AIIdeasStep
-            key="ai-ideas"
-            painArea={data.painArea}
-            specificPain={data.specificPain}
-            onSelect={handleIdeaSelect}
-            onBack={actions.goBack}
-            generatedIdeas={data.generatedIdeas}
-            onIdeasGenerated={handleIdeasGenerated}
-            regenerationCount={data.regenerationCount}
-            onRegenerate={() => actions.updateData({ regenerationCount: data.regenerationCount + 1 })}
-          />
-        )}
-
-        {step === 'motivation' && (
-          <MotivationStep
-            key="motivation"
-            onSelect={handleMotivation}
-            onBack={actions.goBack}
-          />
-        )}
-
-        {step === 'pain-story' && (
-          <PainStoryStep
-            key="pain-story"
-            onNext={handlePainStory}
-            onSkip={() => handlePainStory([])}
-            onBack={actions.goBack}
-            initialValue={data.painDetails}
-          />
-        )}
-
-        {step === 'experience' && (
-          <ExperienceStep
-            key="experience"
-            onNext={handleExperience}
-            onBack={actions.goBack}
-            initialValue={data.experience}
-          />
-        )}
-
-        {step === 'generating' && (
-          <GeneratingStep key="generating" onComplete={actions.finishGenerating} />
-        )}
-
-        {step === 'video' && (
-          <VideoStep key="video" onComplete={actions.finishVideo} />
-        )}
-
-        {step === 'reveal' && (
-          <RevealStep key="reveal" onComplete={actions.finishReveal} />
-        )}
-
-        {step === 'card' && (
-          <CardRevealStep
-            key="card"
-            data={data}
-            onContinue={handleCardReveal}
-            onEdit={() => actions.goToStep('project-name')}
-          />
-        )}
-
-        {step === 'fork' && (
-          <ForkStep key="fork" onSelect={handlePathSelect} />
-        )}
-      </AnimatePresence>
-
-      {step === 'email' && (
-        <EmailStep
-          data={data}
-          selectedPath={selectedPath}
-          onComplete={handleEmailComplete}
+    <div className="min-h-screen bg-black text-white overflow-hidden relative">
+      {/* Beach Background - always visible except during video */}
+      {step !== 'video' && (
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-40"
+          style={{ backgroundImage: "url('/images/beach-background.png')" }}
         />
       )}
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
+
+      {/* Content */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center py-12">
+        <AnimatePresence mode="wait">
+          {step === 'start' && (
+            <StartStep key="start" onSelect={handleBranchSelect} />
+          )}
+
+          {step === 'project-name' && (
+            <ProjectNameStep
+              key="project-name"
+              onNext={handleProjectName}
+              onBack={actions.goBack}
+              initialValue={data.projectName}
+            />
+          )}
+
+          {step === 'analogy' && (
+            <AnalogyStep
+              key="analogy"
+              onSelect={handleAnalogy}
+              onBack={actions.goBack}
+            />
+          )}
+
+          {step === 'niche' && data.analogyTemplate && (
+            <NicheStep
+              key="niche"
+              template={data.analogyTemplate}
+              onNext={handleNiche}
+              onBack={actions.goBack}
+              initialValue={data.analogyNiche}
+            />
+          )}
+
+          {step === 'audience' && (
+            <AudienceStep
+              key="audience"
+              onNext={handleAudience}
+              onBack={actions.goBack}
+              initialValue={data.targetAudience}
+            />
+          )}
+
+          {step === 'pain-area' && (
+            <PainAreaStep
+              key="pain-area"
+              onSelect={handlePainArea}
+              onBack={actions.goBack}
+            />
+          )}
+
+          {step === 'pain-specific' && (
+            <PainSpecificStep
+              key="pain-specific"
+              painArea={data.painArea}
+              onSelect={handlePainSpecific}
+              onBack={actions.goBack}
+            />
+          )}
+
+          {step === 'ai-ideas' && (
+            <AIIdeasStep
+              key="ai-ideas"
+              painArea={data.painArea}
+              specificPain={data.specificPain}
+              onSelect={handleIdeaSelect}
+              onBack={actions.goBack}
+              generatedIdeas={data.generatedIdeas}
+              onIdeasGenerated={handleIdeasGenerated}
+              regenerationCount={data.regenerationCount}
+              onRegenerate={() => actions.updateData({ regenerationCount: data.regenerationCount + 1 })}
+            />
+          )}
+
+          {step === 'motivation' && (
+            <MotivationStep
+              key="motivation"
+              onSelect={handleMotivation}
+              onBack={actions.goBack}
+            />
+          )}
+
+          {step === 'pain-story' && (
+            <PainStoryStep
+              key="pain-story"
+              onNext={handlePainStory}
+              onSkip={() => handlePainStory([])}
+              onBack={actions.goBack}
+              initialValue={data.painDetails}
+            />
+          )}
+
+          {step === 'experience' && (
+            <ExperienceStep
+              key="experience"
+              onNext={handleExperience}
+              onBack={actions.goBack}
+              initialValue={data.experience}
+            />
+          )}
+
+          {step === 'generating' && (
+            <GeneratingStep key="generating" onComplete={actions.finishGenerating} />
+          )}
+
+          {step === 'video' && (
+            <VideoStep key="video" onComplete={actions.finishVideo} />
+          )}
+
+          {step === 'reveal' && (
+            <RevealStep key="reveal" onComplete={actions.finishReveal} />
+          )}
+
+          {step === 'card' && (
+            <CardRevealStep
+              key="card"
+              data={data}
+              onContinue={handleCardReveal}
+              onEdit={() => actions.goToStep('project-name')}
+            />
+          )}
+
+          {step === 'fork' && (
+            <ForkStep key="fork" onSelect={handlePathSelect} />
+          )}
+        </AnimatePresence>
+
+        {step === 'email' && (
+          <EmailStep
+            data={data}
+            selectedPath={selectedPath}
+            onComplete={handleEmailComplete}
+          />
+        )}
+      </div>
     </div>
   );
 }

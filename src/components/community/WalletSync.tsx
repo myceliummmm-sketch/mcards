@@ -23,8 +23,8 @@ export function WalletSync({ onSync, onSkip }: WalletSyncProps) {
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring" }}
         >
-          <div className="w-20 h-20 rounded-full bg-[#2E7D32]/20 border-2 border-[#2E7D32] flex items-center justify-center">
-            <Smartphone className="w-10 h-10 text-[#2E7D32]" />
+          <div className="w-20 h-20 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center">
+            <Smartphone className="w-10 h-10 text-primary" />
           </div>
         </motion.div>
 
@@ -44,8 +44,8 @@ export function WalletSync({ onSync, onSkip }: WalletSyncProps) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="w-10 h-10 rounded-full bg-[#2E7D32]/20 flex items-center justify-center flex-shrink-0">
-              <Zap className="w-5 h-5 text-[#2E7D32]" />
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+              <Zap className="w-5 h-5 text-primary" />
             </div>
             <div className="text-left">
               <p className="text-white font-medium">Instant Access</p>
@@ -59,8 +59,8 @@ export function WalletSync({ onSync, onSkip }: WalletSyncProps) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <div className="w-10 h-10 rounded-full bg-[#2E7D32]/20 flex items-center justify-center flex-shrink-0">
-              <Clock className="w-5 h-5 text-[#2E7D32]" />
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5 text-primary" />
             </div>
             <div className="text-left">
               <p className="text-white font-medium">Real-time Updates</p>

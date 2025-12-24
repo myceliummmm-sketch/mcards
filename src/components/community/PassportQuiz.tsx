@@ -42,7 +42,7 @@ export function PassportQuiz({ onComplete, onTrackEvent }: PassportQuizProps) {
           </div>
           <div className="h-2 bg-white/10 rounded-full overflow-hidden">
             <motion.div 
-              className="h-full bg-[#2E7D32]"
+              className="h-full bg-primary"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
@@ -69,7 +69,7 @@ export function PassportQuiz({ onComplete, onTrackEvent }: PassportQuizProps) {
                 <motion.button
                   key={option.label}
                   onClick={() => handleAnswer(option.archetype)}
-                  className="group relative p-6 rounded-xl backdrop-blur-xl bg-white/5 border-2 border-white/10 hover:border-[#2E7D32] hover:bg-[#2E7D32]/10 transition-all duration-300"
+                  className="group relative p-6 rounded-xl backdrop-blur-xl bg-white/5 border-2 border-white/10 hover:border-primary hover:bg-primary/10 transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -78,13 +78,13 @@ export function PassportQuiz({ onComplete, onTrackEvent }: PassportQuizProps) {
                 >
                   <div className="flex flex-col items-center text-center gap-3">
                     <span className="text-4xl">{option.icon}</span>
-                    <span className="text-lg font-semibold text-white group-hover:text-[#2E7D32] transition-colors">
+                    <span className="text-lg font-semibold text-white group-hover:text-primary transition-colors">
                       {option.label}
                     </span>
                   </div>
 
                   {/* Hover glow */}
-                  <div className="absolute inset-0 rounded-xl bg-[#2E7D32]/0 group-hover:bg-[#2E7D32]/5 transition-colors" />
+                  <div className="absolute inset-0 rounded-xl bg-primary/0 group-hover:bg-primary/5 transition-colors" />
                 </motion.button>
               ))}
             </div>

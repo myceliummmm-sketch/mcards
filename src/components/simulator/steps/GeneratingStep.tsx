@@ -1,94 +1,81 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
 
 interface GeneratingStepProps {
   onComplete: () => void;
 }
 
-const stages = [
-  { text: 'Анализирую данные...', duration: 1200 },
-  { text: 'Формирую видение...', duration: 1500 },
-  { text: 'Оцениваю Founder Fit...', duration: 1000 },
-  { text: 'Генерирую карточку...', duration: 800 },
+const hackingLines = [
+  '> Analyzing Niche Profitability...',
+  '> Finding Blue Ocean...',
+  '> Calculating MRR...',
+  '> Projecting Revenue Curve...',
+  '> Generating Empire Blueprint...',
+  '> SUCCESS: Your $10k/mo path is ready!',
 ];
 
 export function GeneratingStep({ onComplete }: GeneratingStepProps) {
-  const [stageIndex, setStageIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [lineIndex, setLineIndex] = useState(0);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     
-    if (stageIndex < stages.length) {
+    if (lineIndex < hackingLines.length - 1) {
       timeout = setTimeout(() => {
-        setStageIndex((prev) => prev + 1);
-        setProgress((prev) => prev + 100 / stages.length);
-      }, stages[stageIndex].duration);
+        setLineIndex((prev) => prev + 1);
+      }, 600);
     } else {
-      timeout = setTimeout(onComplete, 500);
+      timeout = setTimeout(onComplete, 800);
     }
 
     return () => clearTimeout(timeout);
-  }, [stageIndex, onComplete]);
+  }, [lineIndex, onComplete]);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center px-4 py-12"
+      className="flex flex-col items-center justify-center px-4 py-12 w-full max-w-md"
     >
-      <motion.div
-        animate={{ 
-          rotate: 360,
-          scale: [1, 1.1, 1],
-        }}
-        transition={{ 
-          rotate: { duration: 3, repeat: Infinity, ease: 'linear' },
-          scale: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
-        }}
-        className="w-24 h-24 rounded-full bg-gradient-to-r from-primary via-amber-400 to-primary flex items-center justify-center mb-8 shadow-2xl shadow-primary/30"
-      >
-        <Sparkles className="w-12 h-12 text-white" />
-      </motion.div>
+      {/* Terminal Window */}
+      <div className="w-full bg-black/80 border border-[#00FF00]/30 rounded-xl p-6 font-mono">
+        {/* Terminal Header */}
+        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[#00FF00]/20">
+          <div className="w-3 h-3 rounded-full bg-red-500" />
+          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+          <div className="w-3 h-3 rounded-full bg-green-500" />
+          <span className="text-xs text-white/40 ml-2">revenue_engine.exe</span>
+        </div>
 
-      <motion.h2
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-2xl font-bold text-foreground mb-4"
-      >
-        ✨ Магия...
-      </motion.h2>
-
-      <div className="w-full max-w-xs mb-4">
-        <div className="h-2 bg-background/50 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-primary to-amber-400"
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.3 }}
-          />
+        {/* Terminal Content */}
+        <div className="space-y-2 text-sm min-h-[180px]">
+          {hackingLines.slice(0, lineIndex + 1).map((line, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className={`${
+                i === lineIndex 
+                  ? 'text-[#00FF00]' 
+                  : 'text-[#00FF00]/60'
+              }`}
+            >
+              {line}
+              {i === lineIndex && (
+                <span className="animate-pulse">█</span>
+              )}
+            </motion.div>
+          ))}
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.p
-          key={stageIndex}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="text-muted-foreground text-center"
-        >
-          {stages[stageIndex]?.text || 'Готово!'}
-        </motion.p>
-      </AnimatePresence>
-
+      {/* Progress indicator */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="text-sm text-primary/60 mt-4"
+        className="text-sm text-[#00FF00]/60 mt-6 font-mono"
       >
         Ever Green создаёт твой Vision Statement
       </motion.p>
