@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,15 @@ export function EmailCapture({ passportId, onComplete, onSkip }: EmailCapturePro
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { language } = useLanguage();
+
+  // Auto-recovery: if passportId is empty on mount, skip with warning
+  useEffect(() => {
+    if (!passportId || passportId.length < 10) {
+      console.error('EmailCapture mounted with invalid passportId:', passportId);
+      toast.error(language === 'ru' ? 'Ошибка: перезапустите процесс создания паспорта' : 'Error: Please restart the passport flow');
+      onSkip();
+    }
+  }, []);
 
   const t = {
     en: {
