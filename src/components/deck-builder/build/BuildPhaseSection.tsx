@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Crown, Gift, Sparkles, Loader2, CheckCircle2, Rocket, Trophy, BarChart3, AlertTriangle } from 'lucide-react';
+import { Lock, Crown, Gift, Sparkles, Loader2, CheckCircle2, Rocket, Trophy, BarChart3, AlertTriangle, Palette, RefreshCw, MessageSquare } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -14,12 +14,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FlippableCard } from '../FlippableCard';
 import { PhaseIcon } from '../PhaseIcon';
 import { UpgradeModal } from '@/components/paywall/UpgradeModal';
 import { RewardModal } from '../RewardModal';
+import { RarityBadge } from '@/components/marketplace/RarityBadge';
+import { GenerateDesignPromptModal } from './GenerateDesignPromptModal';
+import { GenerateLovablePromptModal } from './GenerateLovablePromptModal';
 import { PHASE_CONFIG } from '@/data/cardDefinitions';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -31,6 +40,7 @@ type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
 interface BuildPhaseSectionProps {
   deckId: string;
   cards: DeckCard[];
+  deckTitle?: string;
   onEditCard: (slot: number) => void;
   onRefresh?: () => void;
   locked?: boolean;
@@ -41,6 +51,7 @@ interface BuildPhaseSectionProps {
 export const BuildPhaseSection = ({
   deckId,
   cards,
+  deckTitle = 'My Deck',
   onEditCard,
   onRefresh,
   locked = false,
@@ -53,6 +64,8 @@ export const BuildPhaseSection = ({
   // UI-only state
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [rewardModalOpen, setRewardModalOpen] = useState(false);
+  const [designPromptOpen, setDesignPromptOpen] = useState(false);
+  const [lovablePromptOpen, setLovablePromptOpen] = useState(false);
 
   // Build phase logic from custom hook
   const {
@@ -68,6 +81,8 @@ export const BuildPhaseSection = ({
     evaluateBuildPhase,
     generateBuildCard,
     generateAllBuildCards,
+    getCardRarity,
+    getCardFeedback,
   } = useBuildPhase({
     deckId,
     cards,
@@ -89,6 +104,7 @@ export const BuildPhaseSection = ({
   };
 
   const canStartBuild = visionComplete;
+  const allCardsFilled = filledCount === 5;
 
   return (
     <>
@@ -235,7 +251,7 @@ export const BuildPhaseSection = ({
 
                   <div className="flex items-center gap-3">
                     {/* BUILD Score Display */}
-                    {buildScore && filledCount === 5 && (
+                    {buildScore && allCardsFilled && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -252,7 +268,7 @@ export const BuildPhaseSection = ({
                     )}
 
                     {/* Evaluate Button */}
-                    {filledCount === 5 && !buildScore && (
+                    {allCardsFilled && !buildScore && (
                       <div onClick={(e) => e.stopPropagation()}>
                         <Button
                           onClick={evaluateBuildPhase}
@@ -313,109 +329,211 @@ export const BuildPhaseSection = ({
                   </div>
                 </motion.div>
               ) : (
-                <motion.div
-                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 lg:gap-10 px-6 pb-8"
-                  initial="hidden"
-                  animate="visible"
-                  variants={{
-                    hidden: { opacity: 0 },
-                    visible: {
-                      opacity: 1,
-                      transition: { staggerChildren: 0.1 }
-                    }
-                  }}
-                >
-                  {definitions.map((definition) => {
-                    const cardData = cards.find(c => c.card_slot === definition.slot);
-                    const hasData = cardData?.card_data && Object.keys(cardData.card_data as object).length > 0;
-                    const isCardGenerating = generatingSlots.includes(definition.slot);
+                <>
+                  {/* Cards Grid */}
+                  <motion.div
+                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 lg:gap-10 px-6 pb-6"
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: {
+                        opacity: 1,
+                        transition: { staggerChildren: 0.1 }
+                      }
+                    }}
+                  >
+                    <TooltipProvider>
+                      {definitions.map((definition) => {
+                        const cardData = cards.find(c => c.card_slot === definition.slot);
+                        const hasData = cardData?.card_data && Object.keys(cardData.card_data as object).length > 0;
+                        const isCardGenerating = generatingSlots.includes(definition.slot);
+                        const cardRarity = getCardRarity(definition.slot);
+                        const cardFeedback = getCardFeedback(definition.slot);
 
-                    // Check if previous card is filled (for sequential generation)
-                    const prevSlot = definition.slot - 1;
-                    const canGenerate = definition.slot === 11 ||
-                      cards.some(c => c.card_slot === prevSlot && c.card_data && Object.keys(c.card_data as object).length > 0);
+                        // Check if previous card is filled (for sequential generation)
+                        const prevSlot = definition.slot - 1;
+                        const canGenerate = definition.slot === 11 ||
+                          cards.some(c => c.card_slot === prevSlot && c.card_data && Object.keys(c.card_data as object).length > 0);
 
-                    return (
-                      <motion.div
-                        key={definition.slot}
-                        variants={{
-                          hidden: { opacity: 0, y: 20 },
-                          visible: { opacity: 1, y: 0 }
-                        }}
-                        className="relative"
-                      >
-                        <FlippableCard
-                          definition={definition}
-                          cardRow={cardData}
-                          isInsight={false}
-                          onEdit={() => hasData ? onEditCard(definition.slot) : (canGenerate && generateBuildCard(definition.slot))}
-                          isGenerating={isCardGenerating}
-                        />
-
-                        {/* Generate/Fill button overlay for empty cards */}
-                        {!hasData && canGenerate && !isCardGenerating && (
+                        return (
                           <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg cursor-pointer hover:bg-black/50 transition-colors"
-                            onClick={() => {
-                              if (buildMode === 'manual') {
-                                // In manual mode, open edit modal directly
-                                onEditCard(definition.slot);
-                              } else {
-                                // In auto/hybrid mode, generate with AI
-                                generateBuildCard(definition.slot);
-                              }
+                            key={definition.slot}
+                            variants={{
+                              hidden: { opacity: 0, y: 20 },
+                              visible: { opacity: 1, y: 0 }
                             }}
+                            className="relative"
                           >
-                            <div className="text-center p-4">
-                              {buildMode === 'manual' ? (
-                                <>
-                                  <span className="text-2xl mb-2 block">✍️</span>
-                                  <span className="text-sm font-medium text-white">
-                                    {language === 'ru' ? 'Заполнить' : 'Fill in'}
-                                  </span>
-                                </>
-                              ) : (
-                                <>
-                                  <Sparkles className="w-8 h-8 mx-auto mb-2 text-primary animate-pulse" />
-                                  <span className="text-sm font-medium text-white">
-                                    {language === 'ru' ? 'Сгенерировать' : 'Generate'}
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                          </motion.div>
-                        )}
+                            <FlippableCard
+                              definition={definition}
+                              cardRow={cardData}
+                              isInsight={false}
+                              onEdit={() => hasData ? onEditCard(definition.slot) : (canGenerate && generateBuildCard(definition.slot))}
+                              isGenerating={isCardGenerating}
+                            />
 
-                        {/* Completed indicator with warning badge */}
-                        {hasData && (
-                          <div className="absolute top-2 right-2 flex items-center gap-1">
-                            {cardWarnings[definition.slot]?.length > 0 ? (
+                            {/* Generate/Fill button overlay for empty cards */}
+                            {!hasData && canGenerate && !isCardGenerating && (
                               <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="relative group cursor-pointer"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg cursor-pointer hover:bg-black/50 transition-colors"
+                                onClick={() => {
+                                  if (buildMode === 'manual') {
+                                    onEditCard(definition.slot);
+                                  } else {
+                                    generateBuildCard(definition.slot);
+                                  }
+                                }}
                               >
-                                <AlertTriangle className="w-5 h-5 text-amber-500 animate-pulse" />
-                                {/* Warning tooltip */}
-                                <div className="absolute right-0 top-6 w-64 p-2 bg-background/95 border border-amber-500/30 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
-                                  {cardWarnings[definition.slot].map((warning, i) => (
-                                    <div key={i} className="text-xs text-amber-200 mb-1 last:mb-0">
-                                      {warning.message}
-                                    </div>
-                                  ))}
+                                <div className="text-center p-4">
+                                  {buildMode === 'manual' ? (
+                                    <>
+                                      <span className="text-2xl mb-2 block">✍️</span>
+                                      <span className="text-sm font-medium text-white">
+                                        {language === 'ru' ? 'Заполнить' : 'Fill in'}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Sparkles className="w-8 h-8 mx-auto mb-2 text-primary animate-pulse" />
+                                      <span className="text-sm font-medium text-white">
+                                        {language === 'ru' ? 'Сгенерировать' : 'Generate'}
+                                      </span>
+                                    </>
+                                  )}
                                 </div>
                               </motion.div>
-                            ) : (
-                              <CheckCircle2 className="w-5 h-5 text-green-500" />
                             )}
-                          </div>
-                        )}
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
+
+                            {/* Top badges: Rarity + Warning/Check */}
+                            {hasData && (
+                              <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+                                {/* Rarity Badge */}
+                                {cardRarity && (
+                                  <RarityBadge rarity={cardRarity} className="scale-75 origin-top-right" />
+                                )}
+
+                                {/* Warning or Check */}
+                                <div className="flex items-center gap-1">
+                                  {cardWarnings[definition.slot]?.length > 0 ? (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <motion.div
+                                          initial={{ scale: 0 }}
+                                          animate={{ scale: 1 }}
+                                          className="cursor-pointer"
+                                        >
+                                          <AlertTriangle className="w-5 h-5 text-amber-500 animate-pulse" />
+                                        </motion.div>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="left" className="max-w-64 bg-background/95 border border-amber-500/30">
+                                        {cardWarnings[definition.slot].map((warning, i) => (
+                                          <div key={i} className="text-xs text-amber-200 mb-1 last:mb-0">
+                                            {warning.message}
+                                          </div>
+                                        ))}
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  ) : (
+                                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Bottom: AI Actions + Team Feedback */}
+                            {hasData && (
+                              <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                                {/* Regenerate Button */}
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-7 w-7 p-0 bg-background/80 hover:bg-background"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        generateBuildCard(definition.slot);
+                                      }}
+                                      disabled={isCardGenerating}
+                                    >
+                                      {isCardGenerating ? (
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      ) : (
+                                        <RefreshCw className="w-3.5 h-3.5" />
+                                      )}
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    {language === 'ru' ? 'Перегенерировать' : 'Regenerate'}
+                                  </TooltipContent>
+                                </Tooltip>
+
+                                {/* Team Feedback */}
+                                {cardFeedback && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-7 w-7 p-0 bg-background/80 hover:bg-background"
+                                      >
+                                        <MessageSquare className="w-3.5 h-3.5 text-blue-400" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="max-w-72 bg-background/95 border border-blue-500/30">
+                                      <div className="flex items-start gap-2">
+                                        <span className="text-lg">🌲</span>
+                                        <div>
+                                          <div className="text-xs font-semibold text-blue-300 mb-1">
+                                            {language === 'ru' ? 'Анализ команды' : 'Team Analysis'}
+                                          </div>
+                                          <div className="text-xs text-foreground/80">
+                                            {cardFeedback}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </TooltipProvider>
+                  </motion.div>
+
+                  {/* Action Buttons - Show when all cards filled */}
+                  {allCardsFilled && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="px-6 pb-8 flex flex-wrap gap-3 justify-center"
+                    >
+                      {/* Create Design Prompt Button */}
+                      <Button
+                        onClick={() => setDesignPromptOpen(true)}
+                        variant="outline"
+                        className="gap-2 border-pink-500/30 text-pink-400 hover:bg-pink-500/10"
+                      >
+                        <Palette className="w-4 h-4" />
+                        {language === 'ru' ? 'Design Промт' : 'Design Prompt'}
+                      </Button>
+
+                      {/* Create Lovable Prompt Button */}
+                      <Button
+                        onClick={() => setLovablePromptOpen(true)}
+                        className="gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700"
+                      >
+                        <Rocket className="w-4 h-4" />
+                        {language === 'ru' ? 'Lovable Промт' : 'Lovable Prompt'}
+                      </Button>
+                    </motion.div>
+                  )}
+                </>
               )}
             </AccordionContent>
           </AccordionItem>
@@ -427,6 +545,18 @@ export const BuildPhaseSection = ({
         open={rewardModalOpen}
         onOpenChange={setRewardModalOpen}
         phase="build"
+      />
+      <GenerateDesignPromptModal
+        open={designPromptOpen}
+        onOpenChange={setDesignPromptOpen}
+        deckTitle={deckTitle}
+        cards={cards}
+      />
+      <GenerateLovablePromptModal
+        open={lovablePromptOpen}
+        onOpenChange={setLovablePromptOpen}
+        deckTitle={deckTitle}
+        cards={cards}
       />
     </>
   );
