@@ -860,6 +860,112 @@ export const translations = {
         error: "Something went wrong. Please try again."
       }
     },
+    portal: {
+      hero: {
+        headline1: "THE SOLO GRIND",
+        headline2: "IS DEAD.",
+        headline3: "JOIN THE LIVING NETWORK.",
+        subtitle: "Get your Digital Passport. Unlock AI-powered research. Build with a network that grows with you.",
+        cta: "INITIALIZE MY PASSPORT",
+        membersCount: "founders already in",
+        joinTelegram: "Join Telegram"
+      },
+      quiz: {
+        progress: "Question {current} of {total}",
+        question1: "What drives you most?",
+        question2: "How do you approach problems?",
+        question3: "What's your superpower?",
+        question4: "Your ideal outcome?",
+        options: {
+          impact: "Making Impact",
+          answers: "Finding Answers",
+          safety: "Building Safety",
+          systems: "Growing Systems",
+          fast: "Move fast, break things",
+          research: "Research deeply first",
+          secure: "Secure foundations",
+          organic: "Organic evolution",
+          revolutions: "Starting revolutions",
+          patterns: "Seeing patterns",
+          protect: "Protecting assets",
+          networks: "Growing networks",
+          world: "Change the world",
+          truth: "Discover truth",
+          fortress: "Build fortress",
+          ecosystem: "Create ecosystem"
+        }
+      },
+      identity: {
+        title: "Lock Your Identity",
+        subtitle: "Choose a name that will be displayed on your passport. This is your founder identity.",
+        placeholder: "Enter your founder name...",
+        cta: "LOCK MY IDENTITY",
+        error: "Name must be at least 2 characters",
+        securityNote: "Your identity is secured with blockchain-grade encryption"
+      },
+      reveal: {
+        trait: "Trait"
+      },
+      wallet: {
+        title: "Secure Your Passport",
+        subtitle: "Add to your wallet for quick access and push notifications when AI analyzes your projects.",
+        instantAccess: "Instant Access",
+        instantAccessDesc: "One tap to open your passport anywhere",
+        realTimeUpdates: "Real-time Updates",
+        realTimeUpdatesDesc: "Get notified when AI completes analysis",
+        addApple: "Add to Apple Wallet",
+        addGoogle: "Add to Google Wallet",
+        skip: "Skip for now",
+        skipWarning: "Skipping means you'll miss real-time notifications"
+      },
+      walletBanner: {
+        title: "Identity not secured",
+        subtitle: "50 Spores at risk. Save to wallet now.",
+        save: "Save"
+      },
+      dashboard: {
+        welcome: "Welcome",
+        subtitle: "Your journey in the Mycelium Network begins now",
+        passportId: "Passport ID",
+        trait: "Trait",
+        projects: "Projects",
+        spores: "Spores",
+        startProject: "Start Your First Project",
+        startProjectDesc: "Plant your first project seed. Our AI Council will analyze your idea and help you validate it before you build.",
+        feature1: "60-second problem discovery",
+        feature2: "AI-powered market analysis",
+        feature3: "Get your Problem Card v1.0",
+        cta: "START MY FIRST PROJECT",
+        cardsCreated: "Cards Created",
+        researchDone: "Research Done",
+        networkRank: "Network Rank"
+      },
+      projectSeed: {
+        targetLabel: "Target",
+        painLabel: "Pain",
+        enemyLabel: "Enemy",
+        timingLabel: "Timing",
+        step: "Step {current} of {total}"
+      },
+      problemCard: {
+        title: "Problem Card",
+        createdBy: "Created by",
+        targetAudience: "Target Audience",
+        corePain: "Core Pain",
+        whySolutionsFail: "Why Solutions Fail",
+        whyNow: "Why Now",
+        generating: "Generating Problem Specification...",
+        analyzing: "Your AI Council (Ever & Toxic) is analyzing your input...",
+        aiAnalysis: "AI Council Analysis",
+        problemStatement: "Problem Statement",
+        keyInsight: "Key Insight",
+        riskFactor: "Risk Factor",
+        firstStep: "First Step This Week",
+        preparingAnalysis: "AI Council is preparing deeper analysis...",
+        viewDashboard: "View Dashboard",
+        errorGeneric: "Failed to generate analysis. Please try again."
+      }
+    },
     empire: {
       title: "EMPIRE BUILDER",
       subtitle: "REAL CASH MODE",
@@ -1749,6 +1855,112 @@ export const translations = {
         alreadySubscribed: "С возвращением! Проверь почту.",
         success: "Ты в деле!",
         error: "Что-то пошло не так. Попробуй ещё раз."
+      }
+    },
+    portal: {
+      hero: {
+        headline1: "ОДИНОЧНЫЙ ГРАЙНД",
+        headline2: "МЁРТВ.",
+        headline3: "ВСТУПАЙ В ЖИВУЮ СЕТЬ.",
+        subtitle: "Получи цифровой паспорт. Открой AI-исследования. Строй с сетью, которая растёт вместе с тобой.",
+        cta: "АКТИВИРОВАТЬ ПАСПОРТ",
+        membersCount: "фаундеров уже внутри",
+        joinTelegram: "В Telegram"
+      },
+      quiz: {
+        progress: "Вопрос {current} из {total}",
+        question1: "Что тебя мотивирует больше всего?",
+        question2: "Как ты подходишь к проблемам?",
+        question3: "Твоя суперсила?",
+        question4: "Твой идеальный результат?",
+        options: {
+          impact: "Создавать импакт",
+          answers: "Находить ответы",
+          safety: "Строить безопасность",
+          systems: "Растить системы",
+          fast: "Двигаться быстро, ломать барьеры",
+          research: "Сначала глубокое исследование",
+          secure: "Надёжный фундамент",
+          organic: "Органическая эволюция",
+          revolutions: "Запускать революции",
+          patterns: "Видеть паттерны",
+          protect: "Защищать активы",
+          networks: "Растить сети",
+          world: "Изменить мир",
+          truth: "Открыть истину",
+          fortress: "Построить крепость",
+          ecosystem: "Создать экосистему"
+        }
+      },
+      identity: {
+        title: "Закрепи свою личность",
+        subtitle: "Выбери имя для своего паспорта. Это твоя фаундер-идентичность.",
+        placeholder: "Введи своё имя...",
+        cta: "ЗАКРЕПИТЬ ЛИЧНОСТЬ",
+        error: "Имя должно быть минимум 2 символа",
+        securityNote: "Твоя личность защищена блокчейн-шифрованием"
+      },
+      reveal: {
+        trait: "Черта"
+      },
+      wallet: {
+        title: "Защити свой паспорт",
+        subtitle: "Добавь в кошелёк для быстрого доступа и уведомлений когда AI анализирует твои проекты.",
+        instantAccess: "Мгновенный доступ",
+        instantAccessDesc: "Один тап — и паспорт открыт где угодно",
+        realTimeUpdates: "Уведомления в реальном времени",
+        realTimeUpdatesDesc: "Узнавай когда AI завершит анализ",
+        addApple: "Добавить в Apple Wallet",
+        addGoogle: "Добавить в Google Wallet",
+        skip: "Пропустить",
+        skipWarning: "Пропуск означает что ты не получишь уведомления"
+      },
+      walletBanner: {
+        title: "Личность не защищена",
+        subtitle: "50 Спор под угрозой. Сохрани в кошелёк.",
+        save: "Сохранить"
+      },
+      dashboard: {
+        welcome: "Добро пожаловать",
+        subtitle: "Твоё путешествие в Mycelium Network начинается",
+        passportId: "ID паспорта",
+        trait: "Черта",
+        projects: "Проекты",
+        spores: "Споры",
+        startProject: "Начни свой первый проект",
+        startProjectDesc: "Посади семя проекта. AI-совет проанализирует идею и поможет валидировать её до начала разработки.",
+        feature1: "60-секундное открытие проблемы",
+        feature2: "AI-анализ рынка",
+        feature3: "Получи Problem Card v1.0",
+        cta: "НАЧАТЬ ПЕРВЫЙ ПРОЕКТ",
+        cardsCreated: "Карт создано",
+        researchDone: "Исследований",
+        networkRank: "Ранг в сети"
+      },
+      projectSeed: {
+        targetLabel: "Цель",
+        painLabel: "Боль",
+        enemyLabel: "Враг",
+        timingLabel: "Тайминг",
+        step: "Шаг {current} из {total}"
+      },
+      problemCard: {
+        title: "Problem Card",
+        createdBy: "Создал",
+        targetAudience: "Целевая аудитория",
+        corePain: "Ключевая боль",
+        whySolutionsFail: "Почему решения не работают",
+        whyNow: "Почему сейчас",
+        generating: "Генерация спецификации проблемы...",
+        analyzing: "AI-совет (Ever & Toxic) анализирует твой ввод...",
+        aiAnalysis: "Анализ AI-совета",
+        problemStatement: "Формулировка проблемы",
+        keyInsight: "Ключевой инсайт",
+        riskFactor: "Фактор риска",
+        firstStep: "Первый шаг на этой неделе",
+        preparingAnalysis: "AI-совет готовит глубокий анализ...",
+        viewDashboard: "К дашборду",
+        errorGeneric: "Не удалось сгенерировать анализ. Попробуй ещё раз."
       }
     },
     empire: {

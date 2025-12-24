@@ -5,7 +5,7 @@ import passportMockup from '@/assets/passport-mockup.png';
 import myceliumBg from '@/assets/mycelium-network.gif';
 
 interface PortalHeroProps {
-  memberCount: number;
+  memberCount: number | null;
   onInitialize: () => void;
 }
 
@@ -30,6 +30,7 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
             transition={{ duration: 0.8 }}
           >
             {/* Member count badge */}
+            {memberCount !== null && (
             <motion.div 
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2E7D32]/20 border border-[#2E7D32]/40 mb-6"
               initial={{ opacity: 0, y: -20 }}
@@ -41,6 +42,7 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
                 {memberCount.toLocaleString()} founders already in
               </span>
             </motion.div>
+            )}
 
             {/* Main headline */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
