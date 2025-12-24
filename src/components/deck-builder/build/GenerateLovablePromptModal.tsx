@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -34,18 +34,12 @@ export const GenerateLovablePromptModal = ({
   // Get Build cards (slots 11-15)
   const buildCards = cards.filter(c => c.card_slot >= 11 && c.card_slot <= 15);
 
-  useEffect(() => {
-    if (open) {
-      generatePrompt();
-    }
-  }, [open, cards]);
-
-  const getCardData = (slot: number) => {
+  const getCardData = useCallback((slot: number): Record<string, string> => {
     const card = cards.find(c => c.card_slot === slot);
-    return card?.card_data as Record<string, any> || {};
-  };
+    return (card?.card_data as Record<string, string>) || {};
+  }, [cards]);
 
-  const generatePrompt = () => {
+  const generatePrompt = useCallback(() => {
     // Vision data (using actual field names from cardDefinitions.ts)
     const v1 = getCardData(1); // Product
     const v2 = getCardData(2); // Problem
@@ -224,7 +218,13 @@ ${b1.tech_validation || 'Everything buildable in Lovable / React Native'}
 `.trim();
 
     setPrompt(generatedPrompt);
-  };
+  }, [getCardData, language, deckTitle]);
+
+  useEffect(() => {
+    if (open) {
+      generatePrompt();
+    }
+  }, [open, generatePrompt]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(prompt);

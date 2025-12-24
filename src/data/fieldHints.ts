@@ -596,7 +596,7 @@ export const FIELD_GUIDANCE: Record<string, FieldGuidance> = {
 export function getLocalizedGuidanceText(text: LocalizedString | string, language: string): string {
   if (typeof text === 'string') return text;
   const lang = language === 'es' ? 'en' : language; // fallback es to en
-  return (text as any)[lang] || text.en;
+  return text[lang as keyof LocalizedString] || text.en;
 }
 
 // Helper function to get guidance for a field
