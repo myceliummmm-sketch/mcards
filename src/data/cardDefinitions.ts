@@ -362,6 +362,7 @@ export const CARD_DEFINITIONS: CardDefinition[] = [
     buildStep: 5,
     fields: [
       { name: 'app_name', label: { en: 'App Name', ru: 'Название приложения' }, type: 'text', placeholder: { en: 'From V-01', ru: 'Из V-01' }, required: true },
+      { name: 'app_format', label: { en: 'App Format', ru: 'Формат приложения' }, type: 'select', required: true, options: [{ en: 'Mobile App (iOS + Android)', ru: 'Мобильное приложение (iOS + Android)' }, { en: 'Web Application', ru: 'Веб-приложение' }, { en: 'Both (Mobile + Web)', ru: 'Оба (Мобильное + Веб)' }] },
       { name: 'app_description', label: { en: 'App Description', ru: 'Описание приложения' }, type: 'textarea', placeholder: { en: 'One-liner from V-01', ru: 'Одна строка из V-01' }, required: true },
       { name: 'features_summary', label: { en: 'Features Summary', ru: 'Сводка фич' }, type: 'textarea', placeholder: { en: 'Key features from B-01', ru: 'Ключевые фичи из B-01' }, required: true },
       { name: 'screens_summary', label: { en: 'Screens Summary', ru: 'Сводка экранов' }, type: 'textarea', placeholder: { en: 'Screen list from B-03', ru: 'Список экранов из B-03' }, required: true },

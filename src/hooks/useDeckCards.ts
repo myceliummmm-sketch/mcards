@@ -2,8 +2,26 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import type { Database } from '@/integrations/supabase/types';
+import type {
+  AllCardData,
+  CardSlot,
+  CardDataMap,
+} from '@/types/cardData';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
+
+/** Extended DeckCard with typed card_data */
+export interface TypedDeckCard<S extends CardSlot = CardSlot> extends Omit<DeckCard, 'card_data'> {
+  card_data: CardDataMap[S] | null;
+}
+
+/** Evaluation data structure */
+export interface CardEvaluation {
+  score?: number;
+  rarity?: string;
+  feedback?: string;
+  details?: Record<string, number>;
+}
 
 export const useDeckCards = (deckId: string) => {
   const [cards, setCards] = useState<DeckCard[]>([]);
@@ -105,25 +123,34 @@ export const useDeckCards = (deckId: string) => {
     };
   }, [deckId, fetchCards]);
 
-  const saveCard = async (
-    cardSlot: number, 
-    cardType: string, 
-    cardData: any,
+  /**
+   * Save card with strict typing support
+   * @param cardSlot - The slot number (1-25)
+   * @param cardType - The card type identifier
+   * @param cardData - The card data (typed based on slot)
+   * @param imageUrl - Optional image URL
+   * @param evaluation - Optional evaluation data
+   * @param silent - If true, suppress success toast
+   */
+  const saveCard = async <S extends CardSlot>(
+    cardSlot: S,
+    cardType: string,
+    cardData: CardDataMap[S] | AllCardData | Record<string, unknown>,
     imageUrl?: string,
-    evaluation?: any,
+    evaluation?: CardEvaluation,
     silent?: boolean
   ) => {
     try {
       // Get existing card to preserve image/evaluation if not explicitly provided
       const existingCard = cards.find(c => c.card_slot === cardSlot);
-      
+
       const { error } = await supabase
         .from('deck_cards')
         .upsert({
           deck_id: deckId,
           card_slot: cardSlot,
           card_type: cardType,
-          card_data: cardData,
+          card_data: cardData as Record<string, unknown>,
           // Preserve existing values if not explicitly provided
           card_image_url: imageUrl !== undefined ? imageUrl : (existingCard?.card_image_url || null),
           evaluation: evaluation !== undefined ? evaluation : (existingCard?.evaluation || null),
@@ -178,8 +205,33 @@ export const useDeckCards = (deckId: string) => {
     }
   };
 
+  /**
+   * Get card by slot (untyped, returns raw DeckCard)
+   */
   const getCardBySlot = (slot: number): DeckCard | undefined => {
     return cards.find(c => c.card_slot === slot);
+  };
+
+  /**
+   * Get typed card data for a specific slot
+   * Returns null if card doesn't exist or data is empty
+   */
+  const getTypedCardData = <S extends CardSlot>(slot: S): CardDataMap[S] | null => {
+    const card = cards.find(c => c.card_slot === slot);
+    if (!card?.card_data || Object.keys(card.card_data).length === 0) {
+      return null;
+    }
+    return card.card_data as CardDataMap[S];
+  };
+
+  /**
+   * Get typed card for a specific slot
+   * Returns the full card with typed card_data
+   */
+  const getTypedCard = <S extends CardSlot>(slot: S): TypedDeckCard<S> | undefined => {
+    const card = cards.find(c => c.card_slot === slot);
+    if (!card) return undefined;
+    return card as unknown as TypedDeckCard<S>;
   };
 
   const getFilledCardsCount = (): number => {
@@ -221,6 +273,8 @@ export const useDeckCards = (deckId: string) => {
     saveCard,
     clearCard,
     getCardBySlot,
+    getTypedCardData,
+    getTypedCard,
     getFilledCardsCount,
     updateCardImage,
     refetch: fetchCards
