@@ -78,6 +78,9 @@ verify_jwt = true
 [functions.build-generate]
 verify_jwt = true
 
+[functions.build-evaluate]
+verify_jwt = true
+
 [functions.generate-research-report]
 verify_jwt = true
 
