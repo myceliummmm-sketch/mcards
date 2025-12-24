@@ -3,8 +3,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { getCardsByPhase } from '@/data/cardDefinitions';
 import type { Database } from '@/integrations/supabase/types';
+import type { Rarity } from '@/data/rarityConfig';
 
 type DeckCard = Database['public']['Tables']['deck_cards']['Row'];
+
+export interface CardScore {
+  score: number;
+  rarity: Rarity;
+  details: Record<string, number>;
+  feedback: string;
+}
 
 export interface BuildScore {
   overallScore: number;
@@ -19,6 +27,16 @@ export interface CardWarning {
   type: string;
   message: string;
   field?: string;
+}
+
+// Helper to convert score to rarity
+function scoreToRarity(score: number): Rarity {
+  // BUILD uses 0-100 scale, convert to rarity
+  if (score >= 90) return 'legendary';
+  if (score >= 75) return 'epic';
+  if (score >= 50) return 'rare';
+  if (score >= 30) return 'uncommon';
+  return 'common';
 }
 
 interface UseBuildPhaseParams {
@@ -46,6 +64,11 @@ interface UseBuildPhaseReturn {
   evaluateBuildPhase: () => Promise<void>;
   generateBuildCard: (cardSlot: number) => Promise<void>;
   generateAllBuildCards: () => Promise<void>;
+
+  // Helpers
+  getCardScore: (slot: number) => CardScore | null;
+  getCardRarity: (slot: number) => Rarity | null;
+  getCardFeedback: (slot: number) => string | null;
 }
 
 export function useBuildPhase({
@@ -236,6 +259,30 @@ export function useBuildPhase({
     }
   }, [filledCount, buildScore, isEvaluating, evaluateBuildPhase]);
 
+  // Helper: Get card score with rarity
+  const getCardScore = useCallback((slot: number): CardScore | null => {
+    if (!buildScore?.cardScores?.[slot]) return null;
+    const scoreData = buildScore.cardScores[slot];
+    return {
+      score: scoreData.score,
+      rarity: scoreToRarity(scoreData.score),
+      details: scoreData.details,
+      feedback: scoreData.feedback,
+    };
+  }, [buildScore]);
+
+  // Helper: Get just the rarity for a card
+  const getCardRarity = useCallback((slot: number): Rarity | null => {
+    const scoreData = buildScore?.cardScores?.[slot];
+    if (!scoreData) return null;
+    return scoreToRarity(scoreData.score);
+  }, [buildScore]);
+
+  // Helper: Get feedback for a card
+  const getCardFeedback = useCallback((slot: number): string | null => {
+    return buildScore?.cardScores?.[slot]?.feedback || null;
+  }, [buildScore]);
+
   return {
     // State
     generatingSlots,
@@ -254,5 +301,10 @@ export function useBuildPhase({
     evaluateBuildPhase,
     generateBuildCard,
     generateAllBuildCards,
+
+    // Helpers
+    getCardScore,
+    getCardRarity,
+    getCardFeedback,
   };
 }
