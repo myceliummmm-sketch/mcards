@@ -18,6 +18,8 @@ interface ABStats {
   email_submits: number;
   chest_opens: number;
   video_plays: number;
+  // Community metrics
+  telegram_clicks: number;
   first_event_at: string | null;
 }
 
@@ -67,6 +69,7 @@ serve(async (req) => {
           email_submits: 0,
           chest_opens: 0,
           video_plays: 0,
+          telegram_clicks: 0,
           first_event_at: null
         };
         sessions[v] = new Set();
@@ -104,6 +107,9 @@ serve(async (req) => {
           break;
         case 'video_play':
           aggregated[v].video_plays++;
+          break;
+        case 'telegram_link_click':
+          aggregated[v].telegram_clicks++;
           break;
       }
     });

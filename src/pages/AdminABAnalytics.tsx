@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RefreshCw, Users, MousePointer, Clock, TrendingUp, Mail, Gift, Play, Calendar } from "lucide-react";
+import { ArrowLeft, RefreshCw, Users, MousePointer, Clock, TrendingUp, Mail, Gift, Play, Calendar, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
@@ -17,6 +17,7 @@ interface ABStats {
   email_submits: number;
   chest_opens: number;
   video_plays: number;
+  telegram_clicks: number;
   first_event_at: string | null;
 }
 
@@ -86,6 +87,7 @@ const AdminABAnalytics = () => {
       email_submits: 0,
       chest_opens: 0,
       video_plays: 0,
+      telegram_clicks: 0,
       first_event_at: null
     };
   });
@@ -167,6 +169,24 @@ const AdminABAnalytics = () => {
           </div>
         )}
 
+        {/* Community-specific metrics */}
+        {stat.variant === 'community' && (
+          <div className="space-y-4 pt-2 border-t">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col items-center gap-1 p-2 bg-emerald-500/10 rounded-lg">
+                <Mail className="h-4 w-4 text-emerald-500" />
+                <p className="text-xl font-bold">{stat.email_submits}</p>
+                <p className="text-xs text-muted-foreground">Emails</p>
+              </div>
+              <div className="flex flex-col items-center gap-1 p-2 bg-emerald-500/10 rounded-lg">
+                <MessageCircle className="h-4 w-4 text-emerald-500" />
+                <p className="text-xl font-bold">{stat.telegram_clicks}</p>
+                <p className="text-xs text-muted-foreground">TG Clicks</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="pt-2 border-t space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Click Rate</span>
@@ -187,6 +207,22 @@ const AdminABAnalytics = () => {
                 {calcConversion(stat.email_submits, stat.page_loads)}
               </span>
             </div>
+          )}
+          {stat.variant === 'community' && (
+            <>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Email Conversion</span>
+                <span className="font-medium text-emerald-500">
+                  {calcConversion(stat.email_submits, stat.page_loads)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">TG Click Rate</span>
+                <span className="font-medium text-emerald-500">
+                  {calcConversion(stat.telegram_clicks, stat.page_loads)}
+                </span>
+              </div>
+            </>
           )}
         </div>
       </CardContent>
