@@ -223,14 +223,16 @@ ${b5.app_format || 'Mobile App (iOS + Android)'}
           </Badge>
         </div>
 
-        <ScrollArea className="flex-1 border rounded-lg bg-muted/30 p-4">
-          <motion.pre
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-sm whitespace-pre-wrap font-mono text-foreground/90 leading-relaxed"
-          >
-            {prompt}
-          </motion.pre>
+        <ScrollArea className="flex-1 min-h-0 h-[50vh] border rounded-lg bg-muted/30">
+          <div className="p-4">
+            <motion.pre
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-sm whitespace-pre-wrap font-mono text-foreground/90 leading-relaxed"
+            >
+              {prompt}
+            </motion.pre>
+          </div>
         </ScrollArea>
 
         <div className="flex justify-between items-center pt-4 border-t">
