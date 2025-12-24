@@ -31,6 +31,7 @@ import { motion } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
 import { useAutoCompleteVision } from '@/hooks/useAutoCompleteVision';
 import { toast } from 'sonner';
+import { isValidCardSlot, type CardSlot } from '@/types/cardData';
 
 type Deck = Database['public']['Tables']['decks']['Row'];
 
@@ -121,9 +122,12 @@ export default function DeckBuilder() {
     const cardDefinition = getCardBySlot(editingSlot);
     if (!cardDefinition) return;
 
+    // Validate slot before saving
+    if (!isValidCardSlot(editingSlot)) return;
+    
     // Save card data to dedicated columns (not nested in card_data)
     // Pass silent flag to prevent duplicate toasts when CardEditor handles its own
-    await saveCard(editingSlot, cardDefinition.cardType, data, imageUrl, evaluation, silent);
+    await saveCard(editingSlot as CardSlot, cardDefinition.cardType, data, imageUrl, evaluation, silent);
   };
 
   const handleSaveTitle = async () => {
@@ -258,8 +262,8 @@ export default function DeckBuilder() {
   // Функция для обновления данных карты
   const handleMobileCardUpdate = async (cardId: string, data: Record<string, any>) => {
     const card = cards.find(c => c.id === cardId);
-    if (!card) return;
-    await saveCard(card.card_slot, card.card_type, data);
+    if (!card || !isValidCardSlot(card.card_slot)) return;
+    await saveCard(card.card_slot as CardSlot, card.card_type, data);
   };
 
   // Функция для ковки карты (мобильная версия)
