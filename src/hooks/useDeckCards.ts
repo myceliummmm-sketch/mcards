@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database, Json } from '@/integrations/supabase/types';
 import type {
   AllCardData,
   CardSlot,
@@ -146,16 +146,16 @@ export const useDeckCards = (deckId: string) => {
 
       const { error } = await supabase
         .from('deck_cards')
-        .upsert({
+        .upsert([{
           deck_id: deckId,
-          card_slot: cardSlot,
+          card_slot: cardSlot as number,
           card_type: cardType,
-          card_data: cardData as Record<string, unknown>,
+          card_data: cardData as unknown as Json,
           // Preserve existing values if not explicitly provided
           card_image_url: imageUrl !== undefined ? imageUrl : (existingCard?.card_image_url || null),
-          evaluation: evaluation !== undefined ? evaluation : (existingCard?.evaluation || null),
+          evaluation: evaluation !== undefined ? (evaluation as unknown as Json) : (existingCard?.evaluation || null),
           updated_at: new Date().toISOString()
-        }, {
+        }], {
           onConflict: 'deck_id,card_slot'
         });
 
@@ -221,7 +221,7 @@ export const useDeckCards = (deckId: string) => {
     if (!card?.card_data || Object.keys(card.card_data).length === 0) {
       return null;
     }
-    return card.card_data as CardDataMap[S];
+    return card.card_data as unknown as CardDataMap[S];
   };
 
   /**
