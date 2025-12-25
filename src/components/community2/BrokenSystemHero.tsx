@@ -79,10 +79,10 @@ export const BrokenSystemHero = ({ onActivateExit, memberCount }: BrokenSystemHe
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8"
-        >
-          {t('brokenSystem.hero.subheadline', { count: memberCount?.toLocaleString() || '2,847' })}
-        </motion.p>
+        className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8"
+      >
+        {t('brokenSystem.hero.subheadline').replace('{count}', memberCount?.toLocaleString() || '2,847')}
+      </motion.p>
 
         {/* 3D Passport Mockup */}
         <motion.div

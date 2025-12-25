@@ -1192,6 +1192,52 @@ export const translations = {
       welcomeBack: "Welcome back! Your empire awaits.",
       sporesClaimed: "Spores claimed! Check your inbox."
     },
+    brokenSystem: {
+      hero: {
+        headline1: "THE SYSTEM IS BROKEN.",
+        headline2: "THE NETWORK IS ALIVE.",
+        subheadline: "Old structures are failing. The solo grind is a trap. Exit the chaos and join {count} builders in the first living digital state.",
+        cta: "ACTIVATE MY EXIT",
+        secondaryCta: "View Community Pulse"
+      },
+      quiz: {
+        intro: "The system doesn't know who you are. We do.",
+        step: "Step {current} of {total}"
+      },
+      identity: {
+        title: "Identification complete.",
+        subtitle: "You are not a number. You are a Founder.",
+        inputLabel: "Enter your handle / name",
+        inputPlaceholder: "Your sovereign identity...",
+        cta: "Secure your status",
+        sporeBonus: "Lock in 50 Spores"
+      },
+      reveal: {
+        issued: "PASSPORT ISSUED",
+        welcome: "WELCOME TO THE NETWORK",
+        archetype: "Archetype",
+        status: "Status",
+        sovereignNode: "Sovereign Node",
+        balance: "Balance",
+        spores: "Spores",
+        addToWallet: "ADD TO WALLET",
+        continue: "Enter the Network",
+        skipWallet: "Skip for now"
+      },
+      dashboard: {
+        headline: "The system is broken because we stopped building our own.",
+        subheadline: "Let's change that.",
+        startProject: "START YOUR FIRST PROJECT",
+        projectsLabel: "Your Projects",
+        noProjects: "No projects yet. Plant your first seed.",
+        reset: "Reset Portal"
+      },
+      warning: {
+        title: "SYSTEM WARNING: Identity not secured",
+        subtitle: "You are still a dreamer. Sync to become a Founder.",
+        cta: "Sync Wallet"
+      }
+    },
   },
   ru: {
     common: {
@@ -2384,6 +2430,52 @@ export const translations = {
       welcomeBack: "С возвращением! Твоя империя ждёт.",
       sporesClaimed: "Споры получены! Проверь почту."
     },
+    brokenSystem: {
+      hero: {
+        headline1: "СИСТЕМА СЛОМАНА.",
+        headline2: "СЕТЬ ЖИВА.",
+        subheadline: "Старые структуры рушатся. Соло-гринд — это ловушка. Выйди из хаоса и присоединись к {count} билдерам в первом живом цифровом государстве.",
+        cta: "АКТИВИРОВАТЬ ВЫХОД",
+        secondaryCta: "Пульс сообщества"
+      },
+      quiz: {
+        intro: "Система не знает, кто ты. Мы знаем.",
+        step: "Шаг {current} из {total}"
+      },
+      identity: {
+        title: "Идентификация завершена.",
+        subtitle: "Ты не номер. Ты Фаундер.",
+        inputLabel: "Введи свой никнейм / имя",
+        inputPlaceholder: "Твоя суверенная идентичность...",
+        cta: "Закрепить статус",
+        sporeBonus: "Получить 50 Spores"
+      },
+      reveal: {
+        issued: "ПАСПОРТ ВЫДАН",
+        welcome: "ДОБРО ПОЖАЛОВАТЬ В СЕТЬ",
+        archetype: "Архетип",
+        status: "Статус",
+        sovereignNode: "Суверенный Узел",
+        balance: "Баланс",
+        spores: "Споры",
+        addToWallet: "ДОБАВИТЬ В КОШЕЛЁК",
+        continue: "Войти в Сеть",
+        skipWallet: "Пропустить"
+      },
+      dashboard: {
+        headline: "Система сломана, потому что мы перестали строить своё.",
+        subheadline: "Давай это изменим.",
+        startProject: "НАЧАТЬ ПЕРВЫЙ ПРОЕКТ",
+        projectsLabel: "Твои проекты",
+        noProjects: "Проектов пока нет. Посади первое семя.",
+        reset: "Сбросить портал"
+      },
+      warning: {
+        title: "ВНИМАНИЕ: Идентичность не защищена",
+        subtitle: "Ты всё ещё мечтатель. Синхронизируйся, чтобы стать Фаундером.",
+        cta: "Синхронизировать"
+      }
+    },
   },
   es: {
     common: {
@@ -3574,6 +3666,52 @@ export const translations = {
       burnWarning: "⚠️ Si te vas, se queman.",
       welcomeBack: "¡Bienvenido de vuelta! Tu imperio te espera.",
       sporesClaimed: "¡Spores reclamados! Revisa tu bandeja."
+    },
+    brokenSystem: {
+      hero: {
+        headline1: "EL SISTEMA ESTÁ ROTO.",
+        headline2: "LA RED ESTÁ VIVA.",
+        subheadline: "Las viejas estructuras están fallando. La lucha en solitario es una trampa. Sal del caos y únete a {count} constructores en el primer estado digital vivo.",
+        cta: "ACTIVAR MI SALIDA",
+        secondaryCta: "Ver Pulso Comunitario"
+      },
+      quiz: {
+        intro: "El sistema no sabe quién eres. Nosotros sí.",
+        step: "Paso {current} de {total}"
+      },
+      identity: {
+        title: "Identificación completa.",
+        subtitle: "No eres un número. Eres un Fundador.",
+        inputLabel: "Ingresa tu nombre / alias",
+        inputPlaceholder: "Tu identidad soberana...",
+        cta: "Asegurar tu estatus",
+        sporeBonus: "Obtén 50 Spores"
+      },
+      reveal: {
+        issued: "PASAPORTE EMITIDO",
+        welcome: "BIENVENIDO A LA RED",
+        archetype: "Arquetipo",
+        status: "Estado",
+        sovereignNode: "Nodo Soberano",
+        balance: "Balance",
+        spores: "Spores",
+        addToWallet: "AGREGAR A WALLET",
+        continue: "Entrar a la Red",
+        skipWallet: "Omitir por ahora"
+      },
+      dashboard: {
+        headline: "El sistema está roto porque dejamos de construir el nuestro.",
+        subheadline: "Cambiemos eso.",
+        startProject: "INICIAR TU PRIMER PROYECTO",
+        projectsLabel: "Tus Proyectos",
+        noProjects: "Aún no hay proyectos. Planta tu primera semilla.",
+        reset: "Reiniciar Portal"
+      },
+      warning: {
+        title: "ADVERTENCIA: Identidad no asegurada",
+        subtitle: "Todavía eres un soñador. Sincroniza para convertirte en Fundador.",
+        cta: "Sincronizar Wallet"
+      }
     },
   },
 } as const;

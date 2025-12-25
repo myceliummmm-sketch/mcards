@@ -341,9 +341,8 @@ const Community2 = () => {
     setCurrentScreen('problem-card');
   };
 
-  const handleProblemCardComplete = async (analysis: ProblemCardData['ai_analysis']) => {
-    await saveProblemCard(projectSeedAnswers, analysis);
-    setCurrentScreen('dashboard');
+  const handleProblemCardComplete = (analysis: ProblemCardData['ai_analysis']) => {
+    saveProblemCard(projectSeedAnswers, analysis);
   };
 
   const handleBackToDashboard = () => {
@@ -412,7 +411,6 @@ const Community2 = () => {
           <ProjectSeedQuiz
             key="project-seed"
             onComplete={handleProjectSeedComplete}
-            onBack={handleBackToDashboard}
           />
         )}
 
@@ -420,8 +418,10 @@ const Community2 = () => {
           <ProblemCard
             key="problem-card"
             answers={projectSeedAnswers}
-            onComplete={handleProblemCardComplete}
-            onBack={handleBackToDashboard}
+            founderName={founderName}
+            onViewDashboard={handleBackToDashboard}
+            onStartAnother={handleStartNewProject}
+            onCardComplete={handleProblemCardComplete}
           />
         )}
       </AnimatePresence>

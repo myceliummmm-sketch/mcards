@@ -91,10 +91,10 @@ export const ArtifactReveal = ({
         className="text-center mb-8"
       >
         <p className="text-[#00FF00] font-mono text-sm tracking-widest mb-2">
-          {t('brokenSystem.reveal.label')}
+          {t('brokenSystem.reveal.issued')}
         </p>
         <h1 className="text-3xl md:text-4xl font-bold text-white">
-          {t('brokenSystem.reveal.title')}
+          {t('brokenSystem.reveal.welcome')}
         </h1>
       </motion.div>
 
@@ -113,7 +113,7 @@ export const ArtifactReveal = ({
           >
             <div className="text-center">
               <Sparkles className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-500 font-mono">{t('brokenSystem.reveal.processing')}</p>
+              <p className="text-gray-500 font-mono">Processing...</p>
             </div>
           </div>
 
@@ -133,7 +133,7 @@ export const ArtifactReveal = ({
               {/* Header */}
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="text-xs text-gray-400 font-mono">SOVEREIGN NODE</p>
+                  <p className="text-xs text-gray-400 font-mono">{t('brokenSystem.reveal.sovereignNode')}</p>
                   <p className="text-xs text-gray-500 font-mono">{passportNumber}</p>
                 </div>
                 <div 
@@ -196,7 +196,7 @@ export const ArtifactReveal = ({
               variant="ghost"
               className="text-gray-400 hover:text-white hover:bg-white/5"
             >
-              {t('brokenSystem.reveal.later')}
+              {t('brokenSystem.reveal.skipWallet')}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </motion.div>

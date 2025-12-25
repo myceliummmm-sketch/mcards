@@ -26,6 +26,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Community = lazy(() => import("./pages/Community"));
+const Community2 = lazy(() => import("./pages/Community2"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/community2" element={<Community2 />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

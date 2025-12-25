@@ -85,7 +85,7 @@ export const SystemQuiz = ({ onComplete }: SystemQuizProps) => {
           </motion.div>
         </div>
         <div className="flex justify-between mt-2 text-xs text-gray-500 font-mono">
-          <span>{t('brokenSystem.quiz.step', { current: currentQuestion + 1, total: PASSPORT_QUIZ_QUESTIONS.length })}</span>
+          <span>{t('brokenSystem.quiz.step').replace('{current}', String(currentQuestion + 1)).replace('{total}', String(PASSPORT_QUIZ_QUESTIONS.length))}</span>
           <span>{Math.round(progress)}%</span>
         </div>
       </div>
