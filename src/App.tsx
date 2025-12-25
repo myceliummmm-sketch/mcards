@@ -25,7 +25,7 @@ const AdminABAnalytics = lazy(() => import("./pages/AdminABAnalytics"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const Terms = lazy(() => import("./pages/Terms"));
-const Community = lazy(() => import("./pages/Community"));
+const CommunitySplitter = lazy(() => import("./components/community/CommunitySplitter"));
 const Community2 = lazy(() => import("./pages/Community2"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -62,7 +62,7 @@ const App = () => (
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/community" element={<Community />} />
+              <Route path="/community" element={<CommunitySplitter />} />
               <Route path="/community2" element={<Community2 />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
