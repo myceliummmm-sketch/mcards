@@ -38,7 +38,7 @@ export const SystemQuiz = ({ onComplete }: SystemQuizProps) => {
       className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative"
     >
       {/* Grid background */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div 
           className="w-full h-full"
           style={{
