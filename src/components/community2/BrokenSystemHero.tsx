@@ -3,6 +3,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ExternalLink, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import passportMockup from "@/assets/passport-mockup.png";
+import myceliumBg from "@/assets/mycelium-network.gif";
 import { useState, useEffect } from "react";
 
 interface BrokenSystemHeroProps {
@@ -35,10 +36,9 @@ export const BrokenSystemHero = ({ onActivateExit, memberCount }: BrokenSystemHe
     >
       {/* GIF Background with dark overlay */}
       <div className="absolute inset-0 z-0">
-        <img
-          src="/src/assets/mycelium-network.gif"
-          alt="Network background"
-          className="w-full h-full object-cover opacity-30"
+        <div 
+          className="w-full h-full bg-cover bg-center opacity-30"
+          style={{ backgroundImage: `url(${myceliumBg})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black" />
       </div>
