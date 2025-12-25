@@ -3,23 +3,25 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PainAreaStepProps {
   onSelect: (area: string) => void;
   onBack: () => void;
 }
 
-const painAreas = [
-  { id: 'money', label: '💸 Деньги' },
-  { id: 'time', label: '⏰ Время' },
-  { id: 'services', label: '📱 Сервисы' },
-  { id: 'health', label: '🏥 Здоровье' },
-  { id: 'education', label: '📚 Обучение' },
-  { id: 'home', label: '🏠 Быт' },
-];
-
 export function PainAreaStep({ onSelect, onBack }: PainAreaStepProps) {
   const [customPain, setCustomPain] = useState('');
+  const { t } = useTranslation();
+
+  const painAreas = [
+    { id: 'money', label: t('simulator.interview.money') },
+    { id: 'time', label: t('simulator.interview.time') },
+    { id: 'services', label: t('simulator.interview.services') },
+    { id: 'health', label: t('simulator.interview.health') },
+    { id: 'education', label: t('simulator.interview.education') },
+    { id: 'home', label: t('simulator.interview.home') },
+  ];
 
   return (
     <motion.div
@@ -33,7 +35,7 @@ export function PainAreaStep({ onSelect, onBack }: PainAreaStepProps) {
         animate={{ opacity: 1, y: 0 }}
         className="text-2xl font-bold text-foreground mb-2 text-center"
       >
-        Что бесит тебя в жизни?
+        {t('simulator.interview.whatAnnoys')}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}
@@ -41,7 +43,7 @@ export function PainAreaStep({ onSelect, onBack }: PainAreaStepProps) {
         transition={{ delay: 0.1 }}
         className="text-muted-foreground mb-6 text-center"
       >
-        Выбери область
+        {t('simulator.interview.chooseArea')}
       </motion.p>
 
       <div className="grid grid-cols-2 gap-3 w-full mb-4">
@@ -63,7 +65,7 @@ export function PainAreaStep({ onSelect, onBack }: PainAreaStepProps) {
         <Input
           value={customPain}
           onChange={(e) => setCustomPain(e.target.value)}
-          placeholder="✏️ Другое: ..."
+          placeholder={t('simulator.interview.otherPain')}
           className="bg-background/50 border-border/50 focus:border-primary"
           onKeyDown={(e) => {
             if (e.key === 'Enter' && customPain.trim()) {
@@ -76,14 +78,14 @@ export function PainAreaStep({ onSelect, onBack }: PainAreaStepProps) {
             onClick={() => onSelect(customPain.trim())}
             className="w-full mt-2 bg-primary hover:bg-primary/90"
           >
-            Продолжить с "{customPain}"
+            {t('simulator.interview.continueWith')} "{customPain}"
           </Button>
         )}
       </div>
 
       <Button variant="outline" onClick={onBack} className="w-full">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Назад
+        {t('simulator.interview.back')}
       </Button>
     </motion.div>
   );

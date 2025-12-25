@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AudienceStepProps {
   onNext: (audience: string[]) => void;
@@ -10,18 +11,19 @@ interface AudienceStepProps {
   initialValue?: string[];
 }
 
-const audiences = [
-  { id: 'students', label: '🎓 Студенты' },
-  { id: 'freelancers', label: '💼 Фрилансеры' },
-  { id: 'small_business', label: '🏪 Малый бизнес' },
-  { id: 'parents', label: '👨‍👩‍👧 Родители' },
-  { id: 'creators', label: '🎨 Креаторы' },
-  { id: 'developers', label: '👨‍💻 Разработчики' },
-];
-
 export function AudienceStep({ onNext, onBack, initialValue = [] }: AudienceStepProps) {
   const [selected, setSelected] = useState<string[]>(initialValue);
   const [customAudience, setCustomAudience] = useState('');
+  const { t } = useTranslation();
+
+  const audiences = [
+    { id: 'students', label: t('simulator.interview.students') },
+    { id: 'freelancers', label: t('simulator.interview.freelancers') },
+    { id: 'small_business', label: t('simulator.interview.smallBusiness') },
+    { id: 'parents', label: t('simulator.interview.parents') },
+    { id: 'creators', label: t('simulator.interview.creators') },
+    { id: 'developers', label: t('simulator.interview.developers') },
+  ];
 
   const toggleAudience = (id: string) => {
     setSelected((prev) =>
@@ -51,7 +53,7 @@ export function AudienceStep({ onNext, onBack, initialValue = [] }: AudienceStep
         animate={{ opacity: 1, y: 0 }}
         className="text-2xl font-bold text-foreground mb-6 text-center"
       >
-        Кто будет пользоваться?
+        {t('simulator.interview.whoWillUse')}
       </motion.h2>
 
       <div className="grid grid-cols-2 gap-3 w-full mb-4">
@@ -80,7 +82,7 @@ export function AudienceStep({ onNext, onBack, initialValue = [] }: AudienceStep
         <Input
           value={customAudience}
           onChange={(e) => setCustomAudience(e.target.value)}
-          placeholder="✏️ Другое: ..."
+          placeholder={t('simulator.interview.otherAudience')}
           className="bg-background/50 border-border/50 focus:border-primary"
         />
       </div>
@@ -88,14 +90,14 @@ export function AudienceStep({ onNext, onBack, initialValue = [] }: AudienceStep
       <div className="flex gap-3 w-full">
         <Button variant="outline" onClick={onBack} className="flex-1">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
+          {t('simulator.interview.back')}
         </Button>
         <Button
           onClick={handleSubmit}
           disabled={selected.length === 0 && !customAudience.trim()}
           className="flex-1 bg-primary hover:bg-primary/90"
         >
-          Дальше
+          {t('simulator.interview.next')}
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ArrowLeft, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ProjectNameStepProps {
   onNext: (name: string) => void;
@@ -12,6 +13,7 @@ interface ProjectNameStepProps {
 
 export function ProjectNameStep({ onNext, onBack, initialValue = '' }: ProjectNameStepProps) {
   const [name, setName] = useState(initialValue);
+  const { t } = useTranslation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,21 +34,21 @@ export function ProjectNameStep({ onNext, onBack, initialValue = '' }: ProjectNa
         animate={{ opacity: 1, y: 0 }}
         className="text-2xl font-bold text-foreground mb-6 text-center"
       >
-        Как назовём твой проект?
+        {t('simulator.interview.projectName')}
       </motion.h2>
 
       <form onSubmit={handleSubmit} className="w-full space-y-4">
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Введи название проекта..."
+          placeholder={t('simulator.interview.projectPlaceholder')}
           className="text-lg h-14 bg-background/50 border-primary/30 focus:border-primary"
           autoFocus
         />
         
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Lightbulb className="w-4 h-4 text-amber-400" />
-          <span>Можно рабочее название, потом поменяешь</span>
+          <span>{t('simulator.interview.workingName')}</span>
         </div>
 
         <div className="flex gap-3 pt-4">
@@ -57,14 +59,14 @@ export function ProjectNameStep({ onNext, onBack, initialValue = '' }: ProjectNa
             className="flex-1"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Назад
+            {t('simulator.interview.back')}
           </Button>
           <Button
             type="submit"
             disabled={!name.trim()}
             className="flex-1 bg-primary hover:bg-primary/90"
           >
-            Дальше
+            {t('simulator.interview.next')}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>

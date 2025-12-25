@@ -2,20 +2,23 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Motivation } from '@/hooks/useInterviewWizard';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface MotivationStepProps {
   onSelect: (motivation: Motivation) => void;
   onBack: () => void;
 }
 
-const motivations: { id: Motivation; emoji: string; label: string; description?: string }[] = [
-  { id: 'personal_pain', emoji: '😤', label: 'Сам страдал от проблемы', description: '+25% к Founder Fit' },
-  { id: 'saw_pain', emoji: '👀', label: 'Видел боль у других', description: '+15% к Founder Fit' },
-  { id: 'market_opportunity', emoji: '💰', label: 'Вижу рыночную возможность', description: '+10% к Founder Fit' },
-  { id: 'cool_idea', emoji: '💡', label: 'Просто крутая идея', description: '+5% к Founder Fit' },
-];
-
 export function MotivationStep({ onSelect, onBack }: MotivationStepProps) {
+  const { t } = useTranslation();
+
+  const motivations: { id: Motivation; label: string; description?: string }[] = [
+    { id: 'personal_pain', label: t('simulator.interview.personalPain'), description: t('simulator.interview.personalPainBonus') },
+    { id: 'saw_pain', label: t('simulator.interview.sawPain'), description: t('simulator.interview.sawPainBonus') },
+    { id: 'market_opportunity', label: t('simulator.interview.marketOpportunity'), description: t('simulator.interview.marketBonus') },
+    { id: 'cool_idea', label: t('simulator.interview.coolIdea'), description: t('simulator.interview.coolIdeaBonus') },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
@@ -28,7 +31,7 @@ export function MotivationStep({ onSelect, onBack }: MotivationStepProps) {
         animate={{ opacity: 1, y: 0 }}
         className="text-2xl font-bold text-foreground mb-2 text-center"
       >
-        Почему именно это?
+        {t('simulator.interview.whyThis')}
       </motion.h2>
       
       <motion.div
@@ -38,7 +41,7 @@ export function MotivationStep({ onSelect, onBack }: MotivationStepProps) {
         className="flex items-center gap-2 text-sm text-muted-foreground mb-6 bg-primary/10 rounded-lg px-3 py-2"
       >
         <Info className="w-4 h-4 text-primary flex-shrink-0" />
-        <span>Это влияет на твой Founder Fit Score</span>
+        <span>{t('simulator.interview.affectsScore')}</span>
       </motion.div>
 
       <div className="space-y-3 w-full mb-6">
@@ -52,7 +55,7 @@ export function MotivationStep({ onSelect, onBack }: MotivationStepProps) {
             className="w-full p-4 rounded-xl bg-background/50 border border-border/50 hover:border-primary/50 hover:bg-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98] text-left flex items-center justify-between"
           >
             <span className="text-lg">
-              {motivation.emoji} {motivation.label}
+              {motivation.label}
             </span>
             {motivation.description && (
               <span className="text-xs text-primary/70">{motivation.description}</span>
@@ -63,7 +66,7 @@ export function MotivationStep({ onSelect, onBack }: MotivationStepProps) {
 
       <Button variant="outline" onClick={onBack} className="w-full">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Назад
+        {t('simulator.interview.back')}
       </Button>
     </motion.div>
   );

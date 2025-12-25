@@ -1,12 +1,15 @@
 import { motion } from 'framer-motion';
 import { Zap, Wrench, Clock, Sparkles } from 'lucide-react';
 import { SelectedPath } from '@/hooks/useInterviewWizard';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ForkStepProps {
   onSelect: (path: SelectedPath) => void;
 }
 
 export function ForkStep({ onSelect }: ForkStepProps) {
+  const { t } = useTranslation();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -19,7 +22,7 @@ export function ForkStep({ onSelect }: ForkStepProps) {
         animate={{ opacity: 1 }}
         className="text-2xl font-bold text-foreground mb-2 text-center"
       >
-        🎉 Как хочешь продолжить?
+        {t('simulator.interview.howToContinue')}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}
@@ -27,7 +30,7 @@ export function ForkStep({ onSelect }: ForkStepProps) {
         transition={{ delay: 0.1 }}
         className="text-muted-foreground mb-8 text-center"
       >
-        Выбери свой путь
+        {t('simulator.interview.choosePath')}
       </motion.p>
 
       <div className="space-y-4 w-full">
@@ -43,25 +46,25 @@ export function ForkStep({ onSelect }: ForkStepProps) {
             <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
               <Zap className="w-6 h-6 text-primary" />
             </div>
-            <h3 className="text-xl font-bold text-foreground">⚡ БЫСТРЫЙ ПУТЬ</h3>
+            <h3 className="text-xl font-bold text-foreground">{t('simulator.interview.fastPath')}</h3>
           </div>
           
           <p className="text-muted-foreground mb-4">
-            AI-команда сделает за тебя:
+            {t('simulator.interview.aiTeamWillDo')}
           </p>
           
           <ul className="space-y-1 text-sm text-foreground mb-4">
-            <li>• Исследование рынка</li>
-            <li>• Лендинг</li>
-            <li>• Первые гипотезы</li>
+            <li>• {t('simulator.interview.marketResearch')}</li>
+            <li>• {t('simulator.interview.landing')}</li>
+            <li>• {t('simulator.interview.firstHypotheses')}</li>
           </ul>
 
           <div className="flex items-center gap-4 text-sm">
             <span className="flex items-center gap-1 text-muted-foreground">
-              <Clock className="w-4 h-4" /> 5 минут
+              <Clock className="w-4 h-4" /> 5 {t('simulator.interview.minutes')}
             </span>
             <span className="flex items-center gap-1 text-primary">
-              <Sparkles className="w-4 h-4" /> 100 спор
+              <Sparkles className="w-4 h-4" /> 100 {t('simulator.interview.spores')}
             </span>
           </div>
         </motion.button>
@@ -78,25 +81,25 @@ export function ForkStep({ onSelect }: ForkStepProps) {
             <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center">
               <Wrench className="w-6 h-6 text-violet-400" />
             </div>
-            <h3 className="text-xl font-bold text-foreground">🛠 СВОИМИ РУКАМИ</h3>
+            <h3 className="text-xl font-bold text-foreground">{t('simulator.interview.diyPath')}</h3>
           </div>
           
           <p className="text-muted-foreground mb-4">
-            Прокачай навыки фаундера:
+            {t('simulator.interview.levelUpSkills')}
           </p>
           
           <ul className="space-y-1 text-sm text-foreground mb-4">
-            <li>• 20 карточек</li>
-            <li>• Все фазы: Vision → Grow</li>
-            <li>• AI-менторы помогают</li>
+            <li>• 20 {t('simulator.interview.cards')}</li>
+            <li>• {t('simulator.interview.allPhases')}</li>
+            <li>• {t('simulator.interview.aiMentorsHelp')}</li>
           </ul>
 
           <div className="flex items-center gap-4 text-sm">
             <span className="flex items-center gap-1 text-muted-foreground">
-              <Clock className="w-4 h-4" /> 7 дней
+              <Clock className="w-4 h-4" /> 7 {t('simulator.interview.days')}
             </span>
             <span className="flex items-center gap-1 text-emerald-400">
-              🆓 Free start
+              {t('simulator.interview.freeStart')}
             </span>
           </div>
         </motion.button>
