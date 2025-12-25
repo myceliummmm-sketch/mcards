@@ -1,13 +1,15 @@
 import { motion } from 'framer-motion';
 import { Lightbulb, Sparkles } from 'lucide-react';
 import { Branch } from '@/hooks/useInterviewWizard';
-import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface StartStepProps {
   onSelect: (branch: Branch) => void;
 }
 
 export function StartStep({ onSelect }: StartStepProps) {
+  const { t } = useTranslation();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,7 +25,7 @@ export function StartStep({ onSelect }: StartStepProps) {
         className="mb-8 px-4 py-2 rounded-full bg-[#00FF00]/10 border border-[#00FF00]/30 inline-block"
       >
         <span className="text-[#00FF00] font-mono text-sm">
-          💰 POTENTIAL REVENUE: LOADING...
+          {t('simulator.interview.potentialRevenue')}
         </span>
       </motion.div>
 
@@ -33,7 +35,7 @@ export function StartStep({ onSelect }: StartStepProps) {
         transition={{ delay: 0.1 }}
         className="text-4xl font-bold font-mono tracking-tight mb-2"
       >
-        <span className="text-[#00FF00]">REVENUE</span> ENGINE
+        <span className="text-[#00FF00]">{t('simulator.interview.revenueEngine')}</span> {t('simulator.interview.engine')}
       </motion.h1>
       <motion.p
         initial={{ opacity: 0 }}
@@ -41,7 +43,7 @@ export function StartStep({ onSelect }: StartStepProps) {
         transition={{ delay: 0.2 }}
         className="text-lg text-orange-400 font-bold tracking-wider mb-2"
       >
-        ⚡ GOD MODE ON
+        {t('simulator.interview.godModeOn')}
       </motion.p>
       <motion.p
         initial={{ opacity: 0 }}
@@ -49,7 +51,7 @@ export function StartStep({ onSelect }: StartStepProps) {
         transition={{ delay: 0.3 }}
         className="text-white/60 mb-8"
       >
-        Generate your $1M Strategy & claim 500 Spores
+        {t('simulator.interview.generateStrategy')}
       </motion.p>
 
       <motion.div
@@ -58,7 +60,7 @@ export function StartStep({ onSelect }: StartStepProps) {
         transition={{ delay: 0.4 }}
         className="w-full space-y-3"
       >
-        <p className="text-lg font-medium text-white mb-4 font-mono">С чего начнём?</p>
+        <p className="text-lg font-medium text-white mb-4 font-mono">{t('simulator.interview.letsStart')}</p>
         
         <button
           onClick={() => onSelect('idea')}
@@ -68,8 +70,8 @@ export function StartStep({ onSelect }: StartStepProps) {
             <Lightbulb className="w-6 h-6 text-[#00FF00]" />
           </div>
           <div className="text-left">
-            <p className="font-semibold text-white font-mono">💡 У меня есть идея</p>
-            <p className="text-sm text-white/60">Знаю что хочу сделать</p>
+            <p className="font-semibold text-white font-mono">{t('simulator.interview.haveIdea')}</p>
+            <p className="text-sm text-white/60">{t('simulator.interview.knowWhatToBuild')}</p>
           </div>
         </button>
 
@@ -81,8 +83,8 @@ export function StartStep({ onSelect }: StartStepProps) {
             <Sparkles className="w-6 h-6 text-violet-400" />
           </div>
           <div className="text-left">
-            <p className="font-semibold text-white font-mono">🔮 Помоги найти идею</p>
-            <p className="text-sm text-white/60">Хочу, но не знаю что</p>
+            <p className="font-semibold text-white font-mono">{t('simulator.interview.helpFindIdea')}</p>
+            <p className="text-sm text-white/60">{t('simulator.interview.wantButDontKnow')}</p>
           </div>
         </button>
       </motion.div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Check, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ExperienceStepProps {
   onNext: (experience: string[]) => void;
@@ -9,15 +10,16 @@ interface ExperienceStepProps {
   initialValue?: string[];
 }
 
-const experienceOptions = [
-  { id: 'worked_in_field', label: '🏆 Работал в этой сфере', bonus: '+20%' },
-  { id: 'studied_deeply', label: '📚 Глубоко изучал тему', bonus: '+10%' },
-  { id: 'has_network', label: '👥 Есть связи/нетворк в индустрии', bonus: '+15%' },
-  { id: 'starting_fresh', label: '🌱 Начинаю с нуля', bonus: '+0%', exclusive: true },
-];
-
 export function ExperienceStep({ onNext, onBack, initialValue = [] }: ExperienceStepProps) {
   const [selected, setSelected] = useState<string[]>(initialValue);
+  const { t } = useTranslation();
+
+  const experienceOptions = [
+    { id: 'worked_in_field', label: t('simulator.interview.workedInField'), bonus: t('simulator.interview.workedBonus') },
+    { id: 'studied_deeply', label: t('simulator.interview.studiedDeeply'), bonus: t('simulator.interview.studiedBonus') },
+    { id: 'has_network', label: t('simulator.interview.hasNetwork'), bonus: t('simulator.interview.networkBonus') },
+    { id: 'starting_fresh', label: t('simulator.interview.startingFresh'), bonus: t('simulator.interview.freshBonus'), exclusive: true },
+  ];
 
   const toggleExperience = (id: string) => {
     const option = experienceOptions.find((o) => o.id === id);
@@ -54,7 +56,7 @@ export function ExperienceStep({ onNext, onBack, initialValue = [] }: Experience
         animate={{ opacity: 1, y: 0 }}
         className="text-2xl font-bold text-foreground mb-2 text-center"
       >
-        Что у тебя уже есть?
+        {t('simulator.interview.whatDoYouHave')}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}
@@ -62,7 +64,7 @@ export function ExperienceStep({ onNext, onBack, initialValue = [] }: Experience
         transition={{ delay: 0.1 }}
         className="text-muted-foreground mb-6 text-center"
       >
-        Можно выбрать несколько
+        {t('simulator.interview.canSelectMultiple')}
       </motion.p>
 
       <div className="space-y-3 w-full mb-6">
@@ -93,7 +95,7 @@ export function ExperienceStep({ onNext, onBack, initialValue = [] }: Experience
       <div className="flex gap-3 w-full">
         <Button variant="outline" onClick={onBack} className="flex-1">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
+          {t('simulator.interview.back')}
         </Button>
         <Button
           onClick={handleSubmit}
@@ -101,7 +103,7 @@ export function ExperienceStep({ onNext, onBack, initialValue = [] }: Experience
           className="flex-1 bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90"
         >
           <Sparkles className="w-4 h-4 mr-2" />
-          Создать карточку
+          {t('simulator.interview.createCard')}
         </Button>
       </div>
     </motion.div>

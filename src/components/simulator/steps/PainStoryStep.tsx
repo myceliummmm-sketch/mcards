@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PainStoryStepProps {
   onNext: (details: string[]) => void;
@@ -11,17 +12,18 @@ interface PainStoryStepProps {
   initialValue?: string[];
 }
 
-const painDetails = [
-  { id: 'time_waste', label: '😤 Тратил слишком много времени на это' },
-  { id: 'money_loss', label: '💸 Терял деньги из-за этой проблемы' },
-  { id: 'daily_frustration', label: '😩 Постоянно раздражало в повседневной жизни' },
-  { id: 'no_solution', label: '🔍 Искал решение, но не нашёл нормального' },
-  { id: 'diy_fail', label: '🛠 Пытался решить сам, но костыли' },
-];
-
 export function PainStoryStep({ onNext, onSkip, onBack, initialValue = [] }: PainStoryStepProps) {
   const [selected, setSelected] = useState<string[]>(initialValue);
   const [customPain, setCustomPain] = useState('');
+  const { t } = useTranslation();
+
+  const painDetails = [
+    { id: 'time_waste', label: t('simulator.interview.timeWaste') },
+    { id: 'money_loss', label: t('simulator.interview.moneyLoss') },
+    { id: 'daily_frustration', label: t('simulator.interview.dailyFrustration') },
+    { id: 'no_solution', label: t('simulator.interview.noSolution') },
+    { id: 'diy_fail', label: t('simulator.interview.diyFail') },
+  ];
 
   const toggleDetail = (id: string) => {
     setSelected((prev) =>
@@ -49,7 +51,7 @@ export function PainStoryStep({ onNext, onSkip, onBack, initialValue = [] }: Pai
         animate={{ opacity: 1, y: 0 }}
         className="text-2xl font-bold text-foreground mb-2 text-center"
       >
-        🔥 Расскажи свою боль
+        {t('simulator.interview.tellYourPain')}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}
@@ -57,7 +59,7 @@ export function PainStoryStep({ onNext, onSkip, onBack, initialValue = [] }: Pai
         transition={{ delay: 0.1 }}
         className="text-muted-foreground mb-6 text-center"
       >
-        Это даст контекст AI-команде
+        {t('simulator.interview.givesContext')}
       </motion.p>
 
       <div className="space-y-3 w-full mb-4">
@@ -86,7 +88,7 @@ export function PainStoryStep({ onNext, onSkip, onBack, initialValue = [] }: Pai
         <Input
           value={customPain}
           onChange={(e) => setCustomPain(e.target.value)}
-          placeholder="✏️ Своё: ..."
+          placeholder={t('simulator.interview.ownStory')}
           className="bg-background/50 border-border/50 focus:border-primary"
         />
       </div>
@@ -94,17 +96,17 @@ export function PainStoryStep({ onNext, onSkip, onBack, initialValue = [] }: Pai
       <div className="flex gap-3 w-full">
         <Button variant="outline" onClick={onBack} className="flex-1">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
+          {t('simulator.interview.back')}
         </Button>
         <Button variant="ghost" onClick={onSkip}>
-          Пропустить
+          {t('simulator.interview.skip')}
         </Button>
         <Button
           onClick={handleSubmit}
           disabled={selected.length === 0 && !customPain.trim()}
           className="flex-1 bg-primary hover:bg-primary/90"
         >
-          Дальше
+          {t('simulator.interview.next')}
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>

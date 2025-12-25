@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface GeneratingStepProps {
   onComplete: () => void;
 }
 
-const hackingLines = [
-  '> Analyzing Niche Profitability...',
-  '> Finding Blue Ocean...',
-  '> Calculating MRR...',
-  '> Projecting Revenue Curve...',
-  '> Generating Empire Blueprint...',
-  '> SUCCESS: Your $10k/mo path is ready!',
-];
-
 export function GeneratingStep({ onComplete }: GeneratingStepProps) {
   const [lineIndex, setLineIndex] = useState(0);
+  const { t } = useTranslation();
+
+  const hackingLines = [
+    t('simulator.interview.analyzingNiche'),
+    t('simulator.interview.findingBlueOcean'),
+    t('simulator.interview.calculatingMRR'),
+    t('simulator.interview.projectingRevenue'),
+    t('simulator.interview.generatingBlueprint'),
+    t('simulator.interview.successReady'),
+  ];
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -29,7 +31,7 @@ export function GeneratingStep({ onComplete }: GeneratingStepProps) {
     }
 
     return () => clearTimeout(timeout);
-  }, [lineIndex, onComplete]);
+  }, [lineIndex, onComplete, hackingLines.length]);
 
   return (
     <motion.div
@@ -77,7 +79,7 @@ export function GeneratingStep({ onComplete }: GeneratingStepProps) {
         transition={{ delay: 0.5 }}
         className="text-sm text-[#00FF00]/60 mt-6 font-mono"
       >
-        Ever Green создаёт твой Vision Statement
+        {t('simulator.interview.creatingVision')}
       </motion.p>
     </motion.div>
   );

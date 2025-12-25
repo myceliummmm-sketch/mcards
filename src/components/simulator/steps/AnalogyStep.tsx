@@ -2,22 +2,25 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Car, Home, Bird, Tv, FileText, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnalogyTemplate } from '@/hooks/useInterviewWizard';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AnalogyStepProps {
   onSelect: (template: AnalogyTemplate) => void;
   onBack: () => void;
 }
 
-const analogies: { id: AnalogyTemplate; icon: React.ReactNode; label: string }[] = [
-  { id: 'uber', icon: <Car className="w-6 h-6" />, label: '🚗 Uber для ___' },
-  { id: 'airbnb', icon: <Home className="w-6 h-6" />, label: '🏠 Airbnb для ___' },
-  { id: 'duolingo', icon: <Bird className="w-6 h-6" />, label: '🦉 Duolingo для ___' },
-  { id: 'netflix', icon: <Tv className="w-6 h-6" />, label: '🎬 Netflix для ___' },
-  { id: 'notion', icon: <FileText className="w-6 h-6" />, label: '📝 Notion для ___' },
-  { id: 'custom', icon: <Sparkles className="w-6 h-6" />, label: '✨ Своё' },
-];
-
 export function AnalogyStep({ onSelect, onBack }: AnalogyStepProps) {
+  const { t } = useTranslation();
+
+  const analogies: { id: AnalogyTemplate; icon: React.ReactNode; label: string }[] = [
+    { id: 'uber', icon: <Car className="w-6 h-6" />, label: t('simulator.interview.uberFor') },
+    { id: 'airbnb', icon: <Home className="w-6 h-6" />, label: t('simulator.interview.airbnbFor') },
+    { id: 'duolingo', icon: <Bird className="w-6 h-6" />, label: t('simulator.interview.duolingoFor') },
+    { id: 'netflix', icon: <Tv className="w-6 h-6" />, label: t('simulator.interview.netflixFor') },
+    { id: 'notion', icon: <FileText className="w-6 h-6" />, label: t('simulator.interview.notionFor') },
+    { id: 'custom', icon: <Sparkles className="w-6 h-6" />, label: t('simulator.interview.custom') },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
@@ -30,7 +33,7 @@ export function AnalogyStep({ onSelect, onBack }: AnalogyStepProps) {
         animate={{ opacity: 1, y: 0 }}
         className="text-2xl font-bold text-foreground mb-2 text-center"
       >
-        Это как...
+        {t('simulator.interview.itsLike')}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}
@@ -38,7 +41,7 @@ export function AnalogyStep({ onSelect, onBack }: AnalogyStepProps) {
         transition={{ delay: 0.1 }}
         className="text-muted-foreground mb-6 text-center"
       >
-        Выбери ближайшую аналогию
+        {t('simulator.interview.chooseAnalogy')}
       </motion.p>
 
       <div className="grid grid-cols-2 gap-3 w-full mb-6">
@@ -58,7 +61,7 @@ export function AnalogyStep({ onSelect, onBack }: AnalogyStepProps) {
 
       <Button variant="outline" onClick={onBack} className="w-full">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Назад
+        {t('simulator.interview.back')}
       </Button>
     </motion.div>
   );

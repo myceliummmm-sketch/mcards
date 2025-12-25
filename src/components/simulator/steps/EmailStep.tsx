@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { InterviewData, SelectedPath } from '@/hooks/useInterviewWizard';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface EmailStepProps {
   data: InterviewData;
@@ -16,12 +17,13 @@ interface EmailStepProps {
 export function EmailStep({ data, selectedPath, onComplete }: EmailStepProps) {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email.trim() || !email.includes('@')) {
-      toast.error('Введи корректный email');
+      toast.error(t('simulator.interview.invalidEmail'));
       return;
     }
 
@@ -58,17 +60,17 @@ export function EmailStep({ data, selectedPath, onComplete }: EmailStepProps) {
       if (error) {
         if (error.code === '23505') {
           // Duplicate email - still proceed
-          toast.info('Этот email уже зарегистрирован');
+          toast.info(t('simulator.interview.emailRegistered'));
         } else {
           throw error;
         }
       }
 
-      toast.success('🎉 500 Spores добавлены!');
+      toast.success(t('simulator.interview.sporesAdded'));
       onComplete(email);
     } catch (err) {
       console.error('Error saving lead:', err);
-      toast.error('Произошла ошибка. Попробуй ещё раз.');
+      toast.error(t('simulator.interview.errorTryAgain'));
     } finally {
       setIsLoading(false);
     }
@@ -92,10 +94,10 @@ export function EmailStep({ data, selectedPath, onComplete }: EmailStepProps) {
             <Sparkles className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-xl font-bold text-foreground mb-2">
-            Получи 500 Spores и сохрани стратегию
+            {t('simulator.interview.get500Spores')}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Введи email, чтобы мы отправили тебе твою Vision Card
+            {t('simulator.interview.enterEmailToSend')}
           </p>
         </motion.div>
 
@@ -121,18 +123,18 @@ export function EmailStep({ data, selectedPath, onComplete }: EmailStepProps) {
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Сохраняем...
+                {t('simulator.interview.saving')}
               </>
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                CLAIM 500 SPORES
+                {t('simulator.interview.claim500Spores')}
               </>
             )}
           </Button>
 
           <p className="text-xs text-muted-foreground text-center">
-            Нажимая кнопку, ты соглашаешься с условиями использования
+            {t('simulator.interview.agreeToTerms')}
           </p>
         </form>
       </div>
