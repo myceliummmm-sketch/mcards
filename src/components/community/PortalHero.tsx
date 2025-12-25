@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, Send, Sparkles, Target, Zap, Shield, Compass, Lightbulb, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
 import passportMockup from '@/assets/passport-mockup.png';
 import myceliumBg from '@/assets/mycelium-network.gif';
 
@@ -10,6 +11,71 @@ interface PortalHeroProps {
 }
 
 export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
+  const { t } = useTranslation();
+
+  const whatIsMyceliumFeatures = [
+    {
+      icon: Sparkles,
+      titleKey: 'portal.landing.aiResearchTeam',
+      descKey: 'portal.landing.aiResearchDesc'
+    },
+    {
+      icon: Target,
+      titleKey: 'portal.landing.problemDiscovery',
+      descKey: 'portal.landing.problemDiscoveryDesc'
+    },
+    {
+      icon: Zap,
+      titleKey: 'portal.landing.livingNetwork',
+      descKey: 'portal.landing.livingNetworkDesc'
+    }
+  ];
+
+  const forWhomFeatures = [
+    {
+      icon: Compass,
+      titleKey: 'portal.landing.soloFounders',
+      descKey: 'portal.landing.soloFoundersDesc'
+    },
+    {
+      icon: Shield,
+      titleKey: 'portal.landing.sideHustlers',
+      descKey: 'portal.landing.sideHustlersDesc'
+    },
+    {
+      icon: Lightbulb,
+      titleKey: 'portal.landing.noCodeBuilders',
+      descKey: 'portal.landing.noCodeBuildersDesc'
+    }
+  ];
+
+  const howItWorksSteps = [
+    {
+      step: "01",
+      icon: Users,
+      titleKey: 'portal.landing.step1Title',
+      descKey: 'portal.landing.step1Desc'
+    },
+    {
+      step: "02",
+      icon: Target,
+      titleKey: 'portal.landing.step2Title',
+      descKey: 'portal.landing.step2Desc'
+    },
+    {
+      step: "03",
+      icon: Sparkles,
+      titleKey: 'portal.landing.step3Title',
+      descKey: 'portal.landing.step3Desc'
+    },
+    {
+      step: "04",
+      icon: Rocket,
+      titleKey: 'portal.landing.step4Title',
+      descKey: 'portal.landing.step4Desc'
+    }
+  ];
+
   return (
     <div className="relative">
       {/* Hero Section - Full Screen */}
@@ -41,24 +107,23 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
               >
                 <Users className="w-4 h-4 text-primary" />
                 <span className="text-sm text-primary font-medium">
-                  {memberCount.toLocaleString()} founders already in
+                  {memberCount.toLocaleString()} {t('portal.hero.membersCount')}
                 </span>
               </motion.div>
               )}
 
               {/* Main headline */}
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground leading-tight mb-6">
-                THE SOLO GRIND
+                {t('portal.hero.headline1')}
                 <br />
-                <span className="text-primary">IS DEAD.</span>
+                <span className="text-primary">{t('portal.hero.headline2')}</span>
                 <br />
-                <span className="text-foreground/90">JOIN THE LIVING NETWORK.</span>
+                <span className="text-foreground/90">{t('portal.hero.headline3')}</span>
               </h1>
 
               {/* Subtitle */}
               <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl">
-                Get your Digital Passport. Unlock AI-powered research. 
-                Build with a network that grows with you.
+                {t('portal.hero.subtitle')}
               </p>
 
               {/* CTAs */}
@@ -68,7 +133,7 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
                   size="lg"
                   className="group bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-primary shadow-[4px_4px_0_hsl(var(--primary)/0.5)] hover:shadow-[2px_2px_0_hsl(var(--primary)/0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all min-h-14 text-lg font-bold"
                 >
-                  INITIALIZE MY PASSPORT
+                  {t('portal.hero.cta')}
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
 
@@ -85,7 +150,7 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
                     className="flex items-center"
                   >
                     <Send className="mr-2 w-5 h-5" />
-                    Join Telegram
+                    {t('portal.hero.joinTelegram')}
                   </a>
                 </Button>
               </div>
@@ -147,33 +212,17 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">
-              WHAT IS <span className="text-primary">MYCELIUM</span>?
+              {t('portal.landing.whatIsMycelium')} <span className="text-primary">{t('portal.landing.mycelium')}</span>?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              A living network of independent builders who validate ideas together before investing time and money.
+              {t('portal.landing.whatIsDesc')}
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              {
-                icon: Sparkles,
-                title: "AI Research Team",
-                description: "7 AI experts analyze your idea from different angles — market, tech, audience, competition."
-              },
-              {
-                icon: Target,
-                title: "Problem Discovery",
-                description: "Find real pain points in 60 seconds. No more building solutions nobody needs."
-              },
-              {
-                icon: Zap,
-                title: "Living Network",
-                description: "Learn from others' insights and mistakes. Share your discoveries. Grow together."
-              }
-            ].map((item, index) => (
+            {whatIsMyceliumFeatures.map((item, index) => (
               <motion.div
-                key={item.title}
+                key={item.titleKey}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -183,8 +232,8 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-4">
                   <item.icon className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">{item.title}</h3>
-                <p className="text-muted-foreground">{item.description}</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">{t(item.titleKey)}</h3>
+                <p className="text-muted-foreground">{t(item.descKey)}</p>
               </motion.div>
             ))}
           </div>
@@ -202,33 +251,17 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">
-              FOR <span className="text-primary">WHOM</span>?
+              {t('portal.landing.forWhom')} <span className="text-primary">{t('portal.landing.whom')}</span>?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Built for people who want to validate before they build.
+              {t('portal.landing.forWhomDesc')}
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              {
-                icon: Compass,
-                title: "Solo Founders",
-                description: "No budget for market research? Get AI-powered validation that would cost thousands at agencies."
-              },
-              {
-                icon: Shield,
-                title: "Side Hustlers",
-                description: "Building after your 9-5? Don't waste precious hours on ideas that won't work."
-              },
-              {
-                icon: Lightbulb,
-                title: "No-Code Builders",
-                description: "Before you start building, know if your idea has real potential."
-              }
-            ].map((item, index) => (
+            {forWhomFeatures.map((item, index) => (
               <motion.div
-                key={item.title}
+                key={item.titleKey}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -238,8 +271,8 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
                 <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-4 mx-auto">
                   <item.icon className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">{item.title}</h3>
-                <p className="text-muted-foreground">{item.description}</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">{t(item.titleKey)}</h3>
+                <p className="text-muted-foreground">{t(item.descKey)}</p>
               </motion.div>
             ))}
           </div>
@@ -257,37 +290,12 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">
-              HOW IT <span className="text-primary">WORKS</span>
+              {t('portal.landing.howItWorks')} <span className="text-primary">{t('portal.landing.works')}</span>
             </h2>
           </motion.div>
 
           <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {[
-              {
-                step: "01",
-                icon: Users,
-                title: "Get Your Passport",
-                description: "Answer a few questions to discover your founder archetype."
-              },
-              {
-                step: "02",
-                icon: Target,
-                title: "Create Problem Card",
-                description: "Describe the pain you want to solve. Be specific about who suffers."
-              },
-              {
-                step: "03",
-                icon: Sparkles,
-                title: "AI Council Analyzes",
-                description: "Your AI team researches market, competition, and validates demand."
-              },
-              {
-                step: "04",
-                icon: Rocket,
-                title: "Build with Confidence",
-                description: "Start building knowing your idea has real potential."
-              }
-            ].map((item, index) => (
+            {howItWorksSteps.map((item, index) => (
               <motion.div
                 key={item.step}
                 initial={{ opacity: 0, y: 30 }}
@@ -304,8 +312,8 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
                   <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center my-3">
                     <item.icon className="w-5 h-5 text-primary" />
                   </div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                  <h3 className="text-lg font-bold text-foreground mb-2">{t(item.titleKey)}</h3>
+                  <p className="text-sm text-muted-foreground">{t(item.descKey)}</p>
                 </div>
               </motion.div>
             ))}
@@ -324,7 +332,7 @@ export function PortalHero({ memberCount, onInitialize }: PortalHeroProps) {
               size="lg"
               className="group bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-primary shadow-[4px_4px_0_hsl(var(--primary)/0.5)] hover:shadow-[2px_2px_0_hsl(var(--primary)/0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all min-h-14 text-lg font-bold"
             >
-              START YOUR JOURNEY
+              {t('portal.landing.startJourney')}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
