@@ -117,7 +117,7 @@ export const NetworkDashboard = ({
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">
-                {t('brokenSystem.dashboard.yourProjects')}
+                {t('brokenSystem.dashboard.projectsLabel')}
               </h3>
               <Button
                 variant="ghost"
@@ -126,7 +126,7 @@ export const NetworkDashboard = ({
                 className="text-[#00FF00] hover:bg-[#00FF00]/10"
               >
                 <Plus className="w-4 h-4 mr-1" />
-                {t('brokenSystem.dashboard.newProject')}
+                New
               </Button>
             </div>
 
@@ -152,7 +152,7 @@ export const NetworkDashboard = ({
                       </p>
                     </>
                   ) : (
-                    <p className="text-gray-400">{t('brokenSystem.dashboard.analyzing')}</p>
+                    <p className="text-gray-400">Analyzing...</p>
                   )}
                   
                   <div className="flex items-center text-gray-500 text-xs">
@@ -183,7 +183,7 @@ export const NetworkDashboard = ({
               className="border-[#00FF00]/30 text-[#00FF00] hover:bg-[#00FF00]/10"
             >
               <Plus className="w-4 h-4 mr-2" />
-              {t('brokenSystem.dashboard.createFirst')}
+              {t('brokenSystem.dashboard.startProject')}
             </Button>
           </motion.div>
         )}

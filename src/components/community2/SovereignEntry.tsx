@@ -15,7 +15,7 @@ export const SovereignEntry = ({ onComplete }: SovereignEntryProps) => {
   const [typedText, setTypedText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
 
-  const fullText = t('brokenSystem.identity.message');
+  const fullText = `${t('brokenSystem.identity.title')} ${t('brokenSystem.identity.subtitle')}`;
 
   // Typewriter effect
   useEffect(() => {
@@ -98,7 +98,7 @@ export const SovereignEntry = ({ onComplete }: SovereignEntryProps) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={t('brokenSystem.identity.placeholder')}
+              placeholder={t('brokenSystem.identity.inputPlaceholder')}
               className="w-full bg-black border-2 border-gray-700 focus:border-[#00FF00] rounded-lg px-4 py-4 text-lg text-white placeholder:text-gray-500 transition-colors"
               autoFocus
             />
@@ -114,8 +114,8 @@ export const SovereignEntry = ({ onComplete }: SovereignEntryProps) => {
             {t('brokenSystem.identity.cta')}
           </Button>
 
-          <p className="text-center text-gray-500 text-sm">
-            {t('brokenSystem.identity.reward')}
+          <p className="text-center text-[#00FF00]/70 text-sm font-mono">
+            🍄 {t('brokenSystem.identity.sporeBonus')}
           </p>
         </motion.form>
       </div>
