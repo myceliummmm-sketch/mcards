@@ -33,17 +33,13 @@ export const BrokenSystemHero = ({ onActivateExit, memberCount }: BrokenSystemHe
       exit={{ opacity: 0 }}
       className="min-h-screen relative flex flex-col items-center justify-center p-6 overflow-hidden"
     >
-      {/* Video Background with dark overlay */}
+      {/* GIF Background with dark overlay */}
       <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
+        <img
+          src="/src/assets/mycelium-network.gif"
+          alt="Network background"
           className="w-full h-full object-cover opacity-30"
-        >
-          <source src="/videos/chest-opening.mp4" type="video/mp4" />
-        </video>
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black" />
       </div>
 
@@ -123,7 +119,7 @@ export const BrokenSystemHero = ({ onActivateExit, memberCount }: BrokenSystemHe
             variant="ghost"
             size="lg"
             className="text-gray-400 hover:text-[#00FF00] hover:bg-[#00FF00]/10"
-            onClick={() => window.open('https://t.me/mycelium_network', '_blank')}
+            onClick={() => window.open('https://t.me/mycelium_dao', '_blank')}
           >
             <ExternalLink className="w-4 h-4 mr-2" />
             {t('brokenSystem.hero.secondaryCta')}
