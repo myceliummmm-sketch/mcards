@@ -11,6 +11,7 @@ import { NetworkDashboard } from "@/components/community2/NetworkDashboard";
 import { SystemWarningBanner } from "@/components/community2/SystemWarningBanner";
 import { ProjectSeedQuiz } from "@/components/community/ProjectSeedQuiz";
 import { ProblemCard } from "@/components/community/ProblemCard";
+import { EmailCapture } from "@/components/community/EmailCapture";
 import { ARCHETYPE_DATA, type ArchetypeKey } from "@/data/passportQuizData";
 
 type PortalScreen = 
@@ -19,6 +20,7 @@ type PortalScreen =
   | 'identity' 
   | 'reveal' 
   | 'dashboard' 
+  | 'email-capture'
   | 'project-seed' 
   | 'problem-card';
 
@@ -34,11 +36,12 @@ const STORAGE_KEYS = {
   skippedWallet: 'community2_skipped_wallet',
   projectSeedAnswers: 'community2_project_seed_answers',
   problemCardIds: 'community2_problem_card_ids',
+  userEmail: 'community2_user_email',
 };
 
 // Screens that require a valid passportId
 const SCREENS_REQUIRING_PASSPORT: PortalScreen[] = [
-  'reveal', 'dashboard', 'project-seed', 'problem-card'
+  'reveal', 'dashboard', 'email-capture', 'project-seed', 'problem-card'
 ];
 
 // Calculate archetype from quiz answers
@@ -115,6 +118,10 @@ const Community2 = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [userEmail, setUserEmail] = useState(() => {
+    return localStorage.getItem(STORAGE_KEYS.userEmail) || '';
+  });
+
   const [problemCards, setProblemCards] = useState<ProblemCardData[]>([]);
   const [memberCount, setMemberCount] = useState<number | null>(null);
 
@@ -139,6 +146,7 @@ const Community2 = () => {
     setPassportId('');
     setSkippedWallet(false);
     setProjectSeedAnswers([]);
+    setUserEmail('');
     setProblemCards([]);
     
     toast.success('Portal reset successfully');
@@ -212,6 +220,10 @@ const Community2 = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.projectSeedAnswers, JSON.stringify(projectSeedAnswers));
   }, [projectSeedAnswers]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.userEmail, userEmail);
+  }, [userEmail]);
 
   // Generate passport number
   const generatePassportNumber = () => {
@@ -332,6 +344,22 @@ const Community2 = () => {
 
   const handleStartProjectSeed = () => {
     trackEvent('community2_project_seed_started');
+    // If no email yet, show email capture first
+    if (!userEmail) {
+      setCurrentScreen('email-capture');
+    } else {
+      setCurrentScreen('project-seed');
+    }
+  };
+
+  const handleEmailComplete = (email: string) => {
+    trackEvent('community2_email_captured');
+    setUserEmail(email);
+    setCurrentScreen('project-seed');
+  };
+
+  const handleEmailSkip = () => {
+    trackEvent('community2_email_skipped');
     setCurrentScreen('project-seed');
   };
 
@@ -351,7 +379,12 @@ const Community2 = () => {
 
   const handleStartNewProject = () => {
     setProjectSeedAnswers([]);
-    setCurrentScreen('project-seed');
+    // If email already captured, go directly to project-seed
+    if (userEmail) {
+      setCurrentScreen('project-seed');
+    } else {
+      setCurrentScreen('email-capture');
+    }
   };
 
   return (
@@ -404,6 +437,15 @@ const Community2 = () => {
             problemCards={problemCards}
             onStartProjectSeed={handleStartProjectSeed}
             onReset={resetPortal}
+          />
+        )}
+
+        {currentScreen === 'email-capture' && (
+          <EmailCapture
+            key="email-capture"
+            passportId={passportId}
+            onComplete={handleEmailComplete}
+            onSkip={handleEmailSkip}
           />
         )}
 
