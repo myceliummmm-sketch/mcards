@@ -28,6 +28,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const CommunitySplitter = lazy(() => import("./components/community/CommunitySplitter"));
 const Community2 = lazy(() => import("./pages/Community2"));
 const TelegramRedirect = lazy(() => import("./pages/TelegramRedirect"));
+const TelegramBotRedirect = lazy(() => import("./pages/TelegramBotRedirect"));
 const Vision = lazy(() => import("./pages/Vision"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -67,6 +68,7 @@ const App = () => (
               <Route path="/community" element={<CommunitySplitter />} />
               <Route path="/community2" element={<Community2 />} />
               <Route path="/tg" element={<TelegramRedirect />} />
+              <Route path="/tg2" element={<TelegramBotRedirect />} />
               <Route path="/vision" element={<Vision />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
