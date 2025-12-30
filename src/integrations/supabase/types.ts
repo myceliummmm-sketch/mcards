@@ -557,26 +557,41 @@ export type Database = {
       }
       profiles: {
         Row: {
+          assigned_character: string | null
           avatar_url: string | null
           created_at: string
           id: string
           onboarding_completed: boolean | null
+          onboarding_step: string | null
+          quiz_blocker: string | null
+          telegram_id: number | null
+          telegram_username: string | null
           updated_at: string
           username: string | null
         }
         Insert: {
+          assigned_character?: string | null
           avatar_url?: string | null
           created_at?: string
           id: string
           onboarding_completed?: boolean | null
+          onboarding_step?: string | null
+          quiz_blocker?: string | null
+          telegram_id?: number | null
+          telegram_username?: string | null
           updated_at?: string
           username?: string | null
         }
         Update: {
+          assigned_character?: string | null
           avatar_url?: string | null
           created_at?: string
           id?: string
           onboarding_completed?: boolean | null
+          onboarding_step?: string | null
+          quiz_blocker?: string | null
+          telegram_id?: number | null
+          telegram_username?: string | null
           updated_at?: string
           username?: string | null
         }

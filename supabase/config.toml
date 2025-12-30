@@ -107,3 +107,6 @@ verify_jwt = false
 
 [functions.update-passport-email]
 verify_jwt = false
+
+[functions.telegram-bot-bridge]
+verify_jwt = false
