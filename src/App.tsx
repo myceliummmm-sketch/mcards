@@ -27,6 +27,7 @@ const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const CommunitySplitter = lazy(() => import("./components/community/CommunitySplitter"));
 const Community2 = lazy(() => import("./pages/Community2"));
+const TelegramRedirect = lazy(() => import("./pages/TelegramRedirect"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
               <Route path="/community" element={<CommunitySplitter />} />
               <Route path="/community2" element={<Community2 />} />
+              <Route path="/tg" element={<TelegramRedirect />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
