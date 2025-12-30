@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -38,6 +38,7 @@ type Deck = Database['public']['Tables']['decks']['Row'];
 export default function DeckBuilder() {
   const { deckId } = useParams<{ deckId: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t, language } = useTranslation();
   const isMobile = useIsMobile();
   const [deck, setDeck] = useState<Deck | null>(null);
@@ -107,6 +108,21 @@ export default function DeckBuilder() {
 
     fetchDeck();
   }, [deckId, navigate]);
+
+  // Handle ?slot=N query parameter from Vision flow
+  useEffect(() => {
+    if (!loading && deck) {
+      const slotParam = searchParams.get('slot');
+      if (slotParam) {
+        const slot = parseInt(slotParam, 10);
+        if (isValidCardSlot(slot)) {
+          setEditingSlot(slot);
+          searchParams.delete('slot');
+          setSearchParams(searchParams, { replace: true });
+        }
+      }
+    }
+  }, [loading, deck, searchParams, setSearchParams]);
 
   const handleEditCard = (slot: number) => {
     setEditingSlot(slot);
