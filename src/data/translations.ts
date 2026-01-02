@@ -986,6 +986,17 @@ export const translations = {
         generatingBlueprint: "> Generating Empire Blueprint...",
         successReady: "> SUCCESS: Your $10k/mo path is ready!",
         creatingVision: "Ever Green is creating your Vision Statement",
+        // AI Ideas Step
+        aiIdeas: {
+          generating: "🔮 Generating ideas...",
+          analyzingMarket: "Analyzing market and trends",
+          whatIFound: "✨ Here's what I came up with",
+          chooseIdea: "Choose the idea that resonates",
+          back: "Back",
+          otherIdeas: "Other ideas",
+          tryAgain: "Try again",
+          errorGenerating: "Failed to generate ideas. Try again.",
+        },
       },
     },
     community: {
@@ -2224,6 +2235,17 @@ export const translations = {
         generatingBlueprint: "> Генерация плана империи...",
         successReady: "> УСПЕХ: Твой путь к $10k/мес готов!",
         creatingVision: "Ever Green создаёт твой Vision Statement",
+        // AI Ideas Step
+        aiIdeas: {
+          generating: "🔮 Генерирую идеи...",
+          analyzingMarket: "Анализирую рынок и тренды",
+          whatIFound: "✨ Вот что я придумал",
+          chooseIdea: "Выбери идею, которая зацепила",
+          back: "Назад",
+          otherIdeas: "Другие идеи",
+          tryAgain: "Попробовать снова",
+          errorGenerating: "Не удалось сгенерировать идеи. Попробуй ещё раз.",
+        },
       },
     },
     community: {
@@ -3462,6 +3484,17 @@ export const translations = {
         generatingBlueprint: "> Generando plan del imperio...",
         successReady: "> ¡ÉXITO: Tu camino a $10k/mes está listo!",
         creatingVision: "Ever Green está creando tu Vision Statement",
+        // AI Ideas Step
+        aiIdeas: {
+          generating: "🔮 Generando ideas...",
+          analyzingMarket: "Analizando mercado y tendencias",
+          whatIFound: "✨ Esto es lo que se me ocurrió",
+          chooseIdea: "Elige la idea que te atrapa",
+          back: "Atrás",
+          otherIdeas: "Otras ideas",
+          tryAgain: "Intentar de nuevo",
+          errorGenerating: "No se pudieron generar ideas. Intenta de nuevo.",
+        },
       },
     },
     community: {
