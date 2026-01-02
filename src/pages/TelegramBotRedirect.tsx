@@ -41,88 +41,102 @@ const benefits = [
 
 const TelegramBotRedirect = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden flex flex-col">
-      {/* Hero Section - Compact */}
-      <section className="px-4 pt-6 pb-4 shrink-0">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* Hero Section */}
+      <section className="relative px-4 pt-12 pb-8">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.5 }}
           className="text-center max-w-md mx-auto"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs mb-3"
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm mb-6"
           >
-            <Sparkles className="h-3 w-3" />
-            <span>342 разработчика уже строят проекты</span>
+            <Sparkles className="h-4 w-4" />
+            <span>342 разработчика уже строят свои проекты</span>
           </motion.div>
 
-          <h1 className="text-2xl font-bold mb-2 leading-tight">
-            Превратить <span className="text-primary">идею в продукт</span>?
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+            Хочешь превратить{" "}
+            <span className="text-primary">идею в продукт</span>?
           </h1>
 
-          <p className="text-muted-foreground text-sm">
-            Посмотрел видео о пет-проектах — теперь сделаем твой.
+          <p className="text-muted-foreground text-lg">
+            Ты только что посмотрел видео о пет-проектах. Теперь давай сделаем твой.
           </p>
         </motion.div>
       </section>
 
-      {/* Team Avatars - Compact horizontal */}
-      <section className="px-4 pb-3 shrink-0">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="max-w-md mx-auto"
-        >
-          <div className="flex justify-center items-center gap-1">
-            {teamMembers.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.25 + index * 0.03 }}
-                className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/30 bg-card -ml-2 first:ml-0"
-              >
-                <img
-                  src={member.avatar}
-                  alt={member.name}
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-            ))}
-            <span className="ml-2 text-xs text-muted-foreground">← AI-команда</span>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Benefits - Compact inline */}
-      <section className="px-4 pb-4 shrink-0">
-        <div className="max-w-md mx-auto flex flex-wrap justify-center gap-2">
+      {/* Benefits Section */}
+      <section className="px-4 pb-8">
+        <div className="max-w-md mx-auto space-y-3">
           {benefits.map((benefit, index) => (
             <motion.div
               key={benefit.title}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.35 + index * 0.05 }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-card/50 border border-border/50 text-xs"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 + index * 0.1 }}
             >
-              <benefit.icon className="h-3.5 w-3.5 text-primary" />
-              <span className="text-muted-foreground">{benefit.title}</span>
+              <Card className="bg-card/50 backdrop-blur border-border/50">
+                <CardContent className="flex items-start gap-4 p-4">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+                    <benefit.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm mb-1">{benefit.title}</h3>
+                    <p className="text-muted-foreground text-sm">{benefit.description}</p>
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* CTA Section - Always visible */}
-      <section className="px-4 mt-auto pb-8 pt-4 shrink-0">
+      {/* Team Section */}
+      <section className="px-4 pb-8">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="max-w-md mx-auto"
+        >
+          <p className="text-center text-sm text-muted-foreground mb-4">
+            Твоя AI-команда:
+          </p>
+          <div className="flex justify-center gap-2 flex-wrap">
+            {teamMembers.map((member, index) => (
+              <motion.div
+                key={member.name}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.7 + index * 0.05 }}
+                className="flex flex-col items-center gap-1"
+              >
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
+                  <img
+                    src={member.avatar}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground">{member.role}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="px-4 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.9 }}
           className="max-w-md mx-auto text-center"
         >
           <Button
@@ -137,7 +151,7 @@ const TelegramBotRedirect = () => {
             </a>
           </Button>
 
-          <p className="mt-3 text-xs text-muted-foreground">
+          <p className="mt-4 text-sm text-muted-foreground">
             Бесплатно • Без обязательств • 2 минуты до старта
           </p>
         </motion.div>
