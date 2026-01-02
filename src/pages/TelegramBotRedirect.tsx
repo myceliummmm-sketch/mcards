@@ -69,6 +69,30 @@ const TelegramBotRedirect = () => {
             Ты только что посмотрел видео о пет-проектах. Теперь давай сделаем твой.
           </p>
         </motion.div>
+
+        {/* CTA Button - Primary */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8"
+        >
+          <Button
+            asChild
+            size="lg"
+            className="w-full text-lg py-6 shadow-[4px_4px_0_0_hsl(var(--primary)/0.3)] hover:shadow-[2px_2px_0_0_hsl(var(--primary)/0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          >
+            <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="mr-2 h-5 w-5" />
+              Войти в Telegram
+              <Rocket className="ml-2 h-5 w-5" />
+            </a>
+          </Button>
+
+          <p className="mt-3 text-sm text-muted-foreground">
+            Бесплатно • Без обязательств • 2 минуты до старта
+          </p>
+        </motion.div>
       </section>
 
       {/* Benefits Section */}
@@ -79,7 +103,7 @@ const TelegramBotRedirect = () => {
               key={benefit.title}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 + index * 0.1 }}
+              transition={{ delay: 0.5 + index * 0.1 }}
             >
               <Card className="bg-card/50 backdrop-blur border-border/50">
                 <CardContent className="flex items-start gap-4 p-4">
@@ -131,31 +155,6 @@ const TelegramBotRedirect = () => {
         </motion.div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-4 pb-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          className="max-w-md mx-auto text-center"
-        >
-          <Button
-            asChild
-            size="lg"
-            className="w-full text-lg py-6 shadow-[4px_4px_0_0_hsl(var(--primary)/0.3)] hover:shadow-[2px_2px_0_0_hsl(var(--primary)/0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-          >
-            <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
-              <MessageCircle className="mr-2 h-5 w-5" />
-              Войти в Telegram
-              <Rocket className="ml-2 h-5 w-5" />
-            </a>
-          </Button>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-            Бесплатно • Без обязательств • 2 минуты до старта
-          </p>
-        </motion.div>
-      </section>
     </div>
   );
 };
