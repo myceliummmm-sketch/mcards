@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RefreshCw, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { AIIdea } from '@/hooks/useInterviewWizard';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AIIdeasStepProps {
   painArea: string;
@@ -26,6 +27,7 @@ export function AIIdeasStep({
   regenerationCount,
   onRegenerate,
 }: AIIdeasStepProps) {
+  const { language, t } = useTranslation();
   const [isLoading, setIsLoading] = useState(generatedIdeas.length === 0);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +43,7 @@ export function AIIdeasStep({
 
     try {
       const { data, error } = await supabase.functions.invoke('generate-interview-ideas', {
-        body: { painArea, specificPain },
+        body: { painArea, specificPain, language },
       });
 
       if (error) throw error;
@@ -53,7 +55,7 @@ export function AIIdeasStep({
       }
     } catch (err) {
       console.error('Error generating ideas:', err);
-      setError('Не удалось сгенерировать идеи. Попробуй ещё раз.');
+      setError(t('simulator.interview.aiIdeas.errorGenerating'));
     } finally {
       setIsLoading(false);
     }
@@ -80,8 +82,12 @@ export function AIIdeasStep({
         >
           <Sparkles className="w-8 h-8 text-white" />
         </motion.div>
-        <h2 className="text-xl font-bold text-foreground mb-2">🔮 Генерирую идеи...</h2>
-        <p className="text-muted-foreground text-center">Анализирую рынок и тренды</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">
+          {t('simulator.interview.aiIdeas.generating')}
+        </h2>
+        <p className="text-muted-foreground text-center">
+          {t('simulator.interview.aiIdeas.analyzingMarket')}
+        </p>
       </motion.div>
     );
   }
@@ -96,11 +102,11 @@ export function AIIdeasStep({
         <p className="text-destructive mb-4">{error}</p>
         <Button onClick={generateIdeas} className="mb-4">
           <RefreshCw className="w-4 h-4 mr-2" />
-          Попробовать снова
+          {t('simulator.interview.aiIdeas.tryAgain')}
         </Button>
         <Button variant="outline" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
+          {t('simulator.interview.aiIdeas.back')}
         </Button>
       </motion.div>
     );
@@ -118,7 +124,7 @@ export function AIIdeasStep({
         animate={{ opacity: 1, y: 0 }}
         className="text-2xl font-bold text-foreground mb-2 text-center"
       >
-        ✨ Вот что я придумал
+        {t('simulator.interview.aiIdeas.whatIFound')}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}
@@ -126,7 +132,7 @@ export function AIIdeasStep({
         transition={{ delay: 0.1 }}
         className="text-muted-foreground mb-6 text-center"
       >
-        Выбери идею, которая зацепила
+        {t('simulator.interview.aiIdeas.chooseIdea')}
       </motion.p>
 
       <div className="space-y-3 w-full mb-4">
@@ -152,7 +158,7 @@ export function AIIdeasStep({
       <div className="flex gap-3 w-full">
         <Button variant="outline" onClick={onBack} className="flex-1">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
+          {t('simulator.interview.aiIdeas.back')}
         </Button>
         {regenerationCount < 3 && (
           <Button
@@ -162,7 +168,7 @@ export function AIIdeasStep({
             disabled={isLoading}
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Другие идеи ({3 - regenerationCount})
+            {t('simulator.interview.aiIdeas.otherIdeas')} ({3 - regenerationCount})
           </Button>
         )}
       </div>
