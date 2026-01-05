@@ -44,12 +44,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   const { toast } = useToast();
   const { t, language } = useTranslation();
 
-  // Sync form data when initialData changes (e.g., after loading from database)
-  useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
-      setFormData(initialData);
-    }
-  }, [initialData]);
+  // Note: Removed duplicate useEffect that was resetting wizard state.
+  // The sync is handled in the useEffect at line 116 below.
 
   // Sync image and evaluation when props change
   useEffect(() => {
