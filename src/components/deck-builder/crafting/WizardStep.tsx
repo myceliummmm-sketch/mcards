@@ -145,49 +145,51 @@ export const WizardStep = ({
         )}
       </div>
 
-      {/* Hints Section */}
+      {/* Guidance Cards Grid - 3 columns */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-3"
+        className="grid grid-cols-1 md:grid-cols-3 gap-3"
       >
-        <div className="flex items-center gap-2 text-primary">
-          <Lightbulb className="w-5 h-5" />
-          <span className="font-semibold text-sm">{t('wizard.hints')}</span>
+        {/* Hints Card */}
+        <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl h-full">
+          <div className="flex items-center gap-2 text-primary mb-2">
+            <Lightbulb className="w-4 h-4" />
+            <span className="font-semibold text-xs uppercase">{t('wizard.hints')}</span>
+          </div>
+          <ul className="space-y-1.5 text-xs text-muted-foreground">
+            {guidance.hints.slice(0, 3).map((hint, i) => (
+              <li key={i} className="flex items-start gap-1.5">
+                <span className="text-primary mt-0.5 flex-shrink-0">•</span>
+                <span className="line-clamp-2">{getLocalizedGuidanceText(hint, language)}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="space-y-2 text-sm text-muted-foreground">
-          {guidance.hints.map((hint, i) => (
-            <li key={i} className="flex items-start gap-2">
-              <span className="text-primary mt-0.5">•</span>
-              <span>{getLocalizedGuidanceText(hint, language)}</span>
-            </li>
-          ))}
-        </ul>
-      </motion.div>
 
-      {/* Example Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="p-4 bg-secondary/10 border border-secondary/20 rounded-lg"
-      >
-        <div className="text-xs font-bold text-secondary mb-2">{t('wizard.example')}</div>
-        <div className="text-sm text-foreground italic">"{getLocalizedGuidanceText(guidance.example, language)}"</div>
-      </motion.div>
+        {/* Example Card */}
+        <div className="p-3 bg-secondary/10 border border-secondary/20 rounded-xl h-full">
+          <div className="text-xs font-bold text-secondary mb-2">📝 {t('wizard.example')}</div>
+          <div className="text-xs text-foreground italic line-clamp-4">
+            "{getLocalizedGuidanceText(guidance.example, language)}"
+          </div>
+        </div>
 
-      {/* Validation Tip */}
-      {isFilled && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="p-3 bg-accent/10 border border-accent/20 rounded-lg"
-        >
-          <div className="text-xs font-bold text-accent mb-1">✨ {t('wizard.goodAnswer')}</div>
-          <div className="text-sm text-muted-foreground">{getLocalizedGuidanceText(guidance.validationTip, language)}</div>
-        </motion.div>
-      )}
+        {/* Validation Tip Card - Always visible, highlighted when filled */}
+        <div className={`p-3 rounded-xl h-full transition-all duration-300 ${
+          isFilled 
+            ? 'bg-accent/10 border border-accent/30' 
+            : 'bg-muted/5 border border-muted/20 opacity-60'
+        }`}>
+          <div className="text-xs font-bold mb-2">
+            {isFilled ? '✨' : '💭'} {t('wizard.goodAnswer')}
+          </div>
+          <div className="text-xs text-muted-foreground line-clamp-4">
+            {getLocalizedGuidanceText(guidance.validationTip, language)}
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };

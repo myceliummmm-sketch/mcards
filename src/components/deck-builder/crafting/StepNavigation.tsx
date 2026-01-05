@@ -26,7 +26,7 @@ export const StepNavigation = ({
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center justify-between pt-6 border-t border-border">
+    <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm flex items-center justify-between pt-4 pb-2 border-t border-border mt-4 -mx-1 px-1">
       <Button
         variant="outline"
         onClick={onPrevious}
@@ -52,14 +52,14 @@ export const StepNavigation = ({
         <Button
           onClick={onNext}
           disabled={!canGoNext && !isOptionalField}
-          className="gap-2 min-w-[120px]"
+          className="gap-2 min-w-[120px] h-12"
         >
           {isLastStep ? t('wizard.review') : t('wizard.next')}
           <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
 
-      <div className="text-xs text-muted-foreground">
+      <div className="text-xs text-muted-foreground hidden sm:block">
         {t('wizard.pressEnter')}
       </div>
     </div>
