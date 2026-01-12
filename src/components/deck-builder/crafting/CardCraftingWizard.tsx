@@ -56,13 +56,22 @@ export const CardCraftingWizard = ({
   // Sync internal state when initialData prop changes (e.g., opening a different card)
   useEffect(() => {
     const newInitialDataStr = JSON.stringify(initialData);
+    const currentFormDataStr = JSON.stringify(state.formData);
+    
     // If this data matches what we just synced to parent, ignore it
     if (newInitialDataStr === lastSyncedData.current) {
       return;
     }
+    
+    // If data is semantically the same as current form, don't reset wizard step
+    if (newInitialDataStr === currentFormDataStr) {
+      lastSyncedData.current = newInitialDataStr;
+      return;
+    }
+    
     // Only reset if it's truly different initial data (opening a different card)
     actions.resetState(initialData);
-  }, [initialData, actions]);
+  }, [initialData, actions, state.formData]);
 
   // Update completed steps when current field is filled
   useEffect(() => {
