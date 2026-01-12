@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Sparkles, Zap, Wand2, MessageSquare, Languages } from 'lucide-react';
+import { ArrowLeft, Sparkles, Zap, Wand2, MessageSquare, Languages, Loader2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AIHelperHint } from './AIHelperHint';
 import { DynamicFormField } from './DynamicFormField';
@@ -43,6 +43,29 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   const [wizardMode, setWizardMode] = useState(true);
   const { toast } = useToast();
   const { t, language } = useTranslation();
+
+  // Check if data is still loading (editor open but no data yet)
+  const isDataLoading = isOpen && !initialData && !cardId;
+
+  // Check for unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    const initialStr = JSON.stringify(initialData || {});
+    const currentStr = JSON.stringify(formData || {});
+    return initialStr !== currentStr;
+  }, [initialData, formData]);
+
+  // Handle close with unsaved changes warning
+  const handleClose = () => {
+    if (hasUnsavedChanges) {
+      const confirmMessage = language === 'ru' 
+        ? 'У вас есть несохранённые изменения. Вы уверены что хотите закрыть?'
+        : 'You have unsaved changes. Are you sure you want to close?';
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+    }
+    onClose();
+  };
 
   // === SAVE-ORIGIN TRACKING to prevent wizard reset on refetch ===
   // Stable card identifier to detect card switches vs refetches
@@ -345,14 +368,24 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   const secondaryHelper = definition.aiHelpers[1] || definition.aiHelpers[0];
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none p-0">
+        {/* Loading state while data is being fetched */}
+        {isDataLoading ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">
+              {language === 'ru' ? 'Загрузка данных карточки...' : 'Loading card data...'}
+            </p>
+          </div>
+        ) : (
+          <>
         <SheetHeader className="px-6 py-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
-              onClick={onClose}
+              onClick={handleClose}
               className="gap-2 hover:bg-primary/10"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -367,6 +400,14 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
               <Wand2 className="w-4 h-4" />
               {wizardMode ? t('cardEditor.quickEdit') : t('cardEditor.wizardMode')}
             </Button>
+            
+            {/* Unsaved changes indicator */}
+            {hasUnsavedChanges && (
+              <span className="text-xs text-amber-500 animate-pulse flex items-center gap-1 ml-auto">
+                <span className="w-2 h-2 bg-amber-500 rounded-full" />
+                {language === 'ru' ? 'Несохранённые изменения' : 'Unsaved changes'}
+              </span>
+            )}
           </div>
           
           <SheetTitle className="text-left mt-4">
@@ -615,6 +656,8 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
             setLoadingStage('idle');
           }}
         />
+          </>
+        )}
       </SheetContent>
     </Sheet>
   );

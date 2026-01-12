@@ -109,27 +109,32 @@ export default function DeckBuilder() {
     fetchDeck();
   }, [deckId, navigate]);
 
-  // Handle ?slot=N query parameter from Vision flow
+  // Handle ?slot=N query parameter from Vision flow - restore on page refresh
   useEffect(() => {
     if (!loading && deck) {
       const slotParam = searchParams.get('slot');
-      if (slotParam) {
+      // Only set editingSlot if not already set (prevents resetting on re-renders)
+      if (slotParam && editingSlot === null) {
         const slot = parseInt(slotParam, 10);
         if (isValidCardSlot(slot)) {
           setEditingSlot(slot);
-          searchParams.delete('slot');
-          setSearchParams(searchParams, { replace: true });
+          // Don't delete the param immediately - keep it for potential refresh
         }
       }
     }
-  }, [loading, deck, searchParams, setSearchParams]);
+  }, [loading, deck, searchParams, editingSlot]);
 
   const handleEditCard = (slot: number) => {
     setEditingSlot(slot);
+    // Add slot to URL so it persists on refresh
+    setSearchParams({ slot: slot.toString() }, { replace: true });
   };
 
   const handleCloseEditor = () => {
     setEditingSlot(null);
+    // Remove slot from URL when closing editor
+    searchParams.delete('slot');
+    setSearchParams(searchParams, { replace: true });
   };
 
   const handleSaveCard = async (data: any, imageUrl?: string, evaluation?: any, silent?: boolean) => {
