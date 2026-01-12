@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -44,8 +44,15 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
   const { toast } = useToast();
   const { t, language } = useTranslation();
 
-  // Note: Removed duplicate useEffect that was resetting wizard state.
-  // The sync is handled in the useEffect at line 116 below.
+  // === SAVE-ORIGIN TRACKING to prevent wizard reset on refetch ===
+  // Stable card identifier to detect card switches vs refetches
+  const editorKeyRef = useRef<string>('');
+  const ignoreNextPropSyncRef = useRef(false);
+  const lastLocalSaveRef = useRef<string>('');
+  const wizardModeInitializedRef = useRef(false);
+  
+  // Generate stable key for this card editing session
+  const currentEditorKey = `${deckId ?? 'no-deck'}:${definition.slot}`;
 
   // Sync image and evaluation when props change
   useEffect(() => {
@@ -109,13 +116,56 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
     }
   };
 
+  // === MAIN SYNC EFFECT: Handle card switch vs refetch of same card ===
   useEffect(() => {
+    const isCardSwitch = editorKeyRef.current !== currentEditorKey;
+    const initialDataStr = JSON.stringify(initialData || {});
+    
+    // Case 1: Card switched - do a full reset
+    if (isCardSwitch) {
+      editorKeyRef.current = currentEditorKey;
+      setFormData(initialData || {});
+      setCurrentImageUrl(cardImageUrl);
+      setCurrentEvaluation(evaluation);
+      
+      // Only initialize wizardMode on card switch
+      const hasExistingData = initialData && Object.keys(initialData).length > 0;
+      setWizardMode(!hasExistingData);
+      wizardModeInitializedRef.current = true;
+      
+      // Reset save tracking for new card
+      ignoreNextPropSyncRef.current = false;
+      lastLocalSaveRef.current = '';
+      return;
+    }
+    
+    // Case 2: Same card - check if we should ignore this update (our own save bounced back)
+    if (ignoreNextPropSyncRef.current) {
+      // Check if this is the data we just saved
+      if (initialDataStr === lastLocalSaveRef.current) {
+        ignoreNextPropSyncRef.current = false;
+        // Just sync image/evaluation, keep formData untouched
+        setCurrentImageUrl(cardImageUrl);
+        setCurrentEvaluation(evaluation);
+        return;
+      }
+    }
+    
+    // Case 3: Same card, external update - check if data is semantically same
+    const currentFormDataStr = JSON.stringify(formData || {});
+    if (initialDataStr === currentFormDataStr) {
+      // Data is same, just sync image/evaluation
+      setCurrentImageUrl(cardImageUrl);
+      setCurrentEvaluation(evaluation);
+      return;
+    }
+    
+    // Case 4: Genuine external update - sync all (rare case, e.g., collaborator edit)
     setFormData(initialData || {});
     setCurrentImageUrl(cardImageUrl);
     setCurrentEvaluation(evaluation);
-    const hasExistingData = initialData && Object.keys(initialData).length > 0;
-    setWizardMode(!hasExistingData);
-  }, [initialData, cardImageUrl, evaluation]);
+    // Don't touch wizardMode for same-card updates
+  }, [initialData, cardImageUrl, evaluation, currentEditorKey]);
 
   // Auto-translate on open if language is Russian and content is English
   useEffect(() => {
@@ -257,6 +307,11 @@ export const CardEditor = ({ isOpen, onClose, definition, initialData, cardImage
         }, 1200);
       }
 
+      // === SET SAVE-ORIGIN TRACKING before calling onSave ===
+      // This prevents the sync effect from resetting formData when the saved data bounces back
+      lastLocalSaveRef.current = JSON.stringify(dataToUse);
+      ignoreNextPropSyncRef.current = true;
+      
       // Always pass silent=true since CardEditor handles its own toasts
       await onSave(dataToUse, finalImageUrl, finalEvaluation, true);
       
