@@ -174,6 +174,12 @@ export const CardCraftingWizard = ({
     }
   };
 
+  // Handle forge - clear draft after successful forge
+  const handleForge = () => {
+    actions.clearDraft();
+    onForge(formData);
+  };
+
   if (isReviewMode) {
     return (
       <div className="space-y-6">
@@ -188,7 +194,7 @@ export const CardCraftingWizard = ({
           definition={definition}
           formData={formData}
           onEdit={handleEditFromReview}
-          onForge={() => onForge(formData)}
+          onForge={handleForge}
           isForging={isForging}
           hasExistingCard={hasExistingCard}
         />
