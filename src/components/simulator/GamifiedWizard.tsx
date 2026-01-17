@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Briefcase, Skull, Flame, Mail, X, Gamepad2, Landmark, Heart, Bot, Check, Rocket, Palette, Megaphone, Zap, Sparkles, Bitcoin, ShoppingCart, GraduationCap, Cloud } from "lucide-react";
+import { Code, Briefcase, Skull, Flame, Mail, X, Gamepad2, Landmark, Heart, Bot, Check, Rocket, Palette, Megaphone, Zap, Sparkles, Bitcoin, ShoppingCart, GraduationCap, Cloud, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useStartupSimulator } from "@/hooks/useStartupSimulator";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -450,6 +450,17 @@ export const GamifiedWizard = ({ trackEvent }: GamifiedWizardProps) => {
               <NeonButton onClick={() => actions.nextStep("class")}>
                 {t('simulator.pressStart')}
               </NeonButton>
+
+              {/* Community Link */}
+              <a
+                href="https://mycelium.gg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center gap-2 text-xs text-white/40 hover:text-[#39FF14] transition-colors"
+              >
+                <Users className="w-3 h-3" />
+                <span>{t('landing.community.mobileLink')}</span>
+              </a>
             </motion.div>
           )}
 
