@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import myceliumCardsHero from "@/assets/mycelium-cards-hero.png";
@@ -75,6 +75,17 @@ export const MobileHero = ({ trackEvent }: MobileHeroProps) => {
         <p className="mt-4 text-xs sm:text-sm text-muted-foreground px-2">
           {t('landing.mobile.hero.time')}
         </p>
+
+        {/* Community Link for Real Humans */}
+        <a
+          href="https://mycelium.gg"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors border border-border/50 rounded-full px-4 py-2"
+        >
+          <Users className="w-3 h-3" />
+          <span>{t('landing.community.mobileLink')}</span>
+        </a>
       </motion.div>
     </div>
   );

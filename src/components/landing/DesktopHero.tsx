@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Zap, ArrowRight, ChevronRight } from 'lucide-react';
+import { Zap, ArrowRight, ChevronRight, Users, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TEAM_CHARACTERS } from '@/data/teamCharacters';
@@ -168,6 +168,25 @@ export const DesktopHero = ({ onOpenChat }: DesktopHeroProps) => {
               <p className="mt-4 text-sm text-muted-foreground">
                 {t('landing.hero.noCreditCard')}
               </p>
+
+              {/* Community Link */}
+              <motion.div
+                className="mt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1 }}
+              >
+                <a
+                  href="https://mycelium.gg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>{t('landing.community.connectLink')}</span>
+                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </motion.div>
             </motion.div>
           </motion.div>
 
