@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Code, Briefcase, Skull, Rocket, Sparkles, Loader2 } from "lucide-react";
+import { Code, Briefcase, Skull, Rocket, Sparkles, Loader2, Users } from "lucide-react";
 
 type UserClass = "hacker" | "hustler";
 type CapitalLevel = "bootstrapper" | "investor";
@@ -192,6 +192,17 @@ export const EmpireBuilder = ({ trackEvent }: EmpireBuilderProps) => {
               >
                 ⚡ BUILD MY EMPIRE
               </Button>
+
+              {/* Community Link */}
+              <a
+                href="https://mycelium.gg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center gap-2 text-xs text-white/40 hover:text-[#00FF00] transition-colors"
+              >
+                <Users className="w-3 h-3" />
+                <span>{t('landing.community.mobileLink')}</span>
+              </a>
             </motion.div>
           )}
 

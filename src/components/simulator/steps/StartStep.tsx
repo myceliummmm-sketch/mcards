@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Lightbulb, Sparkles } from 'lucide-react';
+import { Lightbulb, Sparkles, Users } from 'lucide-react';
 import { Branch } from '@/hooks/useInterviewWizard';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -87,6 +87,17 @@ export function StartStep({ onSelect }: StartStepProps) {
             <p className="text-sm text-white/60">{t('simulator.interview.wantButDontKnow')}</p>
           </div>
         </button>
+
+        {/* Community Link */}
+        <a
+          href="https://mycelium.gg"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-flex items-center gap-2 text-xs text-white/40 hover:text-[#00FF00] transition-colors"
+        >
+          <Users className="w-3 h-3" />
+          <span>{t('landing.community.mobileLink')}</span>
+        </a>
       </motion.div>
     </motion.div>
   );

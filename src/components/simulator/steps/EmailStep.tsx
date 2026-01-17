@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Sparkles, Loader2 } from 'lucide-react';
+import { Mail, Sparkles, Loader2, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -136,6 +136,17 @@ export function EmailStep({ data, selectedPath, onComplete }: EmailStepProps) {
           <p className="text-xs text-muted-foreground text-center">
             {t('simulator.interview.agreeToTerms')}
           </p>
+
+          {/* Community Link */}
+          <a
+            href="https://mycelium.gg"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors w-full"
+          >
+            <Users className="w-3 h-3" />
+            <span>{t('landing.community.bottomLink')}</span>
+          </a>
         </form>
       </div>
     </motion.div>
