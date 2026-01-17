@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LazySection } from "@/components/ui/lazy-section";
-import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Target, Search, DollarSign } from "lucide-react";
+import { Sparkles, Zap, Users, MessageSquare, Trophy, ShoppingBag, ArrowRight, Target, Search, DollarSign, ExternalLink } from "lucide-react";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import { motion } from "framer-motion";
 import { TEAM_CHARACTERS } from "@/data/teamCharacters";
@@ -211,6 +211,19 @@ export const DesktopLanding = () => {
               <p className="mt-4 text-muted-foreground">
                 {t('landing.finalCta.hasAccount')}{" "}
                 <button onClick={() => navigate("/auth")} className="text-primary hover:underline">{t('landing.finalCta.signIn')}</button>
+              </p>
+              {/* Community Link */}
+              <p className="mt-6">
+                <a
+                  href="https://mycelium.gg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
+                >
+                  <Users className="w-4 h-4" />
+                  {t('landing.community.connectLink')}
+                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
               </p>
             </motion.div>
           </div>

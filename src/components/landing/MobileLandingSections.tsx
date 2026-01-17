@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Users, Zap, Target, DollarSign, CheckCircle, Clock, Star } from "lucide-react";
+import { ArrowRight, Users, Zap, Target, DollarSign, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -249,6 +249,19 @@ export const MobileBottomCTA = ({ trackEvent }: MobileBottomCTAProps) => {
           >
             {t('landing.finalCta.signIn')}
           </button>
+        </div>
+
+        {/* Real Humans Community Link */}
+        <div className="mt-4">
+          <a
+            href="https://mycelium.gg"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+          >
+            <Users className="w-3 h-3" />
+            {t('landing.community.bottomLink')}
+          </a>
         </div>
       </motion.div>
     </section>

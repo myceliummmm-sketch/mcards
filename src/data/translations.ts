@@ -147,6 +147,11 @@ export const translations = {
         cta: "Take the Quiz",
         timeInfo: "⏱️ Takes 2 minutes • 100% free",
       },
+      community: {
+        connectLink: "🤝 Not a bot? Connect with real builders here →",
+        mobileLink: "👋 Click here to connect with real humans building stuff",
+        bottomLink: "🌐 Join 500+ builders at mycelium.gg",
+      },
     },
     quiz: {
       title: "How Fast to $1K?",
@@ -1401,6 +1406,11 @@ export const translations = {
         cta: "Пройти тест",
         timeInfo: "⏱️ Занимает 2 минуты • Бесплатно",
       },
+      community: {
+        connectLink: "🤝 Не бот? Законнекться с реальными билдерами →",
+        mobileLink: "👋 Нажми, чтобы связаться с реальными людьми, которые строят проекты",
+        bottomLink: "🌐 Присоединяйся к 500+ билдерам на mycelium.gg",
+      },
     },
     quiz: {
       title: "За сколько до $1K?",
@@ -2654,6 +2664,11 @@ export const translations = {
         blockerLabel: "Tu bloqueador",
         cta: "Hacer el quiz",
         timeInfo: "⏱️ Toma 2 minutos • 100% gratis",
+      },
+      community: {
+        connectLink: "🤝 ¿No eres un bot? Conéctate con constructores reales →",
+        mobileLink: "👋 Haz clic para conectarte con personas reales que construyen cosas",
+        bottomLink: "🌐 Únete a 500+ constructores en mycelium.gg",
       },
     },
     quiz: {
