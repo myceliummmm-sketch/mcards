@@ -47,8 +47,10 @@ export const useCardCrafting = (
     return null;
   }, [draftKey]);
 
-  // Initialize state - check for draft first, then use initialData
-  const initializeState = useCallback(() => {
+  // Initialize state ONLY ONCE - use useRef to compute initial values
+  const initialStateRef = useRef<{ formData: Record<string, any>; currentStep: number; hasDraft: boolean } | null>(null);
+  
+  if (initialStateRef.current === null) {
     const draft = loadDraft();
     const hasInitialData = initialData && Object.keys(initialData).length > 0;
     
@@ -56,7 +58,7 @@ export const useCardCrafting = (
     if (draft?.formData && Object.keys(draft.formData).length > 0) {
       const draftHasMoreData = Object.keys(draft.formData).length >= Object.keys(initialData || {}).length;
       if (draftHasMoreData) {
-        return {
+        initialStateRef.current = {
           formData: draft.formData,
           currentStep: draft.currentStep || 1,
           hasDraft: true
@@ -64,14 +66,16 @@ export const useCardCrafting = (
       }
     }
     
-    return {
-      formData: initialData || {},
-      currentStep: 1,
-      hasDraft: false
-    };
-  }, [loadDraft, initialData]);
+    if (initialStateRef.current === null) {
+      initialStateRef.current = {
+        formData: initialData || {},
+        currentStep: 1,
+        hasDraft: false
+      };
+    }
+  }
 
-  const initialState = initializeState();
+  const initialState = initialStateRef.current;
   
   // State
   const [currentStep, setCurrentStep] = useState(initialState.currentStep);
