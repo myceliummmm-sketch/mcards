@@ -79,27 +79,26 @@ export const useCardCrafting = (
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [isAIGenerating, setIsAIGenerating] = useState(false);
-  const [draftRestored, setDraftRestored] = useState(initialState.hasDraft);
-  
   // Refs for sync tracking
   const lastSyncedData = useRef<string>(JSON.stringify(initialState.formData));
   const isInitialMount = useRef(true);
   const saveDraftTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const draftToastShown = useRef(false);
 
   const totalSteps = definition.fields.length;
   const currentField = definition.fields[currentStep - 1];
   const currentValue = formData[currentField?.name];
   const isCurrentStepComplete = currentValue !== undefined && currentValue !== null && currentValue !== '';
 
-  // Show toast if draft was restored
+  // Show toast if draft was restored - only once on mount
   useEffect(() => {
-    if (draftRestored && Object.keys(formData).length > 0) {
+    if (initialState.hasDraft && !draftToastShown.current) {
+      draftToastShown.current = true;
       toast.info('📝 Черновик восстановлен', {
         description: 'Продолжайте с того места, где остановились'
       });
-      setDraftRestored(false);
     }
-  }, [draftRestored, formData]);
+  }, []);
 
   // Save draft to localStorage (debounced)
   useEffect(() => {
@@ -181,7 +180,13 @@ export const useCardCrafting = (
       setFormData(draft.formData);
       setCurrentStep(draft.currentStep || 1);
       lastSyncedData.current = JSON.stringify(draft.formData);
-      setDraftRestored(true);
+      // Show toast for restored draft when switching cards
+      if (!draftToastShown.current) {
+        draftToastShown.current = true;
+        toast.info('📝 Черновик восстановлен', {
+          description: 'Продолжайте с того места, где остановились'
+        });
+      }
     } else {
       setFormData(newData);
       setCurrentStep(1);
