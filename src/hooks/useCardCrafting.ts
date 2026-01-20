@@ -27,38 +27,32 @@ export const useCardCrafting = (
   // Draft key for localStorage
   const draftKey = deckId ? `card_draft_${deckId}_${definition.slot}` : null;
 
-  // Load draft from localStorage
-  const loadDraft = useCallback((): DraftData | null => {
+  // Load draft from localStorage - pure function, no hooks
+  const loadDraftSync = (): DraftData | null => {
     if (!draftKey) return null;
     try {
       const saved = localStorage.getItem(draftKey);
       if (saved) {
         const draft = JSON.parse(saved) as DraftData;
-        // Check if draft is not older than 24 hours
         if (Date.now() - draft.timestamp < DRAFT_EXPIRY_MS) {
           return draft;
         }
-        // Expired draft - remove it
         localStorage.removeItem(draftKey);
       }
     } catch (e) {
       console.error('Error loading draft:', e);
     }
     return null;
-  }, [draftKey]);
+  };
 
-  // Initialize state ONLY ONCE - use useRef to compute initial values
-  const initialStateRef = useRef<{ formData: Record<string, any>; currentStep: number; hasDraft: boolean } | null>(null);
-  
-  if (initialStateRef.current === null) {
-    const draft = loadDraft();
-    const hasInitialData = initialData && Object.keys(initialData).length > 0;
+  // Compute initial state - runs once per hook instance
+  const getInitialState = () => {
+    const draft = loadDraftSync();
     
-    // If we have a draft with more data than initialData, use draft
     if (draft?.formData && Object.keys(draft.formData).length > 0) {
       const draftHasMoreData = Object.keys(draft.formData).length >= Object.keys(initialData || {}).length;
       if (draftHasMoreData) {
-        initialStateRef.current = {
+        return {
           formData: draft.formData,
           currentStep: draft.currentStep || 1,
           hasDraft: true
@@ -66,28 +60,26 @@ export const useCardCrafting = (
       }
     }
     
-    if (initialStateRef.current === null) {
-      initialStateRef.current = {
-        formData: initialData || {},
-        currentStep: 1,
-        hasDraft: false
-      };
-    }
-  }
-
-  const initialState = initialStateRef.current;
+    return {
+      formData: initialData || {},
+      currentStep: 1,
+      hasDraft: false
+    };
+  };
   
-  // State
-  const [currentStep, setCurrentStep] = useState(initialState.currentStep);
-  const [formData, setFormData] = useState<Record<string, any>>(initialState.formData);
+  // State - use lazy initializer to compute once
+  const [currentStep, setCurrentStep] = useState(() => getInitialState().currentStep);
+  const [formData, setFormData] = useState<Record<string, any>>(() => getInitialState().formData);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [isAIGenerating, setIsAIGenerating] = useState(false);
-  // Refs for sync tracking
-  const lastSyncedData = useRef<string>(JSON.stringify(initialState.formData));
-  const isInitialMount = useRef(true);
-  const saveDraftTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Track if we showed draft toast
   const draftToastShown = useRef(false);
+  const saveDraftTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasDraftOnMount = useRef(getInitialState().hasDraft);
+  const lastSyncedData = useRef<string>(JSON.stringify(formData));
+  const isInitialMount = useRef(true);
 
   const totalSteps = definition.fields.length;
   const currentField = definition.fields[currentStep - 1];
@@ -96,7 +88,7 @@ export const useCardCrafting = (
 
   // Show toast if draft was restored - only once on mount
   useEffect(() => {
-    if (initialState.hasDraft && !draftToastShown.current) {
+    if (hasDraftOnMount.current && !draftToastShown.current) {
       draftToastShown.current = true;
       toast.info('📝 Черновик восстановлен', {
         description: 'Продолжайте с того места, где остановились'
@@ -175,7 +167,7 @@ export const useCardCrafting = (
   // Reset state when switching to a different card
   const resetState = useCallback((newData: Record<string, any>) => {
     // Check for existing draft for this card
-    const draft = loadDraft();
+    const draft = loadDraftSync();
     const hasNewData = newData && Object.keys(newData).length > 0;
     const hasDraftData = draft?.formData && Object.keys(draft.formData).length > 0;
     
@@ -200,7 +192,7 @@ export const useCardCrafting = (
     setCompletedSteps(new Set());
     setIsReviewMode(false);
     isInitialMount.current = true;
-  }, [loadDraft]);
+  }, [draftKey]);
 
   // Set form data and mark filled steps as complete
   const setFormDataFull = useCallback((data: Record<string, any>) => {
