@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { WizardProgress } from './WizardProgress';
 import { WizardStep } from './WizardStep';
@@ -48,30 +48,32 @@ export const CardCraftingWizard = ({
 
   const { currentStep, formData, completedSteps, isReviewMode, isAIGenerating } = state;
   const { lastSyncedData, isInitialMount } = refs;
+  
+  // Track previous initialData to detect when a DIFFERENT card is opened
+  const prevInitialDataRef = useRef<string>(JSON.stringify(initialData));
 
   // Get guidance for current field
   const guidance = currentField ? getFieldGuidance(currentField.name) : null;
   const aiHelper = currentField ? getFieldAIHelper(currentField.name, definition) : definition.aiHelpers[0];
 
-  // Sync internal state when initialData prop changes (e.g., opening a different card)
+  // Sync internal state ONLY when a different card is opened (initialData changes externally)
+  // Do NOT include formData in dependencies - that causes infinite loop!
   useEffect(() => {
     const newInitialDataStr = JSON.stringify(initialData);
-    const currentFormDataStr = JSON.stringify(state.formData);
     
-    // If this data matches what we just synced to parent, ignore it
-    if (newInitialDataStr === lastSyncedData.current) {
+    // If initialData hasn't changed from what we tracked, do nothing
+    if (newInitialDataStr === prevInitialDataRef.current) {
       return;
     }
     
-    // If data is semantically the same as current form, don't reset wizard step
-    if (newInitialDataStr === currentFormDataStr) {
-      lastSyncedData.current = newInitialDataStr;
-      return;
-    }
+    // initialData changed - this means a different card was opened
+    prevInitialDataRef.current = newInitialDataStr;
     
-    // Only reset if it's truly different initial data (opening a different card)
-    actions.resetState(initialData);
-  }, [initialData, actions, state.formData]);
+    // Only reset if the new data is actually different from current synced data
+    if (newInitialDataStr !== lastSyncedData.current) {
+      actions.resetState(initialData);
+    }
+  }, [initialData, actions, lastSyncedData]);
 
   // Update completed steps when current field is filled
   useEffect(() => {
