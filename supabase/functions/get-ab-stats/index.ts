@@ -20,6 +20,13 @@ interface ABStats {
   video_plays: number;
   // Community metrics
   telegram_clicks: number;
+  // TG2 metrics
+  tg2_page_loads: number;
+  tg2_answer_bot: number;
+  tg2_answer_project: number;
+  tg2_answer_random: number;
+  tg2_answer_curious: number;
+  tg2_telegram_clicks: number;
   first_event_at: string | null;
 }
 
@@ -70,6 +77,12 @@ serve(async (req) => {
           chest_opens: 0,
           video_plays: 0,
           telegram_clicks: 0,
+          tg2_page_loads: 0,
+          tg2_answer_bot: 0,
+          tg2_answer_project: 0,
+          tg2_answer_random: 0,
+          tg2_answer_curious: 0,
+          tg2_telegram_clicks: 0,
           first_event_at: null
         };
         sessions[v] = new Set();
@@ -111,14 +124,32 @@ serve(async (req) => {
         case 'telegram_link_click':
           aggregated[v].telegram_clicks++;
           break;
+        case 'tg2_page_load':
+          aggregated[v].tg2_page_loads++;
+          if (event.page_load_time_ms) {
+            aggregated[v].avg_load_time_ms += event.page_load_time_ms;
+          }
+          break;
+        case 'tg2_answer_selected':
+          // Track which answer was selected
+          const answerId = event.metadata?.answer_id;
+          if (answerId === 'bot') aggregated[v].tg2_answer_bot++;
+          else if (answerId === 'project') aggregated[v].tg2_answer_project++;
+          else if (answerId === 'random') aggregated[v].tg2_answer_random++;
+          else if (answerId === 'curious') aggregated[v].tg2_answer_curious++;
+          break;
+        case 'tg2_telegram_click':
+          aggregated[v].tg2_telegram_clicks++;
+          break;
       }
     });
 
     // Finalize averages and session counts
     Object.keys(aggregated).forEach(v => {
       aggregated[v].total_sessions = sessions[v]?.size || 0;
-      if (aggregated[v].page_loads > 0) {
-        aggregated[v].avg_load_time_ms = Math.round(aggregated[v].avg_load_time_ms / aggregated[v].page_loads);
+      const totalLoads = aggregated[v].page_loads + aggregated[v].tg2_page_loads;
+      if (totalLoads > 0) {
+        aggregated[v].avg_load_time_ms = Math.round(aggregated[v].avg_load_time_ms / totalLoads);
       }
     });
 
