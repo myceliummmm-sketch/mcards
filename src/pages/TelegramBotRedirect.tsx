@@ -1,7 +1,8 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MessageCircle, Rocket, Users, Sparkles, Bot, TrendingUp } from "lucide-react";
+import { MessageCircle, Rocket, Users, Sparkles, Bot, TrendingUp, Shuffle, HelpCircle } from "lucide-react";
 
 import everAvatar from "@/assets/avatars/ever.png";
 import prismaAvatar from "@/assets/avatars/prisma.png";
@@ -11,6 +12,8 @@ import toxicAvatar from "@/assets/avatars/toxic.png";
 import zenAvatar from "@/assets/avatars/zen.png";
 
 const TELEGRAM_BOT_URL = "https://t.me/mdao_community_bot";
+
+type ScreenState = 'question' | 'bot-joke' | 'landing';
 
 const teamMembers = [
   { name: "Ever", role: "Визионер", avatar: everAvatar },
@@ -39,7 +42,138 @@ const benefits = [
   },
 ];
 
-const TelegramBotRedirect = () => {
+const questionOptions = [
+  { id: 'bot', text: 'Я бот 🤖', icon: Bot, action: 'bot-joke' as const },
+  { id: 'project', text: 'Хочу сделать свой проект', icon: Rocket, action: 'landing' as const },
+  { id: 'random', text: 'Ыыы не знаю, просто кликнул', icon: Shuffle, action: 'landing' as const },
+  { id: 'curious', text: 'Интересно что тут', icon: HelpCircle, action: 'landing' as const },
+];
+
+// Question Screen Component
+const QuestionScreen = ({ onAnswer }: { onAnswer: (screen: ScreenState) => void }) => {
+  return (
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center mb-8"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          className="text-5xl mb-6"
+        >
+          👋
+        </motion.div>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+          Зачем ты кликнул?
+        </h1>
+      </motion.div>
+
+      <div className="w-full max-w-sm space-y-3">
+        {questionOptions.map((option, index) => (
+          <motion.button
+            key={option.id}
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+            whileHover={{ scale: 1.02, x: 4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onAnswer(option.action)}
+            className="w-full group"
+          >
+            <Card className="bg-card/80 backdrop-blur-sm border-2 border-border/50 hover:border-primary/60 transition-all duration-300 overflow-hidden">
+              <CardContent className="flex items-center gap-4 p-4">
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 shrink-0">
+                  <option.icon className="h-5 w-5" />
+                </div>
+                <span className="text-foreground font-medium text-left">
+                  {option.text}
+                </span>
+              </CardContent>
+            </Card>
+          </motion.button>
+        ))}
+      </div>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+        className="mt-8 text-sm text-muted-foreground text-center"
+      >
+        Выбери честно, мы не осуждаем 😉
+      </motion.p>
+    </div>
+  );
+};
+
+// Bot Joke Screen Component
+const BotJokeScreen = () => {
+  return (
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8">
+      <motion.div
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+        className="text-7xl mb-6"
+      >
+        😄
+      </motion.div>
+
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="text-2xl md:text-3xl font-bold text-foreground text-center mb-3"
+      >
+        Отличная шутка!
+      </motion.h1>
+
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="text-lg text-muted-foreground text-center mb-8 max-w-xs"
+      >
+        Теперь попробуй пошутить тут 👇
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="w-full max-w-sm"
+      >
+        <Button
+          asChild
+          size="lg"
+          className="w-full text-lg py-6 shadow-[4px_4px_0_0_hsl(var(--primary)/0.3)] hover:shadow-[2px_2px_0_0_hsl(var(--primary)/0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+        >
+          <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
+            <MessageCircle className="mr-2 h-5 w-5" />
+            Войти в Telegram
+            <Bot className="ml-2 h-5 w-5" />
+          </a>
+        </Button>
+      </motion.div>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+        className="mt-4 text-sm text-muted-foreground text-center max-w-xs"
+      >
+        Там такие же как ты, кто шутит про ботов 🤖
+      </motion.p>
+    </div>
+  );
+};
+
+// Landing Screen Component (existing content)
+const LandingScreen = () => {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Hero Section */}
@@ -154,8 +288,52 @@ const TelegramBotRedirect = () => {
           </div>
         </motion.div>
       </section>
-
     </div>
+  );
+};
+
+// Main Component
+const TelegramBotRedirect = () => {
+  const [screen, setScreen] = useState<ScreenState>('question');
+
+  return (
+    <AnimatePresence mode="wait">
+      {screen === 'question' && (
+        <motion.div
+          key="question"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, x: -100 }}
+          transition={{ duration: 0.3 }}
+        >
+          <QuestionScreen onAnswer={setScreen} />
+        </motion.div>
+      )}
+
+      {screen === 'bot-joke' && (
+        <motion.div
+          key="bot-joke"
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <BotJokeScreen />
+        </motion.div>
+      )}
+
+      {screen === 'landing' && (
+        <motion.div
+          key="landing"
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <LandingScreen />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
