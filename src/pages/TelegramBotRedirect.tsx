@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle, Rocket, Users, Sparkles, Bot, TrendingUp, Shuffle, HelpCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 import everAvatar from "@/assets/avatars/ever.png";
 import prismaAvatar from "@/assets/avatars/prisma.png";
@@ -12,6 +13,21 @@ import toxicAvatar from "@/assets/avatars/toxic.png";
 import zenAvatar from "@/assets/avatars/zen.png";
 
 const TELEGRAM_BOT_URL = "https://t.me/mdao_community_bot";
+
+// Analytics helper
+const generateSessionId = (): string => {
+  return `tg2-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+};
+
+const getOrCreateSessionId = (): string => {
+  const key = 'tg2_session_id';
+  const existing = sessionStorage.getItem(key);
+  if (existing) return existing;
+  
+  const newId = generateSessionId();
+  sessionStorage.setItem(key, newId);
+  return newId;
+};
 
 type ScreenState = 'question' | 'bot-joke' | 'landing';
 
@@ -50,7 +66,22 @@ const questionOptions = [
 ];
 
 // Question Screen Component
-const QuestionScreen = ({ onAnswer }: { onAnswer: (screen: ScreenState) => void }) => {
+const QuestionScreen = ({ 
+  onAnswer, 
+  trackEvent 
+}: { 
+  onAnswer: (screen: ScreenState) => void;
+  trackEvent: (eventType: string, metadata?: Record<string, unknown>) => void;
+}) => {
+  const handleAnswer = (option: typeof questionOptions[0]) => {
+    trackEvent('tg2_answer_selected', { 
+      answer_id: option.id, 
+      answer_text: option.text,
+      next_screen: option.action 
+    });
+    onAnswer(option.action);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8">
       <motion.div
@@ -81,7 +112,7 @@ const QuestionScreen = ({ onAnswer }: { onAnswer: (screen: ScreenState) => void 
             transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
             whileHover={{ scale: 1.02, x: 4 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => onAnswer(option.action)}
+            onClick={() => handleAnswer(option)}
             className="w-full group"
           >
             <Card className="bg-card/80 backdrop-blur-sm border-2 border-border/50 hover:border-primary/60 transition-all duration-300 overflow-hidden">
@@ -111,7 +142,14 @@ const QuestionScreen = ({ onAnswer }: { onAnswer: (screen: ScreenState) => void 
 };
 
 // Bot Joke Screen Component
-const BotJokeScreen = () => {
+const BotJokeScreen = ({ 
+  trackEvent 
+}: { 
+  trackEvent: (eventType: string, metadata?: Record<string, unknown>) => void;
+}) => {
+  const handleTelegramClick = () => {
+    trackEvent('tg2_telegram_click', { source: 'bot_joke_screen' });
+  };
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8">
       <motion.div
@@ -151,6 +189,7 @@ const BotJokeScreen = () => {
           asChild
           size="lg"
           className="w-full text-lg py-6 shadow-[4px_4px_0_0_hsl(var(--primary)/0.3)] hover:shadow-[2px_2px_0_0_hsl(var(--primary)/0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          onClick={handleTelegramClick}
         >
           <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
             <MessageCircle className="mr-2 h-5 w-5" />
@@ -173,7 +212,15 @@ const BotJokeScreen = () => {
 };
 
 // Landing Screen Component (existing content)
-const LandingScreen = () => {
+const LandingScreen = ({ 
+  trackEvent 
+}: { 
+  trackEvent: (eventType: string, metadata?: Record<string, unknown>) => void;
+}) => {
+  const handleTelegramClick = () => {
+    trackEvent('tg2_telegram_click', { source: 'landing_screen' });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Hero Section */}
@@ -215,6 +262,7 @@ const LandingScreen = () => {
             asChild
             size="lg"
             className="w-full text-lg py-6 shadow-[4px_4px_0_0_hsl(var(--primary)/0.3)] hover:shadow-[2px_2px_0_0_hsl(var(--primary)/0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            onClick={handleTelegramClick}
           >
             <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
               <MessageCircle className="mr-2 h-5 w-5" />
@@ -295,6 +343,36 @@ const LandingScreen = () => {
 // Main Component
 const TelegramBotRedirect = () => {
   const [screen, setScreen] = useState<ScreenState>('question');
+  const sessionId = useRef(getOrCreateSessionId());
+  const hasTrackedPageLoad = useRef(false);
+  const pageLoadStart = useRef(performance.now());
+
+  const trackEvent = useCallback(async (
+    eventType: string, 
+    metadata?: Record<string, unknown>
+  ) => {
+    try {
+      await (supabase.from('ab_test_events') as any).insert({
+        session_id: sessionId.current,
+        variant: 'tg2',
+        event_type: eventType,
+        page_load_time_ms: eventType === 'tg2_page_load' 
+          ? Math.round(performance.now() - pageLoadStart.current) 
+          : null,
+        metadata: metadata || {}
+      });
+    } catch (error) {
+      console.debug('TG2 tracking error:', error);
+    }
+  }, []);
+
+  // Track page load on mount
+  useEffect(() => {
+    if (!hasTrackedPageLoad.current) {
+      hasTrackedPageLoad.current = true;
+      trackEvent('tg2_page_load');
+    }
+  }, [trackEvent]);
 
   return (
     <AnimatePresence mode="wait">
@@ -306,7 +384,7 @@ const TelegramBotRedirect = () => {
           exit={{ opacity: 0, x: -100 }}
           transition={{ duration: 0.3 }}
         >
-          <QuestionScreen onAnswer={setScreen} />
+          <QuestionScreen onAnswer={setScreen} trackEvent={trackEvent} />
         </motion.div>
       )}
 
@@ -318,7 +396,7 @@ const TelegramBotRedirect = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <BotJokeScreen />
+          <BotJokeScreen trackEvent={trackEvent} />
         </motion.div>
       )}
 
@@ -330,7 +408,7 @@ const TelegramBotRedirect = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <LandingScreen />
+          <LandingScreen trackEvent={trackEvent} />
         </motion.div>
       )}
     </AnimatePresence>
