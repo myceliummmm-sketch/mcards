@@ -44,16 +44,34 @@ serve(async (req) => {
 
     console.log('Fetching A/B test events...');
 
-    const { data, error } = await supabase
-      .from('ab_test_events')
-      .select('*')
-      .order('created_at', { ascending: true })
-      .limit(50000);
-
-    if (error) {
-      console.error('Database error:', error);
-      throw error;
+    // Get all events - no limit to ensure we capture all data
+    // Supabase default limit is 1000, so we need to paginate or increase
+    let allData: any[] = [];
+    let offset = 0;
+    const batchSize = 1000;
+    
+    while (true) {
+      const { data: batch, error: batchError } = await supabase
+        .from('ab_test_events')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .range(offset, offset + batchSize - 1);
+      
+      if (batchError) {
+        console.error('Database error:', batchError);
+        throw batchError;
+      }
+      
+      if (!batch || batch.length === 0) break;
+      
+      allData = allData.concat(batch);
+      offset += batchSize;
+      
+      // Safety limit to prevent infinite loops
+      if (offset > 100000) break;
     }
+    
+    const data = allData;
 
     console.log(`Found ${data?.length || 0} events`);
 
