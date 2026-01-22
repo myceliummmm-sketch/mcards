@@ -18,16 +18,24 @@ interface ABStats {
   chest_opens: number;
   video_plays: number;
   telegram_clicks: number;
+  // TG2 metrics
+  tg2_page_loads: number;
+  tg2_answer_bot: number;
+  tg2_answer_project: number;
+  tg2_answer_random: number;
+  tg2_answer_curious: number;
+  tg2_telegram_clicks: number;
   first_event_at: string | null;
 }
 
 // All expected current variants
-const CURRENT_VARIANTS = ['empire', 'community', 'classic'] as const;
+const CURRENT_VARIANTS = ['empire', 'community', 'classic', 'tg2'] as const;
 
 const variantNames: Record<string, string> = {
   empire: "Empire Builder (60%)",
   community: "Community Page (25%)", 
   classic: "Classic Landing (15%)",
+  tg2: "Telegram Bot Page",
   A: "Legacy A",
   B: "Legacy B"
 };
@@ -36,6 +44,7 @@ const variantColors: Record<string, string> = {
   empire: "border-l-amber-500",
   community: "border-l-emerald-500",
   classic: "border-l-blue-500",
+  tg2: "border-l-cyan-500",
   A: "border-l-purple-500",
   B: "border-l-pink-500"
 };
@@ -73,7 +82,7 @@ const AdminABAnalytics = () => {
     return ((num / denom) * 100).toFixed(1) + "%";
   };
 
-  // Normalize current variants - always show all 3, even with 0 data
+  // Normalize current variants - always show all, even with 0 data
   const currentStats: ABStats[] = CURRENT_VARIANTS.map(variant => {
     const existing = stats.find(s => s.variant === variant);
     return existing || {
@@ -88,6 +97,12 @@ const AdminABAnalytics = () => {
       chest_opens: 0,
       video_plays: 0,
       telegram_clicks: 0,
+      tg2_page_loads: 0,
+      tg2_answer_bot: 0,
+      tg2_answer_project: 0,
+      tg2_answer_random: 0,
+      tg2_answer_curious: 0,
+      tg2_telegram_clicks: 0,
       first_event_at: null
     };
   });
@@ -112,6 +127,7 @@ const AdminABAnalytics = () => {
         )}
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* For TG2, show tg2_page_loads instead of page_loads */}
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -123,7 +139,9 @@ const AdminABAnalytics = () => {
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-2xl font-bold">{stat.page_loads}</p>
+              <p className="text-2xl font-bold">
+                {stat.variant === 'tg2' ? stat.tg2_page_loads : stat.page_loads}
+              </p>
               <p className="text-xs text-muted-foreground">Page Loads</p>
             </div>
           </div>
@@ -187,6 +205,40 @@ const AdminABAnalytics = () => {
           </div>
         )}
 
+        {/* TG2-specific metrics */}
+        {stat.variant === 'tg2' && (
+          <div className="space-y-4 pt-2 border-t">
+            <p className="text-xs text-muted-foreground font-medium">Ответы на вопрос:</p>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col items-center gap-1 p-2 bg-cyan-500/10 rounded-lg">
+                <span className="text-lg">🤖</span>
+                <p className="text-xl font-bold">{stat.tg2_answer_bot}</p>
+                <p className="text-xs text-muted-foreground text-center">Я бот</p>
+              </div>
+              <div className="flex flex-col items-center gap-1 p-2 bg-cyan-500/10 rounded-lg">
+                <span className="text-lg">🚀</span>
+                <p className="text-xl font-bold">{stat.tg2_answer_project}</p>
+                <p className="text-xs text-muted-foreground text-center">Проект</p>
+              </div>
+              <div className="flex flex-col items-center gap-1 p-2 bg-cyan-500/10 rounded-lg">
+                <span className="text-lg">🔀</span>
+                <p className="text-xl font-bold">{stat.tg2_answer_random}</p>
+                <p className="text-xs text-muted-foreground text-center">Случайно</p>
+              </div>
+              <div className="flex flex-col items-center gap-1 p-2 bg-cyan-500/10 rounded-lg">
+                <span className="text-lg">❓</span>
+                <p className="text-xl font-bold">{stat.tg2_answer_curious}</p>
+                <p className="text-xs text-muted-foreground text-center">Интересно</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-1 p-2 bg-cyan-500/10 rounded-lg">
+              <MessageCircle className="h-4 w-4 text-cyan-500" />
+              <p className="text-xl font-bold">{stat.tg2_telegram_clicks}</p>
+              <p className="text-xs text-muted-foreground">TG Клики</p>
+            </div>
+          </div>
+        )}
+
         <div className="pt-2 border-t space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Click Rate</span>
@@ -220,6 +272,25 @@ const AdminABAnalytics = () => {
                 <span className="text-muted-foreground">TG Click Rate</span>
                 <span className="font-medium text-emerald-500">
                   {calcConversion(stat.telegram_clicks, stat.page_loads)}
+                </span>
+              </div>
+            </>
+          )}
+          {stat.variant === 'tg2' && (
+            <>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Answer Rate</span>
+                <span className="font-medium text-cyan-500">
+                  {calcConversion(
+                    stat.tg2_answer_bot + stat.tg2_answer_project + stat.tg2_answer_random + stat.tg2_answer_curious,
+                    stat.tg2_page_loads
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">TG Click Rate</span>
+                <span className="font-medium text-cyan-500">
+                  {calcConversion(stat.tg2_telegram_clicks, stat.tg2_page_loads)}
                 </span>
               </div>
             </>
